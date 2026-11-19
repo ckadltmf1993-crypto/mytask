@@ -1,0 +1,2054 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>MY TASK · 업무 관리</title>
+<meta name="description" content="회사 업무와 개인 일정을 한곳에서 관리하고 마감일을 놓치지 않도록 도와주는 업무 관리 도구">
+<meta name="theme-color" content="#14254a">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="MY TASK">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232453c7'/%3E%3Cpath d='M18 33l9 9 19-20' fill='none' stroke='white' stroke-width='7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script>
+/* 화면 깜빡임 없이 테마 먼저 적용 (light / dark / system) */
+(function(){ try{ var p=JSON.parse(localStorage.getItem('mytask.prefs.v1')||'{}'), t=p.theme||'system';
+  var dark = t==='dark' || (t==='system' && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches);
+  document.documentElement.dataset.theme = dark ? 'dark' : 'light'; }catch(e){} })();
+</script>
+<style>
+/* =========================================================
+   1. 디자인 토큰 (색상·간격·그림자) — 여기만 바꾸면 전체 테마 변경
+   ========================================================= */
+:root{
+  --bg:#f4f6f9;
+  --surface:#ffffff;
+  --surface-2:#f8fafc;
+  --border:#e3e8ef;
+  --border-strong:#cfd6e0;
+  --text:#1a2233;
+  --text-2:#4a5568;
+  --text-3:#8a94a6;
+
+  --navy:#14254a;
+  --navy-2:#1d3461;
+  --primary:#2453c7;
+  --primary-hover:#1c44a8;
+  --primary-soft:#eaf0fc;
+
+  --orange:#d9730d;
+  --orange-soft:#fff3e6;
+  --red:#d33a3a;
+  --red-soft:#fdecec;
+  --green:#1f8a5b;
+  --green-soft:#e7f6ef;
+  --gray-soft:#eef1f5;
+  --purple:#6b4fbb;
+  --purple-soft:#f0ecfa;
+
+  --radius:10px;
+  --radius-sm:6px;
+  --shadow:0 1px 2px rgba(16,24,40,.04),0 1px 3px rgba(16,24,40,.06);
+  --shadow-lg:0 12px 32px rgba(16,24,40,.16);
+  --sidebar-w:240px;
+  --topbar-h:64px;
+}
+/* ---------- 다크 모드 ---------- */
+[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0e141f;
+  --surface:#161e2b;
+  --surface-2:#1b2433;
+  --border:#283345;
+  --border-strong:#36435a;
+  --text:#e5eaf2;
+  --text-2:#b2bdcd;
+  --text-3:#7c899d;
+  --navy:#0a1120;
+  --navy-2:#16244a;
+  --primary:#5b8bff;
+  --primary-hover:#4a7af2;
+  --primary-soft:rgba(91,139,255,.14);
+  --orange:#f5a04a;
+  --orange-soft:rgba(245,160,74,.14);
+  --red:#f26b6b;
+  --red-soft:rgba(242,107,107,.14);
+  --green:#3fcf8e;
+  --green-soft:rgba(63,207,142,.14);
+  --gray-soft:#232d3d;
+  --purple:#a98ff2;
+  --purple-soft:rgba(169,143,242,.15);
+  --shadow:0 1px 2px rgba(0,0,0,.3);
+  --shadow-lg:0 12px 32px rgba(0,0,0,.5);
+}
+[data-theme="dark"] .sidebar{border-right:1px solid var(--border)}
+[data-theme="dark"] .si-indigo{background:rgba(121,134,203,.16);color:#9aa8ef}
+[data-theme="dark"] .noti.unread{background:rgba(91,139,255,.07)}
+[data-theme="dark"] .guide-box h4,[data-theme="dark"] .sample-banner{color:var(--text)}
+[data-theme="dark"] .sample-banner{border-color:rgba(91,139,255,.3)}
+[data-theme="dark"] .tasks tr.task-done td,[data-theme="dark"] table.tasks tr.task-done{background:#131a25}
+[data-theme="dark"] .tasks tr.task-done:hover td{background:#171f2c}
+[data-theme="dark"] .tasks tr.task-done .task-desc{color:#5b6779}
+[data-theme="dark"] .tasks tr.task-done .chk.on{background:#4a5568;border-color:#4a5568}
+[data-theme="dark"] .cal-cell:not(.other):hover{background:#1a2230}
+[data-theme="dark"] .toast{background:#273349}
+[data-theme="dark"] .stat.today{background:linear-gradient(135deg,#1b2b55 0%,#22376b 100%)}
+[data-theme="dark"] .overlay,[data-theme="dark"] .center-alert{background:rgba(0,0,0,.6)}
+[data-theme="dark"] .btn-primary{color:#fff}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",system-ui,-apple-system,sans-serif;
+  background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:none;background:none}
+svg{width:18px;height:18px;flex-shrink:0}
+
+/* =========================================================
+   2. 레이아웃 (사이드바 + 메인)
+   ========================================================= */
+.app{display:flex;min-height:100vh}
+
+.sidebar{
+  width:var(--sidebar-w);background:var(--navy);color:#c9d3e6;
+  position:fixed;inset:0 auto 0 0;display:flex;flex-direction:column;z-index:40;
+  transition:transform .25s ease;
+}
+.logo{
+  height:var(--topbar-h);display:flex;align-items:center;gap:10px;padding:0 22px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.logo-mark{
+  width:32px;height:32px;border-radius:8px;background:var(--primary);
+  display:grid;place-items:center;color:#fff;
+}
+.logo-mark svg{width:18px;height:18px}
+.logo-text{font-weight:800;font-size:17px;letter-spacing:.5px;color:#fff}
+.logo-text span{color:#7fa4ff}
+
+.nav{padding:16px 12px;flex:1;overflow-y:auto}
+.nav-label{font-size:11px;font-weight:600;color:#6f7f9c;padding:12px 12px 6px;letter-spacing:.5px}
+.nav-item{
+  display:flex;align-items:center;gap:12px;width:100%;padding:10px 12px;border-radius:8px;
+  color:#c9d3e6;font-size:14px;font-weight:500;text-align:left;margin-bottom:2px;
+  transition:background .15s,color .15s;
+}
+.nav-item:hover{background:rgba(255,255,255,.06);color:#fff}
+.nav-item.active{background:var(--primary);color:#fff}
+.nav-item .count{
+  margin-left:auto;font-size:11px;font-weight:600;background:rgba(255,255,255,.12);
+  padding:1px 8px;border-radius:10px;
+}
+.nav-item.active .count{background:rgba(255,255,255,.25)}
+.nav-item .count.alert{background:var(--red);color:#fff}
+
+.sidebar-footer{padding:16px;border-top:1px solid rgba(255,255,255,.08)}
+.profile{display:flex;align-items:center;gap:10px}
+.avatar{
+  width:34px;height:34px;border-radius:50%;background:#3b5998;color:#fff;
+  display:grid;place-items:center;font-weight:700;font-size:13px;flex-shrink:0;
+}
+.profile-name{color:#fff;font-weight:600;font-size:13px}
+.profile-org{font-size:12px;color:#8796b4}
+
+.main{flex:1;margin-left:var(--sidebar-w);min-width:0;display:flex;flex-direction:column}
+
+.topbar{
+  height:var(--topbar-h);background:var(--surface);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:16px;padding:0 28px;position:sticky;top:0;z-index:30;
+}
+.menu-toggle{display:none;padding:8px;border-radius:8px;color:var(--text-2)}
+.menu-toggle:hover{background:var(--gray-soft)}
+.page-title{font-size:18px;font-weight:700;white-space:nowrap}
+.breadcrumb{font-size:12px;color:var(--text-3)}
+.topbar-search{
+  margin-left:auto;display:flex;align-items:center;gap:8px;background:var(--surface-2);
+  border:1px solid var(--border);border-radius:8px;padding:0 12px;height:38px;width:280px;
+}
+.topbar-search svg{color:var(--text-3);width:16px;height:16px}
+.topbar-search input{border:none;background:none;outline:none;flex:1;min-width:0;font-size:13px}
+.icon-btn{
+  position:relative;width:38px;height:38px;border-radius:8px;display:grid;place-items:center;
+  color:var(--text-2);border:1px solid var(--border);background:var(--surface);
+}
+.icon-btn:hover{background:var(--surface-2)}
+.icon-btn .dot{
+  position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;
+  background:var(--red);color:#fff;font-size:10px;font-weight:700;display:grid;place-items:center;
+  border:2px solid var(--surface);
+}
+
+.content{padding:28px;max-width:1440px;width:100%;margin:0 auto}
+
+/* =========================================================
+   3. 공통 컴포넌트
+   ========================================================= */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;height:38px;padding:0 16px;
+  border-radius:8px;font-weight:600;font-size:13px;white-space:nowrap;transition:background .15s,border-color .15s;
+}
+.btn svg{width:16px;height:16px}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-primary:hover{background:var(--primary-hover)}
+.btn-outline{border:1px solid var(--border-strong);background:var(--surface);color:var(--text-2)}
+.btn-outline:hover{background:var(--surface-2)}
+.btn-sm{height:32px;padding:0 12px;font-size:12px}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
+.card-header{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:16px 20px;border-bottom:1px solid var(--border);flex-wrap:wrap;
+}
+.card-title{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px}
+.card-title .sub{font-size:12px;font-weight:500;color:var(--text-3)}
+.card-body{padding:20px}
+.link-btn{font-size:12px;color:var(--primary);font-weight:600}
+.link-btn:hover{text-decoration:underline}
+
+/* 배지 */
+.badge{
+  display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;
+  padding:3px 9px;border-radius:20px;white-space:nowrap;line-height:1.4;
+}
+.badge::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.badge.no-dot::before{display:none}
+.b-company{background:var(--primary-soft);color:var(--primary)}
+.b-personal{background:var(--purple-soft);color:var(--purple)}
+.b-todo{background:var(--gray-soft);color:var(--text-2)}
+.b-progress{background:var(--primary-soft);color:var(--primary)}
+.b-done{background:var(--green-soft);color:var(--green)}
+.b-high{background:var(--red-soft);color:var(--red)}
+.b-medium{background:var(--orange-soft);color:var(--orange)}
+.b-low{background:var(--gray-soft);color:var(--text-3)}
+
+.due{font-weight:600;white-space:nowrap}
+.due small{display:inline-block;margin-left:6px;font-size:11px;padding:1px 6px;border-radius:4px;font-weight:700}
+.due.soon{color:var(--orange)} .due.soon small{background:var(--orange-soft)}
+.due.overdue{color:var(--red)} .due.overdue small{background:var(--red-soft)}
+.due.normal small{background:var(--gray-soft);color:var(--text-3)}
+.alert-tag{display:flex;align-items:center;gap:3px;font-size:11px;color:var(--text-3);margin-top:3px;white-space:nowrap}
+.alert-tag svg{width:11px;height:11px}
+.alert-tag.off{text-decoration:line-through}
+@media (max-width:640px){ .alert-tag{margin:0 0 0 6px} .tasks td[data-label="마감일"]{justify-content:flex-start} .tasks td[data-label="마감일"]::before{margin-right:auto} }
+
+/* =========================================================
+   4. 대시보드
+   ========================================================= */
+.welcome{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:20px;flex-wrap:wrap}
+.welcome h2{font-size:22px;font-weight:700}
+.welcome p{color:var(--text-2);margin-top:2px}
+
+.stats{display:grid;grid-template-columns:1.3fr repeat(4,1fr);gap:16px;margin-bottom:24px}
+.stat{padding:18px 20px;display:flex;flex-direction:column;gap:10px}
+.stat-top{display:flex;align-items:center;justify-content:space-between}
+.stat-label{font-size:13px;color:var(--text-2);font-weight:500}
+.stat-icon{width:34px;height:34px;border-radius:8px;display:grid;place-items:center}
+.stat-icon svg{width:18px;height:18px}
+.stat-value{font-size:28px;font-weight:800;letter-spacing:-.5px}
+.stat-value span{font-size:14px;font-weight:600;color:var(--text-3);margin-left:3px}
+.stat-foot{font-size:12px;color:var(--text-3)}
+.stat.today{background:linear-gradient(135deg,var(--navy) 0%,var(--navy-2) 100%);color:#fff;border:none}
+.stat.today .stat-label,.stat.today .stat-foot{color:#a9b8d6}
+.stat.today .stat-value{font-size:20px;letter-spacing:-.3px}
+.stat.today .stat-icon{background:rgba(255,255,255,.12);color:#fff}
+.si-blue{background:var(--primary-soft);color:var(--primary)}
+.si-indigo{background:#e8ecfb;color:#3f51b5}
+.si-green{background:var(--green-soft);color:var(--green)}
+.si-orange{background:var(--orange-soft);color:var(--orange)}
+.progress{height:6px;background:var(--gray-soft);border-radius:3px;overflow:hidden}
+.progress>i{display:block;height:100%;background:var(--primary);border-radius:3px}
+
+.dash-grid{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:20px}
+.side-stack{display:flex;flex-direction:column;gap:20px}
+
+/* 마감 임박 리스트 */
+.deadline-list{list-style:none}
+.deadline-item{
+  display:flex;gap:12px;padding:14px 20px;border-bottom:1px solid var(--border);
+  border-left:3px solid transparent;cursor:pointer;
+}
+.deadline-item:last-child{border-bottom:none}
+.deadline-item:hover{background:var(--surface-2)}
+.deadline-item.soon{border-left-color:var(--orange);background:linear-gradient(90deg,var(--orange-soft),transparent 60%)}
+.deadline-item.overdue{border-left-color:var(--red);background:linear-gradient(90deg,var(--red-soft),transparent 60%)}
+.dday{
+  min-width:52px;width:auto !important;padding-left:6px !important;padding-right:6px !important;font-size:12px !important;white-space:nowrap;
+  width:52px;flex-shrink:0;text-align:center;border-radius:8px;padding:6px 0;font-weight:800;font-size:13px;align-self:flex-start;
+}
+.deadline-item.soon .dday{background:var(--orange);color:#fff}
+.deadline-item.overdue .dday{background:var(--red);color:#fff}
+.deadline-info{min-width:0;flex:1}
+.deadline-title{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.deadline-meta{display:flex;gap:6px;align-items:center;margin-top:4px;font-size:12px;color:var(--text-3);flex-wrap:wrap}
+.legend{display:flex;gap:12px;font-size:12px;color:var(--text-3)}
+.legend i{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:4px}
+
+.split-row{display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px}
+.split-row b{font-weight:700}
+.split-block+.split-block{margin-top:16px}
+
+/* =========================================================
+   5. 업무 테이블 (모바일에서는 카드형으로 전환)
+   ========================================================= */
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:14px 20px;border-bottom:1px solid var(--border);background:var(--surface-2)}
+.toolbar .field{
+  display:flex;align-items:center;gap:6px;height:36px;padding:0 10px;border:1px solid var(--border);
+  border-radius:8px;background:var(--surface);
+}
+.toolbar .field svg{width:15px;height:15px;color:var(--text-3)}
+.toolbar input,.toolbar select{border:none;outline:none;background:none;font-size:13px;height:100%}
+.toolbar .search{flex:1;min-width:180px}
+.toolbar .search input{flex:1;min-width:0}
+.toolbar .result{margin-left:auto;font-size:12px;color:var(--text-3)}
+
+.table-wrap{overflow-x:auto}
+table.tasks{width:100%;border-collapse:collapse}
+.tasks th{
+  text-align:left;font-size:12px;font-weight:600;color:var(--text-3);background:var(--surface-2);
+  padding:11px 16px;border-bottom:1px solid var(--border);white-space:nowrap;
+}
+.tasks td{padding:13px 16px;border-bottom:1px solid var(--border);vertical-align:middle;font-size:13px}
+.tasks tbody tr{transition:background .12s}
+.tasks tbody tr:hover{background:var(--surface-2)}
+.tasks tbody tr:last-child td{border-bottom:none}
+.tasks tr.row-overdue td:first-child{box-shadow:inset 3px 0 0 var(--red)}
+.tasks tr.row-soon td:first-child{box-shadow:inset 3px 0 0 var(--orange)}
+.task-name{font-weight:600;color:var(--text)}
+.task-desc{font-size:12px;color:var(--text-3);margin-top:2px;max-width:340px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.task-done .task-name{color:var(--text-3);text-decoration:line-through}
+.date{color:var(--text-2);white-space:nowrap}
+.row-actions{display:flex;gap:4px;justify-content:flex-end}
+.row-actions button{width:30px;height:30px;border-radius:6px;display:grid;place-items:center;color:var(--text-3)}
+.row-actions button:hover{background:var(--gray-soft);color:var(--text)}
+.row-actions button.del:hover{background:var(--red-soft);color:var(--red)}
+.row-actions svg{width:16px;height:16px}
+.empty{padding:48px 20px;text-align:center;color:var(--text-3)}
+.empty svg{width:40px;height:40px;margin-bottom:8px;color:var(--border-strong)}
+
+/* =========================================================
+   6. 캘린더
+   ========================================================= */
+.cal-head{display:flex;align-items:center;gap:10px}
+.cal-head h3{font-size:16px;font-weight:700;min-width:120px;text-align:center}
+.cal-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr))}
+.cal-dow{padding:10px;font-size:12px;font-weight:600;color:var(--text-3);text-align:center;background:var(--surface-2);border-bottom:1px solid var(--border)}
+.cal-dow:first-child{color:var(--red)} .cal-dow:last-child{color:var(--primary)}
+.cal-cell{min-height:112px;padding:8px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:4px;min-width:0}
+.cal-cell:nth-child(7n){border-right:none}
+.cal-cell.other{background:var(--surface-2)}
+.cal-cell.other .cal-day{color:var(--border-strong)}
+.cal-day{font-size:12px;font-weight:600;color:var(--text-2);width:24px;height:24px;display:grid;place-items:center;border-radius:50%}
+.cal-cell.today .cal-day{background:var(--primary);color:#fff}
+.cal-chip{
+  font-size:11px;font-weight:600;padding:3px 6px;border-radius:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;
+  border-left:3px solid currentColor;
+}
+.cal-chip.company{background:var(--primary-soft);color:var(--primary)}
+.cal-chip.personal{background:var(--purple-soft);color:var(--purple)}
+.cal-chip.done{opacity:.5;text-decoration:line-through}
+.cal-chip.overdue{background:var(--red-soft);color:var(--red)}
+.cal-more{font-size:11px;color:var(--text-3);padding-left:4px}
+
+/* =========================================================
+   7. 알림 센터
+   ========================================================= */
+.noti-list{list-style:none}
+.noti{display:flex;gap:14px;padding:16px 20px;border-bottom:1px solid var(--border)}
+.noti:last-child{border-bottom:none}
+.noti.unread{background:#f7f9fe}
+.noti-icon{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;flex-shrink:0}
+.noti-body{flex:1;min-width:0}
+.noti-title{font-weight:600}
+.noti-text{color:var(--text-2);font-size:13px;margin-top:2px}
+.noti-time{font-size:12px;color:var(--text-3);white-space:nowrap}
+.unread-dot{width:8px;height:8px;border-radius:50%;background:var(--primary);margin-top:6px;flex-shrink:0}
+
+/* =========================================================
+   8. 모달 (업무 등록/수정)
+   ========================================================= */
+.overlay{
+  position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:60;display:none;
+  align-items:center;justify-content:center;padding:20px;
+}
+.overlay.open{display:flex}
+.modal{background:var(--surface);border-radius:12px;width:100%;max-width:640px;max-height:calc(100vh - 40px);display:flex;flex-direction:column;box-shadow:var(--shadow-lg)}
+.modal-header{display:flex;align-items:center;justify-content:space-between;padding:18px 24px;border-bottom:1px solid var(--border)}
+.modal-header h3{font-size:17px;font-weight:700}
+.modal-body{padding:22px 24px;overflow-y:auto}
+.modal-footer{display:flex;justify-content:flex-end;gap:8px;padding:14px 24px;border-top:1px solid var(--border);background:var(--surface-2);border-radius:0 0 12px 12px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px 18px}
+.form-group{display:flex;flex-direction:column;gap:6px}
+.form-group.full{grid-column:1/-1}
+.form-group label{font-size:13px;font-weight:600;color:var(--text-2)}
+.form-group label .req{color:var(--red);margin-left:2px}
+.input{
+  height:40px;padding:0 12px;border:1px solid var(--border-strong);border-radius:8px;background:var(--surface);
+  outline:none;font-size:14px;transition:border-color .15s,box-shadow .15s;width:100%;
+}
+textarea.input{height:96px;padding:10px 12px;resize:vertical}
+.input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(36,83,199,.12)}
+.input.invalid{border-color:var(--red)}
+.segmented{display:flex;border:1px solid var(--border-strong);border-radius:8px;overflow:hidden;height:40px}
+.segmented label{flex:1;display:flex;margin:0;cursor:pointer}
+.segmented input{display:none}
+.segmented span{
+  flex:1;display:grid;place-items:center;font-size:13px;font-weight:600;color:var(--text-2);
+  border-right:1px solid var(--border-strong);transition:background .15s,color .15s;
+}
+.segmented label:last-child span{border-right:none}
+.segmented input:checked+span{background:var(--primary);color:#fff}
+.form-hint{font-size:12px;color:var(--text-3)}
+
+.dt-row{display:grid;grid-template-columns:1fr 120px;gap:8px}
+.custom-alert{display:none;grid-template-columns:1fr 110px;gap:8px;margin-top:8px}
+.custom-alert.show{display:grid}
+.due .time{font-weight:500;margin-left:4px;color:inherit;opacity:.85}
+@media (min-width:641px){ .due{display:inline-block} .due small{margin:3px 0 0 0;display:table;white-space:nowrap} }
+
+/* 실시간 알림 팝업 */
+.pop-wrap{position:fixed;top:76px;right:20px;z-index:70;display:flex;flex-direction:column;gap:10px;width:340px;max-width:calc(100vw - 32px)}
+.pop{background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--orange);border-radius:10px;box-shadow:var(--shadow-lg);
+  padding:14px 14px 14px 16px;display:flex;gap:12px;animation:popIn .25s ease;cursor:pointer}
+.pop.overdue{border-left-color:var(--red)}
+.pop .pi{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:var(--orange-soft);color:var(--orange);flex-shrink:0}
+.pop.overdue .pi{background:var(--red-soft);color:var(--red)}
+.pop b{display:block;font-size:13px}
+.pop p{font-size:12px;color:var(--text-2);margin-top:2px}
+.pop .px{margin-left:auto;color:var(--text-3);align-self:flex-start}
+.pop .px svg{width:14px;height:14px}
+@keyframes popIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:none}}
+@media (max-width:640px){ .pop-wrap{top:72px;right:16px;left:16px;width:auto} }
+
+/* 캘린더 내보내기 */
+.header-actions{display:flex;gap:8px;flex-wrap:wrap}
+.check-row{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-2);cursor:pointer;margin-top:12px}
+.check-row input{width:16px;height:16px;accent-color:var(--primary)}
+.export-summary{display:flex;gap:10px;margin-top:16px}
+.export-summary div{flex:1;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:12px 14px}
+.export-summary span{display:block;font-size:12px;color:var(--text-3)}
+.export-summary b{font-size:20px;font-weight:800}
+.guide-box{margin-top:16px;border:1px solid var(--border);border-radius:8px;padding:14px 16px;background:var(--primary-soft)}
+.guide-box h4{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.guide-box h4 svg{width:15px;height:15px}
+.guide-box ul{list-style:none;font-size:12.5px;color:var(--text-2);display:flex;flex-direction:column;gap:5px}
+.guide-box li b{color:var(--text);font-weight:700;margin-right:4px}
+#exShare{display:none}
+@media (max-width:640px){ .hide-sm{display:none} }
+
+/* 데이터 관리 */
+.data-tools{display:flex;gap:6px;margin-bottom:14px}
+.data-tools button{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;height:32px;border-radius:6px;
+  font-size:12px;font-weight:600;color:#c9d3e6;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1)}
+.data-tools button:hover{background:rgba(255,255,255,.12);color:#fff}
+.data-tools svg{width:14px;height:14px}
+.save-state{font-size:11px;color:#6f7f9c;margin:-6px 0 12px;display:flex;align-items:center;gap:5px}
+.save-state i{width:6px;height:6px;border-radius:50%;background:#3fbf7f}
+.save-state.err i{background:var(--red)}
+.sample-banner{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--primary-soft);border:1px solid #cfdcf6;
+  color:var(--navy);border-radius:var(--radius);padding:12px 16px;margin-bottom:20px;font-size:13px}
+.sample-banner svg{color:var(--primary)}
+.sample-banner .btn{margin-left:auto}
+
+/* 화면 가운데 알림창 */
+.center-alert{position:fixed;inset:0;z-index:75;background:rgba(15,23,42,.5);display:none;align-items:center;justify-content:center;padding:20px}
+.center-alert.open{display:flex}
+.ca-box{background:var(--surface);border-radius:16px;width:100%;max-width:440px;box-shadow:0 24px 60px rgba(16,24,40,.35);
+  overflow:hidden;animation:caIn .25s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes caIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:none}}
+.ca-top{padding:30px 28px 22px;text-align:center;border-top:6px solid var(--orange)}
+.ca-box.overdue .ca-top{border-top-color:var(--red)}
+.ca-icon{width:64px;height:64px;border-radius:50%;margin:0 auto 16px;display:grid;place-items:center;background:var(--orange-soft);color:var(--orange);animation:caRing 1.2s ease 2}
+.ca-box.overdue .ca-icon{background:var(--red-soft);color:var(--red)}
+.ca-icon svg{width:30px;height:30px}
+@keyframes caRing{0%,100%{transform:rotate(0)}15%{transform:rotate(-14deg)}30%{transform:rotate(12deg)}45%{transform:rotate(-8deg)}60%{transform:rotate(4deg)}}
+.ca-label{font-size:13px;font-weight:700;color:var(--orange);letter-spacing:.3px}
+.ca-box.overdue .ca-label{color:var(--red)}
+.ca-title{font-size:21px;font-weight:800;margin-top:6px;line-height:1.35;word-break:keep-all}
+.ca-remain{display:inline-block;margin-top:12px;font-size:15px;font-weight:700;padding:6px 14px;border-radius:20px;background:var(--orange-soft);color:var(--orange)}
+.ca-box.overdue .ca-remain{background:var(--red-soft);color:var(--red)}
+.ca-meta{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin-top:14px;font-size:13px;color:var(--text-2);align-items:center}
+.ca-detail{margin-top:12px;font-size:13px;color:var(--text-3);word-break:keep-all}
+.ca-actions{display:flex;gap:8px;padding:16px 20px;background:var(--surface-2);border-top:1px solid var(--border)}
+.ca-actions .btn{flex:1;height:44px;font-size:14px}
+.ca-count{position:absolute;top:14px;right:16px;font-size:12px;font-weight:600;color:var(--text-3)}
+.ca-box{position:relative}
+
+/* 프로필 버튼 */
+.profile{width:100%;text-align:left;border-radius:8px;padding:6px;margin:-6px;width:calc(100% + 12px)}
+.profile:hover{background:rgba(255,255,255,.06)}
+.profile .gear{margin-left:auto;color:#6f7f9c}
+.profile .gear svg{width:16px;height:16px}
+.install-btn{display:none;width:100%;margin-bottom:10px;height:34px;border-radius:6px;background:var(--primary);color:#fff;font-size:12px;font-weight:700;
+  align-items:center;justify-content:center;gap:6px}
+.install-btn.show{display:flex}
+.install-btn svg{width:14px;height:14px}
+
+/* 사용 가이드(온보딩) */
+.guide-modal .modal{max-width:520px}
+.guide-step{display:none;text-align:center;padding:8px 4px 0}
+.guide-step.active{display:block}
+.guide-hero{width:72px;height:72px;border-radius:20px;margin:0 auto 18px;display:grid;place-items:center;background:var(--primary-soft);color:var(--primary)}
+.guide-hero svg{width:34px;height:34px}
+.guide-step h3{font-size:20px;font-weight:800;word-break:keep-all}
+.guide-step>p{color:var(--text-2);margin-top:8px;word-break:keep-all}
+.guide-list{list-style:none;text-align:left;margin-top:20px;display:flex;flex-direction:column;gap:10px}
+.guide-list li{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border:1px solid var(--border);border-radius:10px;background:var(--surface-2)}
+.guide-list .gi{width:32px;height:32px;border-radius:8px;display:grid;place-items:center;background:var(--surface);color:var(--primary);flex-shrink:0;border:1px solid var(--border)}
+.guide-list .gi svg{width:16px;height:16px}
+.guide-list b{display:block;font-size:13.5px}
+.guide-list span{font-size:12.5px;color:var(--text-2);word-break:keep-all}
+.guide-form{text-align:left;margin-top:22px;display:grid;gap:14px}
+.guide-dots{display:flex;gap:6px;justify-content:center;flex:1;align-items:center}
+.guide-dots i{width:7px;height:7px;border-radius:4px;background:var(--border-strong);transition:all .2s}
+.guide-dots i.on{width:20px;background:var(--primary)}
+.guide-footer{display:flex;align-items:center;gap:8px}
+.choice{display:flex;gap:10px;margin-top:16px;text-align:left}
+.choice label{flex:1;border:1px solid var(--border-strong);border-radius:10px;padding:12px;cursor:pointer;font-size:13px;color:var(--text-2)}
+.choice label b{display:block;color:var(--text);font-size:13.5px;margin-bottom:2px}
+.choice input{display:none}
+.choice label:has(input:checked){border-color:var(--primary);background:var(--primary-soft)}
+.perm-row{display:flex;align-items:center;gap:10px;margin-top:14px;padding:12px 14px;border-radius:10px;border:1px dashed var(--border-strong);text-align:left;font-size:13px;color:var(--text-2)}
+.perm-row .btn{margin-left:auto}
+.ios-tip{display:none;margin-top:10px;font-size:12.5px;color:var(--text-3)}
+.ios-tip.show{display:block}
+
+/* 토스트 */
+.toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);opacity:0;
+  background:var(--navy);color:#fff;padding:12px 20px;border-radius:8px;font-size:13px;font-weight:500;
+  box-shadow:var(--shadow-lg);z-index:80;transition:all .25s;pointer-events:none;
+  display:flex;align-items:center;gap:14px;max-width:calc(100vw - 32px);
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.has-action{pointer-events:auto}
+.toast .toast-act{color:#9dbbff;font-weight:700;font-size:13px;white-space:nowrap;padding:2px 4px;border-radius:4px}
+.toast .toast-act:hover{background:rgba(255,255,255,.1)}
+
+/* 원클릭 완료 체크 */
+.title-wrap{display:flex;gap:10px;align-items:flex-start}
+.title-wrap>div{min-width:0}
+.chk{width:20px;height:20px;border-radius:50%;border:2px solid var(--border-strong);background:var(--surface);flex-shrink:0;margin-top:1px;
+  display:grid;place-items:center;color:transparent;transition:all .15s}
+.chk svg{width:12px;height:12px}
+.chk:hover{border-color:var(--green);color:var(--green)}
+.chk.on{background:var(--green);border-color:var(--green);color:#fff}
+
+/* 완료 업무 회색 처리 */
+.tasks tr.task-done td{background:#f5f6f8;color:var(--text-3)}
+.tasks tr.task-done:hover td{background:#eff1f4}
+.tasks tr.task-done .badge,.tasks tr.task-done .date,.tasks tr.task-done .due{filter:grayscale(1);opacity:.6}
+.tasks tr.task-done .task-desc{color:#b4bcc8}
+.tasks tr.task-done .chk.on{background:#a3acb9;border-color:#a3acb9}
+.tasks tr.done-sep td{background:var(--surface-2);font-size:12px;font-weight:600;color:var(--text-3);padding:8px 16px;border-bottom:1px solid var(--border)}
+.tasks tr.done-sep td::before{display:none}
+@media (max-width:640px){
+  table.tasks tr.task-done{background:#f5f6f8}
+  table.tasks tr.task-done td{background:transparent}
+  table.tasks tr.done-sep{padding:0}
+}
+.cal-chip.done{background:var(--gray-soft) !important;color:var(--text-3) !important;opacity:.8}
+
+/* 정렬 */
+.tasks th.sortable{cursor:pointer;user-select:none}
+.tasks th.sortable:hover{color:var(--text)}
+.tasks th .arrow{display:inline-block;margin-left:4px;font-size:10px;opacity:.35}
+.tasks th.sorted{color:var(--primary)}
+.tasks th.sorted .arrow{opacity:1}
+
+/* 캘린더 날짜 클릭 등록 */
+.cal-cell:not(.other){cursor:pointer;position:relative}
+.cal-cell:not(.other):hover{background:#f7f9fd}
+.cal-add{position:absolute;top:6px;right:6px;width:22px;height:22px;border-radius:6px;display:grid;place-items:center;
+  color:var(--primary);background:var(--primary-soft);opacity:0;transition:opacity .15s}
+.cal-add svg{width:13px;height:13px}
+.cal-cell:hover .cal-add{opacity:1}
+@media (max-width:640px){ .cal-add{display:none} }
+
+/* 알림 센터 */
+.sound-toggle.on{border-color:var(--primary);color:var(--primary);background:var(--primary-soft)}
+.pop-actions{display:flex;justify-content:flex-end}
+.pop-actions button{font-size:12px;font-weight:600;color:var(--text-2);background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:4px 10px;box-shadow:var(--shadow)}
+
+.backdrop{display:none}
+.fab{display:none}
+
+/* =========================================================
+   9. 반응형
+   ========================================================= */
+@media (max-width:1200px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .stat.today{grid-column:1/-1}
+  .dash-grid{grid-template-columns:1fr}
+  .side-stack{display:grid;grid-template-columns:1fr 1fr}
+}
+@media (max-width:900px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0);box-shadow:var(--shadow-lg)}
+  .backdrop.open{display:block;position:fixed;inset:0;background:rgba(15,23,42,.4);z-index:35}
+  .main{margin-left:0}
+  .menu-toggle{display:grid}
+  .topbar{padding:0 16px;gap:10px}
+  .topbar-search{display:none}
+  .topbar .btn-primary{margin-left:auto}
+  .content{padding:20px 16px}
+  .side-stack{grid-template-columns:1fr}
+}
+@media (max-width:640px){
+  .breadcrumb{display:none}
+  .page-title{font-size:16px}
+  .topbar .btn-primary .label{display:none}
+  .topbar .btn-primary{width:38px;padding:0}
+  .welcome h2{font-size:18px}
+  .welcome .btn{display:none}
+  .stats{gap:10px}
+  .stat{padding:14px}
+  .stat-value{font-size:24px}
+  .card-header,.toolbar{padding:14px 16px}
+  .toolbar .result{width:100%;margin-left:0}
+  .toolbar .field:not(.search){flex:1}
+
+  /* 테이블 → 카드 */
+  table.tasks thead{display:none}
+  table.tasks,table.tasks tbody,table.tasks tr,table.tasks td{display:block;width:100%}
+  table.tasks tr{padding:14px 16px;border-bottom:1px solid var(--border);position:relative}
+  table.tasks tr:last-child{border-bottom:none}
+  .tasks td,table.tasks td{padding:3px 0;border:none;display:flex;justify-content:space-between;align-items:center;gap:12px}
+  .tasks td::before{content:attr(data-label);font-size:12px;color:var(--text-3);font-weight:500;flex-shrink:0}
+  table.tasks td.cell-title{display:block;padding:0 104px 8px 0}
+  .tasks td.cell-title::before{display:none}
+  table.tasks td.cell-actions{position:absolute;top:10px;right:10px;width:auto;padding:0}
+  .tasks td.cell-actions::before{display:none}
+  .task-desc{max-width:100%;white-space:normal}
+  .tasks tr.row-overdue td:first-child,.tasks tr.row-soon td:first-child{box-shadow:none}
+  .tasks tr.row-overdue{box-shadow:inset 3px 0 0 var(--red)}
+  .tasks tr.row-soon{box-shadow:inset 3px 0 0 var(--orange)}
+
+  .cal-cell{min-height:64px;padding:4px}
+  .cal-chip{font-size:0;padding:0;height:6px;border-left:none;border-radius:3px;background:currentColor !important}
+  .cal-more{font-size:10px}
+  .cal-head h3{min-width:auto;font-size:15px}
+
+  .form-grid{grid-template-columns:1fr}
+  .overlay{padding:0;align-items:flex-end}
+  .modal{max-width:none;border-radius:16px 16px 0 0;max-height:92vh}
+  .modal-footer{border-radius:0}
+  .modal-footer .btn{flex:1}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ===================== 사이드바 ===================== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="logo">
+      <div class="logo-mark" data-icon="check"></div>
+      <div class="logo-text">MY <span>TASK</span></div>
+    </div>
+    <nav class="nav" id="nav"></nav>
+    <div class="sidebar-footer">
+      <div class="save-state" id="saveState"><i></i>이 브라우저에 자동 저장 중</div>
+      <div class="data-tools">
+        <button type="button" id="backupBtn" title="모든 업무를 백업 파일로 저장"><span data-icon="download"></span>백업 저장</button>
+        <button type="button" id="restoreBtn" title="백업 파일에서 업무 불러오기"><span data-icon="upload"></span>불러오기</button>
+        <input type="file" id="restoreFile" accept=".json,application/json" hidden>
+      </div>
+      <button type="button" class="install-btn" id="installBtn"><span data-icon="download"></span>앱으로 설치하기</button>
+      <button type="button" class="profile" id="profileBtn" title="내 정보·화면 설정">
+        <div class="avatar" id="avatar">나</div>
+        <div style="min-width:0">
+          <div class="profile-name" id="profileName">사용자</div>
+          <div class="profile-org" id="profileOrg">설정에서 이름을 입력하세요</div>
+        </div>
+        <span class="gear" data-icon="settings"></span>
+      </button>
+    </div>
+  </aside>
+  <div class="backdrop" id="backdrop"></div>
+
+  <!-- ===================== 메인 ===================== -->
+  <div class="main">
+    <header class="topbar">
+      <button class="menu-toggle" id="menuToggle" aria-label="메뉴 열기" data-icon="menu"></button>
+      <div>
+        <div class="breadcrumb">MY TASK / <span id="crumb">대시보드</span></div>
+        <div class="page-title" id="pageTitle">대시보드</div>
+      </div>
+      <label class="topbar-search">
+        <span data-icon="search"></span>
+        <input id="globalSearch" type="text" placeholder="업무명, 내용으로 검색">
+      </label>
+      <button class="icon-btn" id="themeBtn" aria-label="화면 테마 변경" title="라이트/다크 모드"></button>
+      <button class="icon-btn hide-sm" id="helpBtn" aria-label="사용 가이드" title="사용 가이드"><span data-icon="help"></span></button>
+      <button class="icon-btn" id="bellBtn" aria-label="알림">
+        <span data-icon="bell"></span><span class="dot" id="bellCount">0</span>
+      </button>
+      <button class="btn btn-primary" id="addBtn"><span data-icon="plus"></span><span class="label">업무 등록</span></button>
+    </header>
+
+    <main class="content" id="view"></main>
+  </div>
+</div>
+
+<!-- ===================== 업무 등록 / 수정 모달 ===================== -->
+<div class="overlay" id="taskModal">
+  <form class="modal" id="taskForm" novalidate>
+    <div class="modal-header">
+      <h3 id="modalTitle">새 업무 등록</h3>
+      <button type="button" class="icon-btn" data-close aria-label="닫기"><span data-icon="x"></span></button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" name="id">
+      <div class="form-grid">
+        <div class="form-group full">
+          <label for="f-title">업무명<span class="req">*</span></label>
+          <input class="input" id="f-title" name="title" placeholder="예) 3분기 실적 보고서 작성" maxlength="80">
+        </div>
+        <div class="form-group full">
+          <label>업무 구분<span class="req">*</span></label>
+          <div class="segmented">
+            <label><input type="radio" name="category" value="company" checked><span>회사 업무</span></label>
+            <label><input type="radio" name="category" value="personal"><span>개인 일정</span></label>
+          </div>
+        </div>
+        <div class="form-group full">
+          <label for="f-detail">상세 내용</label>
+          <textarea class="input" id="f-detail" name="detail" placeholder="업무에 대한 상세 내용을 입력하세요"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="f-created">등록일<span class="req">*</span></label>
+          <input class="input" type="date" id="f-created" name="createdAt">
+        </div>
+        <div class="form-group">
+          <label for="f-due">마감일<span class="req">*</span></label>
+          <div class="dt-row">
+            <input class="input" type="date" id="f-due" name="dueDate">
+            <input class="input" type="time" id="f-due-time" name="dueTime" title="마감 시간 (선택)">
+          </div>
+          <span class="form-hint">시간은 선택 항목이며, 비워 두면 23:59로 계산합니다.</span>
+        </div>
+        <div class="form-group">
+          <label>우선순위</label>
+          <div class="segmented">
+            <label><input type="radio" name="priority" value="high"><span>높음</span></label>
+            <label><input type="radio" name="priority" value="medium" checked><span>보통</span></label>
+            <label><input type="radio" name="priority" value="low"><span>낮음</span></label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="f-status">진행 상태</label>
+          <select class="input" id="f-status" name="status">
+            <option value="todo">예정</option>
+            <option value="progress">진행 중</option>
+            <option value="done">완료</option>
+          </select>
+        </div>
+        <div class="form-group full">
+          <label for="f-alert">마감 임박 알림</label>
+          <select class="input" id="f-alert" name="alert"></select>
+          <div class="custom-alert" id="customAlert">
+            <input class="input" type="number" min="1" max="999" name="alertNum" placeholder="숫자 입력">
+            <select class="input" name="alertUnit"><option value="m">분 전</option><option value="h">시간 전</option><option value="d">일 전</option></select>
+          </div>
+          <span class="form-hint">설정한 시점부터 이 업무가 '마감 임박'(주황색)으로 표시되고, 화면을 켜 두면 그 시점에 알림 팝업이 뜹니다.</span>
+        </div>
+      </div>
+      <p class="form-hint" style="margin-top:14px">* 표시 항목은 필수 입력입니다. 입력한 내용은 이 브라우저에 자동 저장됩니다.</p>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline" data-close>취소</button>
+      <button type="submit" class="btn btn-primary" id="submitBtn">등록하기</button>
+    </div>
+  </form>
+</div>
+
+<!-- ===================== 캘린더 내보내기 모달 ===================== -->
+<div class="overlay" id="exportModal">
+  <div class="modal" style="max-width:540px">
+    <div class="modal-header">
+      <h3>캘린더로 내보내기</h3>
+      <button type="button" class="icon-btn" data-ex-close aria-label="닫기"><span data-icon="x"></span></button>
+    </div>
+    <div class="modal-body">
+      <p class="form-hint" style="font-size:13px;color:var(--text-2)">업무를 일정 파일(.ics)로 저장해 핸드폰·PC 캘린더에 등록합니다. 업무별 마감 알림 설정이 캘린더 알람으로 함께 들어가, MY TASK를 닫아 두어도 알림이 울립니다.</p>
+      <div class="form-group" style="margin-top:18px">
+        <label>내보낼 범위</label>
+        <div class="segmented">
+          <label><input type="radio" name="exScope" value="all" checked><span>전체</span></label>
+          <label><input type="radio" name="exScope" value="company"><span>회사 업무</span></label>
+          <label><input type="radio" name="exScope" value="personal"><span>개인 일정</span></label>
+        </div>
+      </div>
+      <label class="check-row"><input type="checkbox" id="exSkipOverdue" checked>마감이 지난 업무는 제외</label>
+      <div class="export-summary">
+        <div><span>내보낼 업무</span><b id="exCount">0</b>건</div>
+        <div><span>알람 포함</span><b id="exAlarm">0</b>건</div>
+      </div>
+      <div class="guide-box">
+        <h4><span data-icon="info"></span>캘린더에 등록하는 방법</h4>
+        <ul>
+          <li><b>아이폰</b>파일을 열고 '모두 추가' → 저장할 캘린더 선택</li>
+          <li><b>안드로이드</b>파일을 구글 캘린더 또는 삼성 캘린더로 열어 '가져오기'</li>
+          <li><b>PC</b>구글 캘린더 → 설정 → 가져오기/내보내기 → 파일 선택, 또는 아웃룩에서 파일 열기</li>
+          <li><b>참고</b>완료된 업무는 자동으로 제외되며, 업무를 수정한 뒤에는 다시 내보내야 반영됩니다.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline" data-ex-close>취소</button>
+      <button type="button" class="btn btn-outline" id="exShare"><span data-icon="layers"></span>공유하기</button>
+      <button type="button" class="btn btn-primary" id="exDownload"><span data-icon="calendar"></span>파일 다운로드</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 사용 가이드 (처음 실행 시) ===================== -->
+<div class="overlay guide-modal" id="guideModal">
+  <div class="modal">
+    <div class="modal-body" style="padding:28px 28px 20px">
+      <div class="guide-step" data-step="0">
+        <div class="guide-hero"><span data-icon="check"></span></div>
+        <h3>MY TASK에 오신 것을 환영합니다</h3>
+        <p>회사 업무와 개인 일정을 한곳에서 관리하고, 마감을 놓치지 않도록 알려 드립니다.</p>
+        <div class="guide-form">
+          <div class="form-group"><label for="g-name">이름<span class="req">*</span></label><input class="input" id="g-name" maxlength="20" placeholder="예) 홍길동"></div>
+          <div class="form-group"><label for="g-org">소속 (선택)</label><input class="input" id="g-org" maxlength="30" placeholder="예) 영업팀"></div>
+        </div>
+      </div>
+      <div class="guide-step" data-step="1">
+        <div class="guide-hero"><span data-icon="bell"></span></div>
+        <h3>업무 등록과 마감 알림</h3>
+        <p>마감 시간과 알림 시점을 업무마다 따로 정할 수 있어요.</p>
+        <ul class="guide-list">
+          <li><span class="gi" data-icon="plus"></span><div><b>업무 등록</b><span>오른쪽 위 '업무 등록' 버튼 또는 캘린더 날짜를 눌러 등록합니다.</span></div></li>
+          <li><span class="gi" data-icon="clock"></span><div><b>업무별 알림</b><span>10분 전, 3시간 전, 1일 전처럼 알림 시점을 고르면 그때 화면 가운데에 알림이 뜹니다.</span></div></li>
+          <li><span class="gi" data-icon="alert"></span><div><b>색으로 구분</b><span>마감 임박은 주황색, 마감이 지난 업무는 빨간색으로 표시됩니다.</span></div></li>
+        </ul>
+      </div>
+      <div class="guide-step" data-step="2">
+        <div class="guide-hero"><span data-icon="dashboard"></span></div>
+        <h3>한눈에, 빠르게 관리</h3>
+        <p>자주 쓰는 동작은 클릭 한 번이면 됩니다.</p>
+        <ul class="guide-list">
+          <li><span class="gi" data-icon="done"></span><div><b>원클릭 완료</b><span>업무명 앞 동그라미를 누르면 완료. 실수해도 '되돌리기'로 복구됩니다.</span></div></li>
+          <li><span class="gi" data-icon="list"></span><div><b>정렬과 검색</b><span>표 제목을 눌러 마감일·우선순위 순으로 정렬하고, 검색창으로 찾을 수 있어요.</span></div></li>
+          <li><span class="gi" data-icon="calendar"></span><div><b>캘린더 내보내기</b><span>휴대폰·아웃룩 캘린더에 등록하면 페이지를 닫아도 알람이 울립니다.</span></div></li>
+        </ul>
+      </div>
+      <div class="guide-step" data-step="3">
+        <div class="guide-hero"><span data-icon="layers"></span></div>
+        <h3>내 데이터는 내 브라우저에</h3>
+        <p>업무는 서버가 아닌 이 브라우저에만 저장되어 다른 사람은 볼 수 없어요. 가끔 '백업 저장'을 눌러 두세요.</p>
+        <div class="choice" id="sampleChoice">
+          <label><input type="radio" name="g-sample" value="keep" checked><b>예시 업무와 함께</b>기능을 둘러본 뒤 나중에 지울 수 있어요</label>
+          <label><input type="radio" name="g-sample" value="clear"><b>빈 화면으로 시작</b>바로 내 업무를 등록할게요</label>
+        </div>
+        <div class="perm-row" id="permRow"><span>컴퓨터 오른쪽 아래·휴대폰 알림으로도 받기</span><button type="button" class="btn btn-outline btn-sm" data-action="notiperm">알림 허용</button></div>
+        <p class="ios-tip" id="iosTip">아이폰은 Safari 공유 버튼 → '홈 화면에 추가'로 설치해야 알림을 받을 수 있어요.</p>
+      </div>
+    </div>
+    <div class="modal-footer guide-footer">
+      <button type="button" class="btn btn-outline" id="gPrev">이전</button>
+      <div class="guide-dots" id="gDots"><i></i><i></i><i></i><i></i></div>
+      <button type="button" class="btn btn-primary" id="gNext">다음</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 내 정보·화면 설정 ===================== -->
+<div class="overlay" id="settingsModal">
+  <form class="modal" id="settingsForm" style="max-width:480px" novalidate>
+    <div class="modal-header">
+      <h3>내 정보·화면 설정</h3>
+      <button type="button" class="icon-btn" data-set-close aria-label="닫기"><span data-icon="x"></span></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group"><label for="s-name">이름<span class="req">*</span></label><input class="input" id="s-name" name="name" maxlength="20"></div>
+        <div class="form-group"><label for="s-org">소속</label><input class="input" id="s-org" name="org" maxlength="30"></div>
+        <div class="form-group full">
+          <label>화면 테마</label>
+          <div class="segmented">
+            <label><input type="radio" name="theme" value="system"><span>시스템 설정</span></label>
+            <label><input type="radio" name="theme" value="light"><span>라이트</span></label>
+            <label><input type="radio" name="theme" value="dark"><span>다크</span></label>
+          </div>
+        </div>
+        <div class="form-group full">
+          <label>알림음</label>
+          <div class="segmented">
+            <label><input type="radio" name="sound" value="on"><span>켜기</span></label>
+            <label><input type="radio" name="sound" value="off"><span>끄기</span></label>
+          </div>
+        </div>
+      </div>
+      <button type="button" class="btn btn-outline btn-sm" id="reGuide" style="margin-top:18px"><span data-icon="help"></span>사용 가이드 다시 보기</button>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline" data-set-close>취소</button>
+      <button type="submit" class="btn btn-primary">저장</button>
+    </div>
+  </form>
+</div>
+
+<!-- ===================== 화면 가운데 마감 알림창 ===================== -->
+<div class="center-alert" id="centerAlert" role="alertdialog" aria-modal="true">
+  <div class="ca-box" id="caBox"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* =========================================================
+   [A] 아이콘 — 인라인 SVG (외부 라이브러리 없이 동작)
+   ========================================================= */
+const ICONS = {
+  check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>',
+  dashboard:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>',
+  list:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>',
+  briefcase:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2M2 13h20"/></svg>',
+  user:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>',
+  calendar:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>',
+  done:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>',
+  bell:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>',
+  search:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>',
+  plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>',
+  menu:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>',
+  x:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>',
+  edit:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>',
+  trash:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>',
+  clock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>',
+  alert:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></svg>',
+  activity:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>',
+  layers:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 10 5-10 5L2 7Z"/><path d="m2 17 10 5 10-5M2 12l10 5 10-5"/></svg>',
+  info:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>',
+  chevL:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m15 18-6-6 6-6"/></svg>',
+  chevR:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m9 18 6-6-6-6"/></svg>',
+  filter:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 3H2l8 9.5V19l4 2v-8.5Z"/></svg>',
+  calPlus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M12 14v5M9.5 16.5h5"/></svg>',
+  download:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>',
+  upload:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>',
+  volume:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/></svg>',
+  mute:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4Z"/><path d="m22 9-6 6M16 9l6 6"/></svg>',
+  settings:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>',
+  help:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01"/></svg>',
+  moon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>',
+  sun:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
+  inbox:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5.1 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.5-6.9A2 2 0 0 0 16.7 4H7.3a2 2 0 0 0-1.8 1.1Z"/></svg>'
+};
+const icon = name => ICONS[name] || '';
+function hydrateIcons(root=document){
+  root.querySelectorAll('[data-icon]').forEach(el=>{ el.innerHTML = icon(el.dataset.icon); el.removeAttribute('data-icon'); });
+}
+
+/* =========================================================
+   [B] 상수 / 라벨 — 화면 문구는 여기서 일괄 관리
+   ========================================================= */
+const LABELS = {
+  category:{ company:'회사', personal:'개인' },
+  categoryFull:{ company:'회사 업무', personal:'개인 일정' },
+  status:{ todo:'예정', progress:'진행 중', done:'완료' },
+  priority:{ high:'높음', medium:'보통', low:'낮음' }
+};
+const PRIORITY_ORDER = { high:0, medium:1, low:2 };
+/* ---------------------------------------------------------
+   마감 알림 설정
+   코드 형식: 'm30' = 30분 전, 'h3' = 3시간 전, 'd1' = 1일 전, 'd0' = 마감 당일, 'off' = 알림 끄기
+   --------------------------------------------------------- */
+const DEFAULT_ALERT = 'd1';        // 업무별 설정이 없을 때 사용하는 기본 알림
+const DEFAULT_DUE_TIME = '23:59';  // 마감 시간을 입력하지 않았을 때 기준 시간
+const ALERT_OPTIONS = [
+  { group:'시간 단위', items:[ ['m10','10분 전'],['m30','30분 전'],['h1','1시간 전'],['h3','3시간 전'],['h6','6시간 전'],['h12','12시간 전'] ] },
+  { group:'일 단위',   items:[ ['d0','마감 당일'],['d1','1일 전'],['d2','2일 전'],['d3','3일 전'],['d7','7일 전'],['d14','14일 전'] ] },
+  { group:'기타',      items:[ ['custom','직접 입력…'],['off','알림 끄기'] ] }
+];
+const ALERT_UNIT = { m:{ label:'분', ms:60000 }, h:{ label:'시간', ms:3600000 }, d:{ label:'일' } };
+
+/* =========================================================
+   [C] 날짜 유틸
+   ========================================================= */
+const DateUtil = {
+  today(){ const d=new Date(); d.setHours(0,0,0,0); return d; },
+  toISO(d){ const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),dd=String(d.getDate()).padStart(2,'0'); return `${y}-${m}-${dd}`; },
+  parse(s){ const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d); },
+  offset(n){ const d=this.today(); d.setDate(d.getDate()+n); return this.toISO(d); },
+  diffFromToday(s){ return Math.round((this.parse(s)-this.today())/86400000); },
+  short(s){ const d=this.parse(s); return `${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`; },
+  full(d){ return `${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일 ${['일','월','화','수','목','금','토'][d.getDay()]}요일`; },
+  /* 마감 일시 (Date) — 시간 미입력 시 DEFAULT_DUE_TIME */
+  dueAt(t){ const [h,mi]=(t.dueTime||DEFAULT_DUE_TIME).split(':').map(Number); const d=this.parse(t.dueDate); d.setHours(h,mi,0,0); return d; },
+  /* 남은/지난 시간을 '2시간 15분' 형식으로 */
+  duration(ms){ const m=Math.max(1,Math.round(Math.abs(ms)/60000)); if(m<60) return `${m}분`; const h=Math.floor(m/60), r=m%60; if(h<24) return r?`${h}시간 ${r}분`:`${h}시간`; return `${Math.floor(h/24)}일`; },
+  dday(n){ return n===0 ? 'D-DAY' : n>0 ? `D-${n}` : `D+${-n}`; }
+};
+
+/* =========================================================
+   [D] 데이터 저장소 (TaskStore)
+   ---------------------------------------------------------
+   지금은 메모리 배열을 사용합니다.
+   나중에 localStorage 또는 서버 API로 바꿀 때는
+   이 객체의 메서드 내부만 교체하면 화면 코드는 그대로 동작합니다.
+   ========================================================= */
+const TaskStore = {
+  _tasks: [],
+  _seq: 1,
+  _listeners: [],
+
+  STORAGE_KEY: 'mytask.tasks.v1',
+  saveOk: true,
+
+  /* 저장된 데이터가 있으면 불러오고, 처음 실행이면 예시 데이터로 시작 */
+  init(seedFn){
+    const saved=this._load();
+    if(saved){ this._tasks=saved; }
+    else { this._tasks=seedFn().map(t=>({ ...t, id:this._seq++, sample:true })); this._save(); }
+    this._seq = this._tasks.reduce((m,t)=>Math.max(m,t.id),0)+1;
+  },
+  _load(){
+    try{ const raw=localStorage.getItem(this.STORAGE_KEY); if(!raw) return null; const d=JSON.parse(raw); return Array.isArray(d.tasks)?d.tasks:null; }
+    catch(e){ return null; }
+  },
+  _save(){
+    try{ localStorage.setItem(this.STORAGE_KEY, JSON.stringify({ version:1, savedAt:new Date().toISOString(), tasks:this._tasks })); this.saveOk=true; }
+    catch(e){ this.saveOk=false; }
+  },
+  /* 백업 파일 내용 / 복원 */
+  exportData(){ return { app:'MY TASK', version:1, exportedAt:new Date().toISOString(), tasks:this._tasks }; },
+  importData(data){
+    const list = Array.isArray(data) ? data : data?.tasks;
+    if(!Array.isArray(list) || list.some(t=>!t || !t.title || !t.dueDate)) throw new Error('형식 오류');
+    let seq=1; this._tasks=list.map(t=>({ ...t, id: Number(t.id)||seq++ }));
+    this._seq=this._tasks.reduce((m,t)=>Math.max(m,t.id),0)+1;
+    this._emit();
+  },
+  /* 삭제 되돌리기용: 원래 위치에 다시 넣기 */
+  restore(task,index){ this._tasks.splice(Math.min(index,this._tasks.length),0,task); this._emit(); },
+  indexOf(id){ return this._tasks.findIndex(t=>t.id===id); },
+  /* 원클릭 완료 / 완료 취소 */
+  toggleDone(id){
+    const t=this.get(id); if(!t) return;
+    if(t.status==='done') this.update(id,{ status:t.prevStatus||'todo', completedAt:null });
+    else this.update(id,{ prevStatus:t.status, status:'done', completedAt:DateUtil.toISO(new Date()) });
+  },
+  hasSamples(){ return this._tasks.some(t=>t.sample); },
+  clearSamples(){ this._tasks=this._tasks.filter(t=>!t.sample); this._emit(); },
+  getAll(){ return [...this._tasks]; },
+  get(id){ return this._tasks.find(t=>t.id===id); },
+  add(data){ const t={ ...data, id:this._seq++ }; this._tasks.push(t); this._emit(); return t; },
+  update(id,data){ const i=this._tasks.findIndex(t=>t.id===id); if(i>-1){ this._tasks[i]={ ...this._tasks[i], ...data, sample:false }; this._emit(); } },
+  remove(id){ this._tasks=this._tasks.filter(t=>t.id!==id); this._emit(); },
+
+  /* 검색/필터 — query: { category, status, priority, keyword, excludeDone } */
+  query(q={}){
+    const kw=(q.keyword||'').trim().toLowerCase();
+    return this._tasks.filter(t=>
+      (!q.category || t.category===q.category) &&
+      (!q.status   || t.status===q.status) &&
+      (!q.priority || t.priority===q.priority) &&
+      (!q.excludeDone || t.status!=='done') &&
+      (!kw || t.title.toLowerCase().includes(kw) || (t.detail||'').toLowerCase().includes(kw))
+    );
+  },
+  subscribe(fn){ this._listeners.push(fn); },
+  _emit(){ this._save(); this._listeners.forEach(fn=>fn()); }
+};
+
+/* ---------------------------------------------------------
+   사용자 설정 (알림음, 읽은 알림) — localStorage 저장
+   --------------------------------------------------------- */
+const Prefs = {
+  KEY:'mytask.prefs.v1',
+  data:{ sound:true, readAlerts:[], theme:'system', name:'', org:'', onboarded:false },
+  load(){ try{ Object.assign(this.data, JSON.parse(localStorage.getItem(this.KEY)||'{}')); }catch(e){} },
+  save(){ try{ localStorage.setItem(this.KEY, JSON.stringify(this.data)); }catch(e){} },
+  get(k){ return this.data[k]; },
+  set(k,v){ this.data[k]=v; this.save(); }
+};
+Prefs.load();
+
+/* 업무 상태 계산 */
+const TaskUtil = {
+  dueState(t){
+    if(t.status==='done') return 'done';
+    const now=Date.now(), dueAt=DateUtil.dueAt(t).getTime();
+    if(now>dueAt) return 'overdue';
+    const a=this.parseAlert(t);
+    if(!a) return 'normal';                                              // 알림 끔
+    if(a.unit==='d') return DateUtil.diffFromToday(t.dueDate)<=a.n ? 'soon' : 'normal';   // 일 단위: 날짜 기준
+    return dueAt-now <= a.n*ALERT_UNIT[a.unit].ms ? 'soon' : 'normal';                   // 분·시간 단위: 실제 시각 기준
+  },
+  /* 알림이 시작되는 시각 (Date) — 알림 끔이면 null */
+  alertStart(t){
+    const a=this.parseAlert(t); if(!a) return null;
+    if(a.unit==='d'){ const d=DateUtil.parse(t.dueDate); d.setDate(d.getDate()-a.n); return d; }
+    return new Date(DateUtil.dueAt(t).getTime()-a.n*ALERT_UNIT[a.unit].ms);
+  },
+  /* 'h3' → { unit:'h', n:3 } / 'off' → null */
+  parseAlert(t){ const code=t.alert||DEFAULT_ALERT; if(code==='off') return null; const m=/^([mhd])(\d+)$/.exec(code); return m?{ unit:m[1], n:+m[2] }:{ unit:'d', n:1 }; },
+  /* 마감까지 남은 시간 표시 (D-2 / 3시간 20분 남음 / 40분 지남) */
+  remainText(t,{ compact=false }={}){
+    const ms=DateUtil.dueAt(t).getTime()-Date.now(), n=DateUtil.diffFromToday(t.dueDate);
+    if(ms<0) return n<0 ? DateUtil.dday(n) : (compact?`${DateUtil.duration(ms)} 지남`:`${DateUtil.duration(ms)} 지남`);
+    if(ms<86400000 && (t.dueTime || n===0)) return compact?DateUtil.duration(ms):`${DateUtil.duration(ms)} 남음`;
+    return DateUtil.dday(n);
+  },
+  /* 업무별 알림 기준일 (설정 없으면 기본값) */
+  alertLabel(t){ const a=this.parseAlert(t); if(!a) return '알림 끔'; if(a.unit==='d' && a.n===0) return '당일 알림'; return `${a.n}${ALERT_UNIT[a.unit].label} 전 알림`; },
+  dueText(t){ return `${DateUtil.short(t.dueDate)}${t.dueTime?' '+t.dueTime:''}`; },
+  /* 정렬 — sort: '키:방향' (예: 'due:asc') */
+  SORTS:{
+    due:(a,b)=>DateUtil.dueAt(a)-DateUtil.dueAt(b),
+    priority:(a,b)=>PRIORITY_ORDER[a.priority]-PRIORITY_ORDER[b.priority],
+    created:(a,b)=>a.createdAt.localeCompare(b.createdAt),
+    title:(a,b)=>a.title.localeCompare(b.title,'ko'),
+    status:(a,b)=>({todo:0,progress:1,done:2}[a.status])-({todo:0,progress:1,done:2}[b.status]),
+    category:(a,b)=>a.category.localeCompare(b.category)
+  },
+  sortBy(list,sort='due:asc'){
+    const [key,dir]=sort.split(':'), f=this.SORTS[key]||this.SORTS.due, d=dir==='desc'?-1:1;
+    const doneLast=(a,b)=>key==='status'?0:(a.status==='done')-(b.status==='done');   // 완료 업무는 항상 아래로
+    return list.sort((a,b)=>doneLast(a,b) || d*f(a,b) || (DateUtil.dueAt(a)-DateUtil.dueAt(b)));
+  },
+  sortByDue(list){ return list.sort((a,b)=>DateUtil.dueAt(a)-DateUtil.dueAt(b) || PRIORITY_ORDER[a.priority]-PRIORITY_ORDER[b.priority]); },
+  stats(){
+    const all=TaskStore.getAll();
+    return {
+      total: all.length,
+      progress: all.filter(t=>t.status==='progress').length,
+      todo: all.filter(t=>t.status==='todo').length,
+      done: all.filter(t=>t.status==='done').length,
+      urgent: all.filter(t=>['soon','overdue'].includes(this.dueState(t))).length,
+      overdue: all.filter(t=>this.dueState(t)==='overdue').length
+    };
+  }
+};
+
+/* =========================================================
+   [E] 예시 데이터 — 오늘 날짜 기준 상대값으로 생성
+   ========================================================= */
+const D = n => DateUtil.offset(n);
+/* 지금으로부터 N분 후 (시간 단위 알림 시연용) */
+const soonAt = mins => { const d=new Date(Date.now()+mins*60000); return { dueDate:DateUtil.toISO(d), dueTime:`${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}` }; };
+TaskStore.init(()=>[
+  { title:'3분기 실적 보고서 작성',     category:'company',  detail:'영업팀 매출 데이터 취합 후 경영진 보고용 요약본 작성', createdAt:D(-6), dueDate:D(0),  dueTime:'18:00', priority:'high',   status:'progress', alert:'h3' },
+  { title:'신규 거래처 계약서 검토',     category:'company',  detail:'법무팀 의견 반영 후 최종본 회신',                     createdAt:D(-4), dueDate:D(1),  priority:'high',   status:'progress' },
+  { title:'주간 팀 회의 자료 준비',      category:'company',  detail:'프로젝트별 진행 현황 슬라이드 정리',                  createdAt:D(-2), dueDate:D(2),  priority:'medium', status:'todo', alert:'d0' },
+  { title:'고객 문의 응대 매뉴얼 개정',  category:'company',  detail:'AICC 상담 시나리오 업데이트 반영',                   createdAt:D(-10),dueDate:D(-2), priority:'medium', status:'progress' },
+  { title:'출장 경비 정산',              category:'company',  detail:'부산 출장 영수증 첨부 및 결재 상신',                  createdAt:D(-8), dueDate:D(-1), priority:'low',    status:'todo' },
+  { title:'2027년 사업계획 초안',        category:'company',  detail:'부서별 목표 및 예산안 초안 작성',                     createdAt:D(-3), dueDate:D(9),  priority:'high',   status:'todo' },
+  { title:'협력사 미팅',                 category:'company',  detail:'오후 2시 본사 3층 회의실',                            createdAt:D(-5), dueDate:D(4),  dueTime:'14:00', priority:'medium', status:'todo', alert:'d7' },
+  { title:'보안 교육 이수',              category:'company',  detail:'온라인 필수 교육 (약 1시간)',                         createdAt:D(-12),dueDate:D(6),  priority:'low',    status:'todo', alert:'d7' },
+  { title:'월간 매출 대시보드 점검',     category:'company',  detail:'데이터 누락 여부 확인',                              createdAt:D(-9), dueDate:D(-3), priority:'medium', status:'done' },
+  { title:'인사평가 자기기술서 제출',    category:'company',  detail:'',                                                   createdAt:D(-15),dueDate:D(-5), priority:'high',   status:'done' },
+  { title:'건강검진 예약',               category:'personal', detail:'회사 지정 병원 연말 마감 전 예약',                    createdAt:D(-3), dueDate:D(2),  priority:'high',   status:'todo', alert:'d3' },
+  { title:'자동차 보험 갱신',            category:'personal', detail:'만기 전 보험사 비교 견적 받기',                       createdAt:D(-7), dueDate:D(-1), priority:'high',   status:'progress' },
+  { title:'영어 회화 수업',              category:'personal', detail:'매주 월·수 저녁 8시',                                 createdAt:D(-1), dueDate:D(0),  dueTime:'20:00', priority:'low',    status:'todo', alert:'m30' },
+  { title:'부모님 생신 선물 준비',       category:'personal', detail:'',                                                   createdAt:D(-2), dueDate:D(5),  priority:'medium', status:'todo' },
+  { title:'연말정산 서류 준비',          category:'personal', detail:'의료비·기부금 영수증 정리',                          createdAt:D(-1), dueDate:D(14), priority:'medium', status:'todo', alert:'off' },
+  { title:'팀장님 보고 자료 전달',      category:'company',  detail:'수정본 메일 발송 (시간 단위 알림 예시)', createdAt:D(0), ...soonAt(45), priority:'high', status:'progress', alert:'h1' },
+  { title:'택배 반품 접수',              category:'personal', detail:'(분 단위 알림 예시)',                     createdAt:D(0), ...soonAt(150), priority:'low', status:'todo', alert:'m30' },
+  { title:'헬스장 회원권 연장',          category:'personal', detail:'',                                                   createdAt:D(-11),dueDate:D(-4), priority:'low',    status:'done' }
+]);
+
+/* =========================================================
+   [F] 메뉴 정의 — 메뉴 추가 시 여기에 한 줄 + VIEWS에 렌더 함수 추가
+   ========================================================= */
+const MENU = [
+  { id:'dashboard', label:'대시보드',  icon:'dashboard', group:'메인' },
+  { id:'all',       label:'전체 업무', icon:'list',      group:'업무 관리', count:()=>TaskStore.query({excludeDone:true}).length },
+  { id:'company',   label:'회사 업무', icon:'briefcase', group:'업무 관리', count:()=>TaskStore.query({category:'company',excludeDone:true}).length },
+  { id:'personal',  label:'개인 일정', icon:'user',      group:'업무 관리', count:()=>TaskStore.query({category:'personal',excludeDone:true}).length },
+  { id:'calendar',  label:'캘린더',    icon:'calendar',  group:'업무 관리' },
+  { id:'completed', label:'완료 업무', icon:'done',      group:'업무 관리', count:()=>TaskStore.query({status:'done'}).length },
+  { id:'alerts',    label:'알림 센터', icon:'bell',      group:'기타', count:()=>AlertCenter.unreadCount(), alert:true }
+];
+
+/* =========================================================
+   [G] UI 조각 (재사용 렌더 함수)
+   ========================================================= */
+const UI = {
+  esc(s){ return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); },
+  catBadge(c){ return `<span class="badge no-dot b-${c}">${LABELS.category[c]}</span>`; },
+  statusBadge(s){ return `<span class="badge b-${s}">${LABELS.status[s]}</span>`; },
+  priBadge(p){ return `<span class="badge no-dot b-${p}">${LABELS.priority[p]}</span>`; },
+  due(t){
+    const st=TaskUtil.dueState(t);
+    const tag = st==='done' ? '' : `<small>${TaskUtil.remainText(t)}</small>`;
+    const custom = (t.alert && st!=='done')
+      ? `<span class="alert-tag ${t.alert==='off'?'off':''}" title="업무별 알림 설정">${icon('bell')}${TaskUtil.alertLabel(t)}</span>` : '';
+    return `<span class="due ${st}">${DateUtil.short(t.dueDate)}${t.dueTime?`<span class="time">${t.dueTime}</span>`:''}${tag}</span>${custom}`;
+  },
+
+  taskTable(list,{ empty='표시할 업무가 없습니다.', sort=null }={}){
+    if(!list.length) return `<div class="empty">${icon('inbox')}<div>${empty}</div></div>`;
+    const [sk,sd]=(sort||'').split(':');
+    const th=(label,key,style='')=>{
+      if(!sort || !key) return `<th${style?` style="${style}"`:''}>${label}</th>`;
+      const on=sk===key;
+      return `<th class="sortable ${on?'sorted':''}" data-sort="${key}" title="눌러서 정렬">${label}<span class="arrow">${on?(sd==='desc'?'▼':'▲'):'▲'}</span></th>`;
+    };
+    const rows=list.map(t=>{
+      const st=TaskUtil.dueState(t);
+      return `<tr class="row-${st} ${t.status==='done'?'task-done':''}" data-id="${t.id}">
+        <td class="cell-title" data-label="업무명"><div class="title-wrap">
+          <button class="chk ${t.status==='done'?'on':''}" data-action="toggle" data-id="${t.id}" title="${t.status==='done'?'완료 취소':'완료 처리'}" aria-label="완료 체크">${icon('check')}</button>
+          <div>
+            <div class="task-name">${this.esc(t.title)}</div>
+            ${t.detail?`<div class="task-desc">${this.esc(t.detail)}</div>`:''}
+          </div>
+        </div></td>
+        <td data-label="업무 구분">${this.catBadge(t.category)}</td>
+        <td data-label="등록일"><span class="date">${DateUtil.short(t.createdAt)}</span></td>
+        <td data-label="마감일">${this.due(t)}</td>
+        <td data-label="진행 상태">${this.statusBadge(t.status)}</td>
+        <td data-label="우선순위">${this.priBadge(t.priority)}</td>
+        <td class="cell-actions"><div class="row-actions">
+          ${t.status!=='done'?`<button data-action="ics" data-id="${t.id}" title="캘린더에 추가">${icon('calPlus')}</button>`:''}
+          <button data-action="edit" data-id="${t.id}" title="수정">${icon('edit')}</button>
+          <button class="del" data-action="delete" data-id="${t.id}" title="삭제">${icon('trash')}</button>
+        </div></td>
+      </tr>`;
+    });
+    /* 진행 중 업무와 완료 업무 사이에 구분선 */
+    const firstDone=list.findIndex(t=>t.status==='done');
+    if(firstDone>0 && list.slice(firstDone).every(t=>t.status==='done'))
+      rows.splice(firstDone,0,`<tr class="done-sep"><td colspan="7">완료된 업무 ${list.length-firstDone}건</td></tr>`);
+    return `<div class="table-wrap"><table class="tasks">
+      <thead><tr>${th('업무명','title')}${th('업무 구분','category')}${th('등록일','created')}${th('마감일','due')}${th('진행 상태','status')}${th('우선순위','priority')}${th('관리',null,'text-align:right')}</tr></thead>
+      <tbody>${rows.join('')}</tbody></table></div>`;
+  },
+
+  toolbar(state,{ showStatus=true }={}){
+    const opt=(map,val,all)=>`<option value="">${all}</option>`+Object.entries(map).map(([k,v])=>`<option value="${k}" ${val===k?'selected':''}>${v}</option>`).join('');
+    return `<div class="toolbar">
+      <label class="field search">${icon('search')}<input data-filter="keyword" value="${this.esc(state.keyword||'')}" placeholder="업무명 또는 내용 검색"></label>
+      ${showStatus?`<label class="field">${icon('filter')}<select data-filter="status">${opt(LABELS.status,state.status,'전체 상태')}</select></label>`:''}
+      <label class="field"><select data-filter="priority">${opt(LABELS.priority,state.priority,'전체 우선순위')}</select></label>
+      <label class="field">${icon('list')}<select data-filter="sort">${SORT_OPTIONS.map(([v,l])=>`<option value="${v}" ${state.sort===v?'selected':''}>${l}</option>`).join('')}${SORT_OPTIONS.some(o=>o[0]===state.sort)?'':`<option value="${state.sort}" selected>표 제목 기준 정렬</option>`}</select></label>
+      <span class="result" id="resultCount"></span>
+    </div>`;
+  }
+};
+
+/* =========================================================
+   [H] 화면(View) 정의 — 각 메뉴별 렌더 함수
+   ========================================================= */
+const listState = {};   // 화면별 필터·정렬 상태 보관
+const SORT_OPTIONS = [
+  ['due:asc','마감일 빠른 순'], ['due:desc','마감일 늦은 순'],
+  ['priority:asc','우선순위 높은 순'], ['created:desc','최근 등록 순'],
+  ['created:asc','오래된 등록 순'], ['title:asc','업무명 가나다순'], ['status:asc','진행 상태 순']
+];
+/* 목록 화면 설정 — 화면 추가 시 여기에 등록 */
+const LIST_VIEWS = {
+  all:      { title:'전체 업무 목록', base:{} },
+  company:  { title:'회사 업무 목록', base:{category:'company'} },
+  personal: { title:'개인 일정 목록', base:{category:'personal'} },
+  completed:{ title:'완료된 업무',    base:{status:'done'}, fixedStatus:true, defaultSort:'due:desc', empty:'완료된 업무가 없습니다.' }
+};
+function listFor(viewId){
+  const cfg=LIST_VIEWS[viewId], st=listState[viewId] ||= {};
+  st.sort ||= cfg.defaultSort || 'due:asc';
+  const q={ ...cfg.base, ...st }; if(cfg.fixedStatus) q.status=cfg.base.status;
+  return TaskUtil.sortBy(TaskStore.query(q), st.sort);
+}
+let calCursor = (()=>{ const d=DateUtil.today(); return new Date(d.getFullYear(),d.getMonth(),1); })();
+
+const VIEWS = {
+  dashboard(){
+    const s=TaskUtil.stats(), today=DateUtil.today();
+    const rate = s.total ? Math.round(s.done/s.total*100) : 0;
+    const todayTasks = TaskUtil.sortByDue(TaskStore.query({excludeDone:true})).filter(t=>DateUtil.diffFromToday(t.dueDate)<=7).slice(0,8);
+    const urgent = TaskUtil.sortByDue(TaskStore.getAll().filter(t=>['soon','overdue'].includes(TaskUtil.dueState(t))));
+    const cat = c => { const all=TaskStore.query({category:c}); const d=all.filter(t=>t.status==='done').length; return { all:all.length, done:d, pct: all.length?Math.round(d/all.length*100):0 }; };
+    const cc=cat('company'), pc=cat('personal');
+
+    return `
+    ${TaskStore.hasSamples()?`<div class="sample-banner">${icon('info')}<span>지금 보이는 업무 중 일부는 <b>예시 데이터</b>입니다. 직접 수정한 업무는 남고 나머지 예시만 지울 수 있습니다.</span><button class="btn btn-outline btn-sm" data-action="clearsamples">예시 데이터 지우기</button></div>`:''}
+    <div class="welcome">
+      <div><h2>안녕하세요, ${Prefs.get('name')?UI.esc(Prefs.get('name'))+'님':'반가워요'} 👋</h2><p>오늘 처리할 업무와 마감 일정을 확인하세요.</p></div>
+      <button class="btn btn-outline" data-goto="calendar">${icon('calendar')}캘린더 보기</button>
+    </div>
+
+    <section class="stats">
+      <div class="card stat today">
+        <div class="stat-top"><span class="stat-label">오늘 날짜</span><span class="stat-icon">${icon('calendar')}</span></div>
+        <div class="stat-value">${DateUtil.full(today)}</div>
+        <div class="stat-foot">전체 완료율 ${rate}%</div>
+      </div>
+      <div class="card stat">
+        <div class="stat-top"><span class="stat-label">전체 업무</span><span class="stat-icon si-blue">${icon('layers')}</span></div>
+        <div class="stat-value">${s.total}<span>건</span></div>
+        <div class="stat-foot">예정 ${s.todo}건 포함</div>
+      </div>
+      <div class="card stat">
+        <div class="stat-top"><span class="stat-label">진행 중</span><span class="stat-icon si-indigo">${icon('activity')}</span></div>
+        <div class="stat-value">${s.progress}<span>건</span></div>
+        <div class="progress"><i style="width:${s.total?s.progress/s.total*100:0}%"></i></div>
+      </div>
+      <div class="card stat">
+        <div class="stat-top"><span class="stat-label">완료</span><span class="stat-icon si-green">${icon('done')}</span></div>
+        <div class="stat-value">${s.done}<span>건</span></div>
+        <div class="progress"><i style="width:${rate}%;background:var(--green)"></i></div>
+      </div>
+      <div class="card stat">
+        <div class="stat-top"><span class="stat-label">마감 임박</span><span class="stat-icon si-orange">${icon('alert')}</span></div>
+        <div class="stat-value" style="color:var(--orange)">${s.urgent}<span>건</span></div>
+        <div class="stat-foot">마감 경과 <b style="color:var(--red)">${s.overdue}건</b></div>
+      </div>
+    </section>
+
+    <section class="dash-grid">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">오늘의 업무 <span class="sub">7일 이내 마감 · 미완료</span></div>
+          <button class="link-btn" data-goto="all">전체 보기 →</button>
+        </div>
+        ${UI.taskTable(todayTasks,{empty:'7일 이내 마감 예정인 업무가 없습니다.'})}
+      </div>
+
+      <div class="side-stack">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">마감 임박 업무 <span class="badge no-dot b-high">${urgent.length}</span></div>
+            <div class="legend"><span><i style="background:var(--orange)"></i>알림 기간</span><span><i style="background:var(--red)"></i>마감 경과</span></div>
+          </div>
+          ${urgent.length ? `<ul class="deadline-list">${urgent.map(t=>{
+            const st=TaskUtil.dueState(t);
+            return `<li class="deadline-item ${st}" data-action="edit" data-id="${t.id}">
+              <div class="dday">${TaskUtil.remainText(t,{compact:true})}</div>
+              <div class="deadline-info">
+                <div class="deadline-title">${UI.esc(t.title)}</div>
+                <div class="deadline-meta">${UI.catBadge(t.category)}${UI.priBadge(t.priority)}<span>마감 ${TaskUtil.dueText(t)} · ${TaskUtil.alertLabel(t)}</span></div>
+              </div></li>`;}).join('')}</ul>`
+          : `<div class="empty">${icon('done')}<div>마감 임박 업무가 없습니다.</div></div>`}
+        </div>
+
+        <div class="card">
+          <div class="card-header"><div class="card-title">구분별 진행률</div></div>
+          <div class="card-body">
+            <div class="split-block">
+              <div class="split-row"><span>${UI.catBadge('company')} 회사 업무</span><span><b>${cc.done}</b> / ${cc.all}건 · ${cc.pct}%</span></div>
+              <div class="progress"><i style="width:${cc.pct}%"></i></div>
+            </div>
+            <div class="split-block">
+              <div class="split-row"><span>${UI.catBadge('personal')} 개인 일정</span><span><b>${pc.done}</b> / ${pc.all}건 · ${pc.pct}%</span></div>
+              <div class="progress"><i style="width:${pc.pct}%;background:var(--purple)"></i></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>`;
+  },
+
+  /* 목록형 화면 공통 생성기 */
+  _list(viewId){
+    const cfg=LIST_VIEWS[viewId], list=listFor(viewId), st=listState[viewId], cat=cfg.base.category;
+    return `<div class="card">
+      <div class="card-header">
+        <div class="card-title">${cfg.title}</div>
+        <div class="header-actions">
+          ${cfg.fixedStatus?'':`<button class="btn btn-outline btn-sm" data-action="export" data-scope="${cat||'all'}">${icon('calendar')}<span class="hide-sm">캘린더로 </span>내보내기</button>`}
+          <button class="btn btn-primary btn-sm" data-action="new" ${cat?`data-category="${cat}"`:''}>${icon('plus')}업무 등록</button>
+        </div>
+      </div>
+      ${UI.toolbar(st,{ showStatus:!cfg.fixedStatus })}
+      <div data-list>${UI.taskTable(list,{ empty:cfg.empty, sort:st.sort })}</div>
+    </div>`;
+  },
+  all(){ return this._list('all'); },
+  company(){ return this._list('company'); },
+  personal(){ return this._list('personal'); },
+  completed(){ return this._list('completed'); },
+
+  calendar(){
+    const y=calCursor.getFullYear(), m=calCursor.getMonth();
+    const first=new Date(y,m,1), start=new Date(y,m,1-first.getDay());
+    const todayISO=DateUtil.toISO(DateUtil.today());
+    const byDate={}; TaskStore.getAll().forEach(t=>(byDate[t.dueDate] ||= []).push(t));
+    let cells='';
+    for(let i=0;i<42;i++){
+      const d=new Date(start); d.setDate(start.getDate()+i);
+      const iso=DateUtil.toISO(d), items=byDate[iso]||[];
+      const cls=['cal-cell', d.getMonth()!==m?'other':'', iso===todayISO?'today':''].join(' ');
+      const chips=items.slice(0,3).map(t=>{
+        const s=TaskUtil.dueState(t);
+        return `<div class="cal-chip ${t.category} ${s==='done'?'done':''} ${s==='overdue'?'overdue':''}" data-action="edit" data-id="${t.id}" title="${UI.esc(t.title)}">${t.dueTime?t.dueTime+' ':''}${UI.esc(t.title)}</div>`;
+      }).join('');
+      cells+=`<div class="${cls}" ${d.getMonth()===m?`data-action="newdate" data-date="${iso}" title="${d.getMonth()+1}월 ${d.getDate()}일 마감 업무 등록"`:''}><span class="cal-day">${d.getDate()}</span>${d.getMonth()===m?`<span class="cal-add">${icon('plus')}</span>`:''}${chips}${items.length>3?`<span class="cal-more">+${items.length-3}건 더보기</span>`:''}</div>`;
+    }
+    return `<div class="card">
+      <div class="card-header">
+        <div class="cal-head">
+          <button class="icon-btn" data-cal="-1" aria-label="이전 달">${icon('chevL')}</button>
+          <h3>${y}년 ${m+1}월</h3>
+          <button class="icon-btn" data-cal="1" aria-label="다음 달">${icon('chevR')}</button>
+          <button class="btn btn-outline btn-sm" data-cal="0">오늘</button>
+        </div>
+        <div class="header-actions" style="align-items:center;gap:16px">
+          <div class="legend"><span><i style="background:var(--primary)"></i>회사 업무</span><span><i style="background:var(--purple)"></i>개인 일정</span><span><i style="background:var(--red)"></i>마감 경과</span></div>
+          <button class="btn btn-outline btn-sm" data-action="export" data-scope="all">${icon('calendar')}캘린더로 내보내기</button>
+        </div>
+      </div>
+      <div class="cal-grid">${['일','월','화','수','목','금','토'].map(d=>`<div class="cal-dow">${d}</div>`).join('')}${cells}</div>
+    </div>`;
+  },
+
+  alerts(){
+    const items=AlertCenter.items(), unread=items.filter(n=>n.unread).length, sound=Prefs.get('sound');
+    return `<div class="card">
+      <div class="card-header">
+        <div class="card-title">알림 센터 <span class="sub">${unread?`읽지 않은 알림 ${unread}건`:'마감 임박·경과 업무를 자동으로 안내합니다'}</span></div>
+        <div class="header-actions">
+          <button class="btn btn-outline btn-sm sound-toggle ${sound?'on':''}" data-action="sound">${icon(sound?'volume':'mute')}알림음 ${sound?'켜짐':'꺼짐'}</button>
+          ${SystemNotify.granted()?`<button class="btn btn-outline btn-sm sound-toggle on" disabled>${icon('bell')}시스템 알림 켜짐</button>`:`<button class="btn btn-outline btn-sm" data-action="notiperm">${icon('bell')}<span class="hide-sm">시스템 </span>알림 켜기</button>`}
+          <button class="btn btn-outline btn-sm" data-action="readall" ${unread?'':'disabled'}>모두 읽음</button>
+        </div>
+      </div>
+      ${items.length ? `<ul class="noti-list">${items.map(n=>`
+        <li class="noti ${n.unread?'unread':''}" data-action="opennoti" data-id="${n.id}" data-key="${n.key}" style="cursor:pointer">
+          <div class="noti-icon" style="background:${n.over?'var(--red-soft);color:var(--red)':'var(--orange-soft);color:var(--orange)'}">${icon(n.over?'alert':'clock')}</div>
+          <div class="noti-body"><div class="noti-title">${n.title}</div><div class="noti-text">${UI.esc(n.text)}</div></div>
+          <div class="noti-time">${n.unread?'새 알림':'읽음'}</div>
+          ${n.unread?'<span class="unread-dot"></span>':''}
+        </li>`).join('')}</ul>`
+      : `<div class="empty">${icon('done')}<div>마감 임박 또는 마감이 지난 업무가 없습니다.</div></div>`}
+    </div>`;
+  }
+};
+
+/* ---------------------------------------------------------
+   알림 센터 데이터 — 업무 상태로 알림을 만들고, 읽음 여부를 저장
+   (마감일·시간·알림 설정이 바뀌거나 '임박→경과'로 바뀌면 새 알림으로 취급)
+   --------------------------------------------------------- */
+const AlertCenter = {
+  key(t){ return [t.id, TaskUtil.dueState(t), t.dueDate, t.dueTime||'', t.alert||''].join('|'); },
+  urgentTasks(){ return TaskUtil.sortByDue(TaskStore.getAll().filter(t=>['soon','overdue'].includes(TaskUtil.dueState(t)))); },
+  isRead(t){ return Prefs.get('readAlerts').includes(this.key(t)); },
+  unreadCount(){ return this.urgentTasks().filter(t=>!this.isRead(t)).length; },
+  items(){
+    return this.urgentTasks().map(t=>{
+      const over=TaskUtil.dueState(t)==='overdue', r=TaskUtil.remainText(t);
+      return { id:t.id, key:this.key(t), over, unread:!this.isRead(t),
+        title: over ? `마감이 지났습니다 (${r})` : (r.startsWith('D-') ? `마감 ${r === 'D-DAY' ? '당일입니다' : r+'입니다'}` : `마감까지 ${r.replace(' 남음','')} 남았습니다`),
+        text:`[${LABELS.categoryFull[t.category]}] ${t.title} · 마감 ${TaskUtil.dueText(t)} · ${TaskUtil.alertLabel(t)}` };
+    });
+  },
+  markRead(keys){
+    const valid=new Set(this.urgentTasks().map(t=>this.key(t)));   // 지난 알림 기록은 정리
+    const set=new Set(Prefs.get('readAlerts').filter(k=>valid.has(k)));
+    keys.forEach(k=>set.add(k)); Prefs.set('readAlerts',[...set]);
+  },
+  markAllRead(){ this.markRead(this.urgentTasks().map(t=>this.key(t))); }
+};
+
+/* =========================================================
+   [I] 라우터 — URL 해시(#calendar 등)로 화면 전환
+   ========================================================= */
+const App = {
+  current:'dashboard',
+  go(id){ if(!VIEWS[id]) id='dashboard'; location.hash=id; },
+  render(){
+    const id=(location.hash.slice(1)||'dashboard');
+    this.current = VIEWS[id] ? id : 'dashboard';
+    const menu=MENU.find(m=>m.id===this.current);
+    document.getElementById('pageTitle').textContent=menu.label;
+    document.getElementById('crumb').textContent=menu.label;
+    document.getElementById('view').innerHTML=VIEWS[this.current]();
+    this.renderNav(); this.updateCount(); this.closeSidebar();
+  },
+  renderNav(){
+    let html='', group='';
+    MENU.forEach(m=>{
+      if(m.group!==group){ group=m.group; html+=`<div class="nav-label">${group}</div>`; }
+      const c=m.count?m.count():null;
+      html+=`<button class="nav-item ${m.id===this.current?'active':''}" data-goto="${m.id}">${icon(m.icon)}<span>${m.label}</span>${c!==null&&c>0?`<span class="count ${m.alert?'alert':''}">${c}</span>`:''}</button>`;
+    });
+    document.getElementById('nav').innerHTML=html;
+    const u=AlertCenter.unreadCount(), bell=document.getElementById('bellCount');
+    bell.textContent=u; bell.style.display=u?'grid':'none';
+  },
+  /* 목록 화면에서 필터만 바꿀 때 목록 영역만 다시 그림 (입력 포커스 유지) */
+  refreshList(){
+    const v=this.current; if(!LIST_VIEWS[v]) return;
+    document.querySelector('[data-list]').innerHTML=UI.taskTable(listFor(v),{ empty:'검색 조건에 맞는 업무가 없습니다.', sort:listState[v].sort });
+    this.updateCount();
+  },
+  updateCount(){
+    const el=document.getElementById('resultCount');
+    if(el) el.textContent=`총 ${document.querySelectorAll('table.tasks tbody tr[data-id]').length}건`;
+  },
+  openSidebar(){ sidebar.classList.add('open'); backdrop.classList.add('open'); },
+  closeSidebar(){ sidebar.classList.remove('open'); backdrop.classList.remove('open'); }
+};
+
+/* =========================================================
+   [J] 업무 등록/수정 모달
+   ========================================================= */
+const Modal = {
+  el:document.getElementById('taskModal'),
+  form:document.getElementById('taskForm'),
+  open(task, preset={}){
+    const f=this.form; f.reset();
+    f.querySelectorAll('.invalid').forEach(e=>e.classList.remove('invalid'));
+    const data = task || { category:preset.category||'company', createdAt:DateUtil.offset(0), dueDate:preset.dueDate||DateUtil.offset(3), priority:'medium', status:'todo' };
+    const defLabel = ALERT_OPTIONS.flatMap(g=>g.items).find(i=>i[0]===DEFAULT_ALERT)?.[1] || DEFAULT_ALERT;
+    f.alert.innerHTML = `<option value="">기본값 (${defLabel})</option>` + ALERT_OPTIONS.map(g=>`<optgroup label="${g.group}">${g.items.map(([v,l])=>`<option value="${v}">${l}</option>`).join('')}</optgroup>`).join('');
+    const code = data.alert || '';
+    const isPreset = !code || ALERT_OPTIONS.some(g=>g.items.some(i=>i[0]===code));
+    f.alert.value = isPreset ? code : 'custom';
+    if(!isPreset){ const m=/^([mhd])(\d+)$/.exec(code); if(m){ f.alertUnit.value=m[1]; f.alertNum.value=m[2]; } }
+    this.toggleCustom();
+    f.dueTime.value = data.dueTime || '';
+    f.id.value = task?task.id:'';
+    f.title.value = data.title||''; f.detail.value=data.detail||'';
+    f.createdAt.value=data.createdAt; f.dueDate.value=data.dueDate; f.status.value=data.status;
+    f.querySelector(`[name=category][value=${data.category}]`).checked=true;
+    f.querySelector(`[name=priority][value=${data.priority}]`).checked=true;
+    document.getElementById('modalTitle').textContent = task?'업무 수정':'새 업무 등록';
+    document.getElementById('submitBtn').textContent = task?'수정 완료':'등록하기';
+    this.el.classList.add('open');
+    setTimeout(()=>f.title.focus(),50);
+  },
+  close(){ this.el.classList.remove('open'); },
+  toggleCustom(){ document.getElementById('customAlert').classList.toggle('show', this.form.alert.value==='custom'); },
+  submit(e){
+    e.preventDefault();
+    const f=this.form, fd=Object.fromEntries(new FormData(f));
+    let ok=true;
+    ['title','createdAt','dueDate'].forEach(k=>{ const bad=!fd[k]?.trim(); f[k].classList.toggle('invalid',bad); if(bad) ok=false; });
+    if(!ok) return toast('필수 항목을 입력해 주세요.');
+    let alert = fd.alert || null;
+    if(alert==='custom'){
+      const n=parseInt(fd.alertNum,10);
+      if(!(n>=1)){ f.alertNum.classList.add('invalid'); return toast('알림 시점을 숫자로 입력해 주세요.'); }
+      alert = fd.alertUnit + n;
+    }
+    if(fd.dueDate<fd.createdAt){ f.dueDate.classList.add('invalid'); return toast('마감일은 등록일 이후여야 합니다.'); }
+    const payload={ title:fd.title.trim(), category:fd.category, detail:fd.detail.trim(), createdAt:fd.createdAt, dueDate:fd.dueDate, priority:fd.priority, status:fd.status, dueTime:fd.dueTime||'', alert };
+    if(fd.id){ TaskStore.update(Number(fd.id),payload); toast('업무가 수정되었습니다.'); }
+    else { TaskStore.add(payload); toast('새 업무가 등록되었습니다.'); }
+    this.close();
+  }
+};
+
+/* toast('메시지') 또는 toast('메시지', { action:'되돌리기', onAction:fn, duration:5000 }) */
+function toast(msg,{ action, onAction, duration }={}){
+  const t=document.getElementById('toast');
+  t.innerHTML=`<span>${UI.esc(msg)}</span>${action?`<button class="toast-act">${UI.esc(action)}</button>`:''}`;
+  t.classList.toggle('has-action',!!action);
+  if(action) t.querySelector('.toast-act').onclick=()=>{ t.classList.remove('show','has-action'); clearTimeout(toast._t); onAction(); };
+  t.classList.add('show');
+  clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.remove('show','has-action'), duration || (action?5000:2200));
+}
+
+/* =========================================================
+   [K] 이벤트 바인딩 (이벤트 위임 방식)
+   ========================================================= */
+const sidebar=document.getElementById('sidebar'), backdrop=document.getElementById('backdrop');
+
+document.addEventListener('click',e=>{
+  const go=e.target.closest('[data-goto]'); if(go){ App.go(go.dataset.goto); return; }
+  const cal=e.target.closest('[data-cal]');
+  if(cal){ const n=+cal.dataset.cal; if(n===0){ const d=DateUtil.today(); calCursor=new Date(d.getFullYear(),d.getMonth(),1);} else calCursor=new Date(calCursor.getFullYear(),calCursor.getMonth()+n,1); App.render(); return; }
+  const th=e.target.closest('th[data-sort]');
+  if(th && LIST_VIEWS[App.current]){
+    const st=listState[App.current], [k,d]=(st.sort||'due:asc').split(':');
+    st.sort = `${th.dataset.sort}:${k===th.dataset.sort && d==='asc'?'desc':'asc'}`;
+    App.render(); return;
+  }
+  const act=e.target.closest('[data-action]'); if(!act) return;
+  const id=Number(act.dataset.id);
+  switch(act.dataset.action){
+    case 'new': Modal.open(null,{category:act.dataset.category}); break;
+    case 'edit': Modal.open(TaskStore.get(id)); break;
+    case 'delete': {
+      const t=TaskStore.get(id), idx=TaskStore.indexOf(id); TaskStore.remove(id);
+      toast(`"${t.title}" 업무를 삭제했습니다.`, { action:'되돌리기', onAction:()=>{ AlertEngine.suppress=true; TaskStore.restore(t,idx); AlertEngine.suppress=false; toast('삭제를 취소했습니다.'); } });
+      break;
+    }
+    case 'toggle': {
+      const t=TaskStore.get(id), wasDone=t.status==='done'; TaskStore.toggleDone(id);
+      toast(wasDone?`"${t.title}" 완료를 취소했습니다.`:`"${t.title}" 완료!`, { action:'되돌리기', onAction:()=>TaskStore.toggleDone(id) });
+      break;
+    }
+    case 'newdate': Modal.open(null,{ dueDate:act.dataset.date }); break;
+    case 'opennoti': AlertCenter.markRead([act.dataset.key]); App.renderNav(); Modal.open(TaskStore.get(id)); break;
+    case 'sound': Prefs.set('sound',!Prefs.get('sound')); if(Prefs.get('sound')) Sound.play(); App.render(); break;
+    case 'export': ExportModal.open(act.dataset.scope); break;
+    case 'ics': {
+      const t=TaskStore.get(id);
+      CalendarExport.download([t], CalendarExport.filename('_'+t.id));
+      toast(`"${t.title}" 일정 파일을 저장했습니다. 파일을 열어 캘린더에 추가하세요.`); break;
+    }
+    case 'clearsamples': TaskStore.clearSamples(); toast('예시 데이터를 지웠습니다.'); break;
+    case 'readall': AlertCenter.markAllRead(); App.render(); toast('모든 알림을 읽음 처리했습니다.'); break;
+  }
+});
+
+document.addEventListener('input',e=>{
+  const f=e.target.closest('[data-filter]'); if(!f) return;
+  (listState[App.current] ||= {})[f.dataset.filter]=f.value; App.refreshList();
+});
+
+document.getElementById('globalSearch').addEventListener('keydown',e=>{
+  if(e.key!=='Enter') return;
+  listState.all={ keyword:e.target.value }; if(App.current==='all') App.render(); else App.go('all');
+});
+
+document.getElementById('addBtn').onclick=()=>Modal.open(null,{category:App.current==='personal'?'personal':'company'});
+document.getElementById('bellBtn').onclick=()=>App.go('alerts');
+document.getElementById('menuToggle').onclick=()=>App.openSidebar();
+backdrop.onclick=()=>App.closeSidebar();
+Modal.form.addEventListener('submit',e=>Modal.submit(e));
+Modal.el.addEventListener('click',e=>{ if(e.target===Modal.el || e.target.closest('[data-close]')) Modal.close(); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ Modal.close(); App.closeSidebar(); document.getElementById('settingsModal').classList.remove('open'); } });
+
+Modal.form.alert.addEventListener('change',()=>Modal.toggleCustom());
+
+/* =========================================================
+   [L] 실시간 알림 (AlertEngine)
+   ---------------------------------------------------------
+   30초마다 업무 상태를 확인해, 새로 '마감 임박' 또는 '마감 경과'가 된
+   업무가 있으면 화면 팝업(+ 허용 시 브라우저 알림)을 띄웁니다.
+   ※ 페이지가 열려 있는 동안만 동작합니다. 닫혀 있을 때 알림은 서버 연동 단계에서 구현.
+   ========================================================= */
+/* 알림음 — 외부 파일 없이 Web Audio로 '띵동' 소리 생성
+   (브라우저 정책상 페이지에서 한 번이라도 클릭한 뒤부터 소리가 납니다) */
+const Sound = {
+  ctx:null,
+  unlock(){ try{ this.ctx ||= new (window.AudioContext||window.webkitAudioContext)(); if(this.ctx.state==='suspended') this.ctx.resume(); }catch(e){} },
+  play(){
+    if(!Prefs.get('sound')) return;
+    try{
+      this.unlock(); const c=this.ctx; if(!c) return;
+      [[880,0],[660,.18]].forEach(([f,at])=>{
+        const o=c.createOscillator(), g=c.createGain(); o.type='sine'; o.frequency.value=f;
+        g.gain.setValueAtTime(0.0001,c.currentTime+at); g.gain.exponentialRampToValueAtTime(0.25,c.currentTime+at+.02);
+        g.gain.exponentialRampToValueAtTime(0.0001,c.currentTime+at+.35);
+        o.connect(g).connect(c.destination); o.start(c.currentTime+at); o.stop(c.currentTime+at+.4);
+      });
+    }catch(e){}
+  }
+};
+document.addEventListener('pointerdown',()=>Sound.unlock(),{ once:true });
+
+/* ---------------------------------------------------------
+   화면 가운데 알림창 (여러 개면 하나씩 차례로 표시)
+   CENTER_ALERT를 false로 바꾸면 예전처럼 오른쪽 위 작은 팝업으로 표시
+   --------------------------------------------------------- */
+const CENTER_ALERT = true;
+const CenterAlert = {
+  el:document.getElementById('centerAlert'),
+  box:document.getElementById('caBox'),
+  queue:[],
+  push(item){
+    if(this.queue.some(q=>q.key===item.key)) return;
+    this.queue.push(item); this.render();
+  },
+  render(){
+    // 이미 완료·삭제된 업무는 건너뜀
+    this.queue=this.queue.filter(q=>{ const t=TaskStore.get(q.id); return t && t.status!=='done'; });
+    if(!this.queue.length){ this.el.classList.remove('open'); return; }
+    const q=this.queue[0], t=TaskStore.get(q.id), over=TaskUtil.dueState(t)==='overdue';
+    const remain=TaskUtil.remainText(t);
+    this.box.className='ca-box'+(over?' overdue':'');
+    this.box.innerHTML=`
+      ${this.queue.length>1?`<span class="ca-count">1 / ${this.queue.length}</span>`:''}
+      <div class="ca-top">
+        <div class="ca-icon">${icon(over?'alert':'bell')}</div>
+        <div class="ca-label">${over?'마감 시간이 지났습니다':'마감 임박 알림'}</div>
+        <div class="ca-title">${UI.esc(t.title)}</div>
+        <div class="ca-remain">${over?remain:(remain.startsWith('D-')?`마감 ${remain}`:`마감까지 ${remain.replace(' 남음','')} 남음`)}</div>
+        <div class="ca-meta">${UI.catBadge(t.category)}${UI.priBadge(t.priority)}<span>마감 ${TaskUtil.dueText(t)}</span></div>
+        ${t.detail?`<div class="ca-detail">${UI.esc(t.detail)}</div>`:''}
+      </div>
+      <div class="ca-actions">
+        <button class="btn btn-outline" data-ca="open">업무 보기</button>
+        <button class="btn btn-outline" data-ca="done">${icon('check')}완료 처리</button>
+        <button class="btn btn-primary" data-ca="ok">${this.queue.length>1?'확인 · 다음':'확인'}</button>
+      </div>`;
+    this.el.classList.add('open');
+    setTimeout(()=>this.box.querySelector('[data-ca=ok]')?.focus(),50);
+  },
+  /* 현재 알림 닫기 (읽음 처리) */
+  next(){
+    const q=this.queue.shift(); if(q){ AlertCenter.markRead([q.key]); App.renderNav(); }
+    this.render();
+  },
+  action(type){
+    const q=this.queue[0]; if(!q) return;
+    if(type==='open'){ this.next(); Modal.open(TaskStore.get(q.id)); }
+    else if(type==='done'){ this.next(); const t=TaskStore.get(q.id); TaskStore.toggleDone(q.id); toast(`"${t.title}" 완료!`,{ action:'되돌리기', onAction:()=>TaskStore.toggleDone(q.id) }); }
+    else this.next();
+  }
+};
+CenterAlert.el.addEventListener('click',e=>{
+  const b=e.target.closest('[data-ca]'); if(b) return CenterAlert.action(b.dataset.ca);
+  if(e.target===CenterAlert.el) CenterAlert.next();      // 바깥 영역 클릭 = 확인
+});
+document.addEventListener('keydown',e=>{ if(e.key==='Escape' && CenterAlert.el.classList.contains('open')){ e.stopImmediatePropagation(); CenterAlert.next(); } }, true);
+
+const AlertEngine = {
+  prev:{},
+  wrap:null,
+  snapshot(){ const m={}; TaskStore.getAll().forEach(t=>m[t.id]=TaskUtil.dueState(t)); return m; },
+  start(){
+    this.wrap=document.createElement('div'); this.wrap.className='pop-wrap'; document.body.appendChild(this.wrap);
+    this.prev=this.snapshot();
+    const s=TaskUtil.stats();
+    const unread=AlertCenter.unreadCount();
+    if(unread && Prefs.get('onboarded')) this.pop({ overdue:s.overdue>0, title:'읽지 않은 마감 알림', text:`확인하지 않은 알림이 ${unread}건 있습니다. (마감 임박 ${s.urgent-s.overdue}건 · 경과 ${s.overdue}건)`, goto:'alerts', auto:12000, silent:true });
+    this.schedule();
+  },
+  /* 상태가 '임박/경과'로 새로 바뀐 업무에 팝업 */
+  notify(prev,now,{ fromEdit=false }={}){
+    TaskStore.getAll().forEach(t=>{
+      const before=prev[t.id], after=now[t.id];
+      if(after!=='soon' && after!=='overdue') return;
+      if(before===after || before==='done') return;
+      if(before===undefined && !fromEdit) return;        // 새로 등록한 업무는 저장 직후에만 확인
+      if(fromEdit && AlertCenter.isRead(t)) return;
+      const over=after==='overdue';
+      this.pop({ overdue:over, id:t.id, key:AlertCenter.key(t),
+        title: over?'마감 시간이 지났습니다':`마감 ${TaskUtil.remainText(t)}`,
+        text:`${t.title} · 마감 ${TaskUtil.dueText(t)}` });
+    });
+  },
+  tick(){
+    const now=this.snapshot();
+    this.notify(this.prev,now);
+    this.prev=now;
+    // 입력 중이 아니면 화면 갱신 (남은 시간 표시 업데이트)
+    const a=document.activeElement;
+    if(!(a && a.closest && a.closest('#view') && /INPUT|SELECT|TEXTAREA/.test(a.tagName))) App.render();
+    this.schedule();
+  },
+  /* 다음 알림 시각(알림 시작 또는 마감)에 맞춰 정확히 확인. 최대 30초마다 화면 갱신 */
+  schedule(){
+    clearTimeout(this._timer);
+    const nowMs=Date.now(); let next=nowMs+30000;
+    TaskStore.getAll().forEach(t=>{
+      if(t.status==='done') return;
+      [TaskUtil.alertStart(t), DateUtil.dueAt(t)].forEach(d=>{ if(d){ const ms=d.getTime()+300; if(ms>nowMs && ms<next) next=ms; } });
+    });
+    this._timer=setTimeout(()=>this.tick(), Math.max(500,next-nowMs));
+  },
+  /* 등록·수정 직후 호출 (불러오기 등 대량 변경 시에는 suppress) */
+  onDataChange(){
+    const now=this.snapshot();
+    if(!this.suppress) this.notify(this.prev,now,{ fromEdit:true });
+    this.prev=now; this.schedule();
+  },
+  /* 업무 알림 팝업은 직접 닫을 때까지 유지 (닫거나 누르면 읽음 처리) */
+  pop({ overdue, title, text, id, key, goto, auto, silent }){
+    if(id && CENTER_ALERT){                       // 업무 알림 → 화면 가운데 큰 알림창
+      CenterAlert.push({ id, key, overdue });
+      if(!silent) Sound.play();
+      SystemNotify.show(title,text,id);
+      return;
+    }
+    const el=document.createElement('div'); el.className='pop'+(overdue?' overdue':'');
+    el.innerHTML=`<div class="pi">${icon(overdue?'alert':'clock')}</div><div><b>${UI.esc(title)}</b><p>${UI.esc(text)}</p></div><button class="px" aria-label="닫기">${icon('x')}</button>`;
+    el.onclick=e=>{
+      el.remove(); this.updateClearAll();
+      if(key){ AlertCenter.markRead([key]); App.renderNav(); }
+      if(e.target.closest('.px')) return;
+      if(id) Modal.open(TaskStore.get(id)); else if(goto) App.go(goto);
+    };
+    this.wrap.prepend(el); this.updateClearAll();
+    if(auto) setTimeout(()=>{ el.remove(); this.updateClearAll(); }, auto);
+    if(!silent) Sound.play();
+    SystemNotify.show(title,text,id);
+  },
+  /* 팝업이 2개 이상이면 '모두 닫기' 표시 */
+  updateClearAll(){
+    let bar=this.wrap.querySelector('.pop-actions');
+    const n=this.wrap.querySelectorAll('.pop').length;
+    if(n>=2 && !bar){ bar=document.createElement('div'); bar.className='pop-actions'; bar.innerHTML='<button>모두 닫기</button>';
+      bar.onclick=()=>{ this.wrap.querySelectorAll('.pop').forEach(p=>p.remove()); bar.remove(); }; this.wrap.appendChild(bar); }
+    if(n<2 && bar) bar.remove();
+  },
+
+};
+document.addEventListener('click',e=>{ if(e.target.closest('[data-action="notiperm"]')) SystemNotify.request(); });
+
+/* =========================================================
+   [M] 캘린더 내보내기 (CalendarExport) — iCalendar(.ics, RFC 5545) 생성
+   ---------------------------------------------------------
+   · 마감 시간이 있는 업무 → 마감 시각 일정(30분)
+   · 마감 시간이 없는 업무 → 종일 일정
+   · 업무별 알림 설정 → VALARM(캘린더 알람)
+       분·시간 단위: 마감 N분/N시간 전
+       일 단위: 마감 N일 전 오전 9시 (마감 당일 = 당일 오전 9시)
+   ========================================================= */
+const CalendarExport = {
+  DAY_ALARM_HOUR: 9,   // 일 단위 알림이 울릴 시각
+  esc(s){ return String(s??'').replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\r?\n/g,'\\n'); },
+  utc(d){ return d.toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,''); },
+  ymd(iso){ return iso.replace(/-/g,''); },
+  /* 한 줄 75바이트 제한 (UTF-8 기준 줄 접기) */
+  fold(line){
+    const enc=new TextEncoder(); let out='', len=0;
+    for(const ch of line){ const b=enc.encode(ch).length; if(len+b>75){ out+='\r\n '; len=1; } out+=ch; len+=b; }
+    return out;
+  },
+  trigger(min){ const m=Math.round(min); return `${m<0?'-':''}PT${Math.abs(m)}M`; },
+  eventStart(t){ const d=DateUtil.dueAt(t); d.setSeconds(0,0); return d; },
+  /* 알람 시점(분) — 일정 시작 기준 상대값, 알림 끔이면 null */
+  alarmOffset(t, allDay){
+    const a=TaskUtil.parseAlert(t); if(!a) return null;
+    const base = allDay ? DateUtil.parse(t.dueDate) : this.eventStart(t);
+    let target;
+    if(a.unit==='d'){ target=DateUtil.parse(t.dueDate); target.setDate(target.getDate()-a.n); target.setHours(this.DAY_ALARM_HOUR,0,0,0); }
+    else { target=new Date(DateUtil.dueAt(t).getTime()-a.n*ALERT_UNIT[a.unit].ms); target.setSeconds(0,0); }
+    let off=(target-base)/60000;
+    if(!allDay) off=Math.min(off,0);   // 마감 시각 이후로 알람이 밀리지 않게
+    return off;
+  },
+  vevent(t){
+    const allDay=!t.dueTime, L=['BEGIN:VEVENT', `UID:mytask-${t.id}-${this.ymd(t.createdAt)}@mytask`, `DTSTAMP:${this.utc(new Date())}`];
+    if(allDay){ const n=DateUtil.parse(t.dueDate); n.setDate(n.getDate()+1); L.push(`DTSTART;VALUE=DATE:${this.ymd(t.dueDate)}`, `DTEND;VALUE=DATE:${this.ymd(DateUtil.toISO(n))}`); }
+    else { const st=this.eventStart(t); L.push(`DTSTART:${this.utc(st)}`, `DTEND:${this.utc(new Date(st.getTime()+30*60000))}`); }
+    const desc=[`업무 구분: ${LABELS.categoryFull[t.category]}`, `우선순위: ${LABELS.priority[t.priority]}`, `진행 상태: ${LABELS.status[t.status]}`, `마감 알림: ${TaskUtil.alertLabel(t)}`];
+    if(t.detail) desc.push('', t.detail);
+    L.push(`SUMMARY:${this.esc(`[${LABELS.category[t.category]}] ${t.title}`)}`,
+           `DESCRIPTION:${this.esc(desc.join('\n'))}`,
+           `CATEGORIES:${this.esc(LABELS.categoryFull[t.category])}`,
+           `PRIORITY:${{high:1,medium:5,low:9}[t.priority]}`,
+           'TRANSP:TRANSPARENT');
+    const off=this.alarmOffset(t,allDay);
+    if(off!==null) L.push('BEGIN:VALARM','ACTION:DISPLAY',`DESCRIPTION:${this.esc('마감 알림: '+t.title)}`,`TRIGGER:${this.trigger(off)}`,'END:VALARM');
+    L.push('END:VEVENT');
+    return L;
+  },
+  build(tasks){
+    let tz='Asia/Seoul'; try{ tz=Intl.DateTimeFormat().resolvedOptions().timeZone||tz; }catch(e){}
+    const L=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//MY TASK//Task Export//KO','CALSCALE:GREGORIAN','METHOD:PUBLISH','X-WR-CALNAME:MY TASK',`X-WR-TIMEZONE:${tz}`];
+    tasks.forEach(t=>L.push(...this.vevent(t)));
+    L.push('END:VCALENDAR');
+    return L.map(l=>this.fold(l)).join('\r\n')+'\r\n';
+  },
+  filename(suffix=''){ return `mytask_${this.ymd(DateUtil.toISO(new Date()))}${suffix}.ics`; },
+  download(tasks,name){
+    const url=URL.createObjectURL(new Blob([this.build(tasks)],{ type:'text/calendar;charset=utf-8' }));
+    const a=document.createElement('a'); a.href=url; a.download=name; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),1500);
+  },
+  /* 휴대폰: 공유 시트로 캘린더·메신저 앱에 바로 보내기 */
+  canShare(){ try{ return !!(navigator.canShare && navigator.canShare({ files:[new File(['x'],'t.ics',{type:'text/calendar'})] })); }catch(e){ return false; } },
+  async share(tasks,name){
+    const file=new File([this.build(tasks)], name, { type:'text/calendar' });
+    try{ await navigator.share({ files:[file], title:'MY TASK 일정' }); return true; }catch(e){ return e.name==='AbortError' ? null : false; }
+  }
+};
+
+/* 내보내기 모달 */
+const ExportModal = {
+  el:document.getElementById('exportModal'),
+  open(scope='all'){
+    const r=this.el.querySelector(`[name=exScope][value=${scope}]`) || this.el.querySelector('[name=exScope]');
+    r.checked=true; this.update();
+    document.getElementById('exShare').style.display = CalendarExport.canShare() ? 'inline-flex' : 'none';
+    this.el.classList.add('open');
+  },
+  close(){ this.el.classList.remove('open'); },
+  selected(){
+    const scope=this.el.querySelector('[name=exScope]:checked').value, skip=document.getElementById('exSkipOverdue').checked;
+    return TaskUtil.sortByDue(TaskStore.query({ excludeDone:true, ...(scope==='all'?{}:{category:scope}) }))
+      .filter(t=>!skip || TaskUtil.dueState(t)!=='overdue');
+  },
+  update(){
+    const list=this.selected();
+    document.getElementById('exCount').textContent=list.length;
+    document.getElementById('exAlarm').textContent=list.filter(t=>TaskUtil.parseAlert(t)).length;
+    document.getElementById('exDownload').disabled=!list.length;
+  },
+  async run(mode){
+    const list=this.selected(); if(!list.length) return toast('내보낼 업무가 없습니다.');
+    const name=CalendarExport.filename();
+    if(mode==='share'){ const r=await CalendarExport.share(list,name); if(r===null) return; if(!r) return toast('공유할 수 없어 파일로 저장합니다.'), CalendarExport.download(list,name); }
+    else CalendarExport.download(list,name);
+    this.close(); toast(`${list.length}건의 일정을 내보냈습니다. 파일을 열어 캘린더에 추가하세요.`);
+  }
+};
+ExportModal.el.addEventListener('click',e=>{ if(e.target===ExportModal.el || e.target.closest('[data-ex-close]')) ExportModal.close(); });
+ExportModal.el.addEventListener('change',()=>ExportModal.update());
+document.getElementById('exDownload').onclick=()=>ExportModal.run('download');
+document.getElementById('exShare').onclick=()=>ExportModal.run('share');
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') ExportModal.close(); });
+
+/* =========================================================
+   [N] 데이터 백업 / 복원
+   ========================================================= */
+const Backup = {
+  save(){
+    const blob=new Blob([JSON.stringify(TaskStore.exportData(),null,2)],{ type:'application/json' });
+    const url=URL.createObjectURL(blob), a=document.createElement('a');
+    a.href=url; a.download=`mytask_backup_${DateUtil.toISO(new Date()).replace(/-/g,'')}.json`;
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),1500);
+    toast('백업 파일을 저장했습니다.');
+  },
+  restore(file){
+    const r=new FileReader();
+    r.onload=()=>{
+      try{ AlertEngine.suppress=true; TaskStore.importData(JSON.parse(r.result)); AlertEngine.suppress=false; toast(`${TaskStore.getAll().length}건의 업무를 불러왔습니다.`); }
+      catch(e){ AlertEngine.suppress=false; toast('MY TASK 백업 파일이 아니거나 손상된 파일입니다.'); }
+    };
+    r.readAsText(file,'utf-8');
+  }
+};
+document.getElementById('backupBtn').onclick=()=>Backup.save();
+document.getElementById('restoreBtn').onclick=()=>document.getElementById('restoreFile').click();
+document.getElementById('restoreFile').onchange=e=>{
+  const f=e.target.files[0]; e.target.value='';
+  if(f && (TaskStore.getAll().length===0 || window.confirm('현재 업무를 백업 파일 내용으로 바꿉니다. 계속할까요?'))) Backup.restore(f);
+};
+function renderSaveState(){
+  const el=document.getElementById('saveState');
+  el.classList.toggle('err',!TaskStore.saveOk);
+  el.lastChild.textContent = TaskStore.saveOk ? '이 브라우저에 자동 저장 중' : '자동 저장 불가 · 백업 저장을 이용하세요';
+}
+
+TaskStore.subscribe(()=>{ renderSaveState(); AlertEngine.onDataChange(); App.render(); });   // 데이터 변경 시 화면 자동 갱신
+window.addEventListener('hashchange',()=>App.render());
+
+/* =========================================================
+   [O] 시스템 알림 — 윈도우 오른쪽 아래 / 휴대폰 알림
+   · https 주소(GitHub Pages 등)에서 열어야 정상 동작합니다. (파일로 열면 브라우저가 막을 수 있음)
+   · 서비스워커가 있으면 그것으로 표시 (안드로이드 크롬은 이 방식만 지원)
+   ========================================================= */
+const SystemNotify = {
+  supported(){ return 'Notification' in window; },
+  granted(){ return this.supported() && Notification.permission==='granted'; },
+  async request(){
+    if(!this.supported()) return toast('이 브라우저는 시스템 알림을 지원하지 않습니다.');
+    if(location.protocol==='file:') toast('파일로 연 경우 브라우저가 알림을 막을 수 있어요. 인터넷 주소로 열면 확실히 동작합니다.');
+    try{
+      const r=await Notification.requestPermission();
+      if(r==='granted'){ toast('시스템 알림이 켜졌습니다.'); this.show('알림이 켜졌습니다','마감 알림이 이렇게 표시됩니다.'); }
+      else toast('알림이 허용되지 않았습니다. 주소창 왼쪽 자물쇠 아이콘에서 다시 허용할 수 있어요.');
+    }catch(e){ toast('이 환경에서는 시스템 알림을 켤 수 없습니다.'); }
+    App.render(); Guide.updatePerm();
+  },
+  async show(title,body,id){
+    if(!this.granted()) return;
+    const opt={ body, icon:'icons/icon-192.png', badge:'icons/icon-192.png', tag:id?'task-'+id:'mytask', renotify:true, requireInteraction:true, data:{ id } };
+    try{
+      const reg = navigator.serviceWorker && await navigator.serviceWorker.getRegistration();
+      if(reg) return reg.showNotification('MY TASK · '+title, opt);
+      const n=new Notification('MY TASK · '+title, opt); n.onclick=()=>{ window.focus(); if(id) Modal.open(TaskStore.get(id)); n.close(); };
+    }catch(e){}
+  }
+};
+
+/* =========================================================
+   [P] 테마 · 내 정보 · 사용 가이드 · 앱 설치
+   ========================================================= */
+const Theme = {
+  apply(){
+    const t=Prefs.get('theme'), dark = t==='dark' || (t==='system' && matchMedia('(prefers-color-scheme: dark)').matches);
+    document.documentElement.dataset.theme = dark?'dark':'light';
+    const b=document.getElementById('themeBtn'); b.innerHTML=icon(dark?'sun':'moon'); b.title=dark?'라이트 모드로':'다크 모드로';
+    document.querySelector('meta[name=theme-color]').content = dark?'#0e141f':'#14254a';
+  },
+  toggle(){ Prefs.set('theme', document.documentElement.dataset.theme==='dark'?'light':'dark'); this.apply(); }
+};
+matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change',()=>{ if(Prefs.get('theme')==='system') Theme.apply(); });
+
+function renderProfile(){
+  const name=Prefs.get('name')||'사용자', org=Prefs.get('org');
+  document.getElementById('profileName').textContent=name;
+  document.getElementById('profileOrg').textContent=org||(Prefs.get('name')?'내 정보 설정':'설정에서 이름을 입력하세요');
+  const ch=[...name]; document.getElementById('avatar').textContent = (/^[가-힣]{3,4}$/.test(name) ? ch.slice(-2) : ch.slice(0,2)).join('');   // 한글 이름은 '길동'처럼 이름 두 글자
+}
+
+const Settings = {
+  el:document.getElementById('settingsModal'), form:document.getElementById('settingsForm'),
+  open(){
+    const f=this.form; f.name.value=Prefs.get('name'); f.org.value=Prefs.get('org');
+    f.querySelector(`[name=theme][value=${Prefs.get('theme')}]`).checked=true;
+    f.querySelector(`[name=sound][value=${Prefs.get('sound')?'on':'off'}]`).checked=true;
+    f.name.classList.remove('invalid'); this.el.classList.add('open'); App.closeSidebar();
+  },
+  close(){ this.el.classList.remove('open'); },
+  save(e){
+    e.preventDefault(); const f=this.form, name=f.name.value.trim();
+    if(!name){ f.name.classList.add('invalid'); return toast('이름을 입력해 주세요.'); }
+    Prefs.set('name',name); Prefs.set('org',f.org.value.trim());
+    Prefs.set('theme',f.querySelector('[name=theme]:checked').value); Prefs.set('sound',f.querySelector('[name=sound]:checked').value==='on');
+    Theme.apply(); renderProfile(); App.render(); this.close(); toast('설정을 저장했습니다.');
+  }
+};
+Settings.form.addEventListener('submit',e=>Settings.save(e));
+Settings.el.addEventListener('click',e=>{ if(e.target===Settings.el || e.target.closest('[data-set-close]')) Settings.close(); });
+document.getElementById('reGuide').onclick=()=>{ Settings.close(); Guide.open(); };
+
+const Guide = {
+  el:document.getElementById('guideModal'), step:0, last:3,
+  open(){
+    this.step=0; document.getElementById('g-name').value=Prefs.get('name'); document.getElementById('g-org').value=Prefs.get('org');
+    document.getElementById('sampleChoice').style.display = TaskStore.hasSamples()?'flex':'none';
+    document.getElementById('iosTip').classList.toggle('show', /iPhone|iPad/.test(navigator.userAgent) && !navigator.standalone);
+    this.updatePerm(); this.render(); this.el.classList.add('open');
+    setTimeout(()=>document.getElementById('g-name').focus(),80);
+  },
+  updatePerm(){ const r=document.getElementById('permRow'); if(r) r.style.display = (SystemNotify.supported() && Notification.permission!=='granted')?'flex':'none'; },
+  render(){
+    this.el.querySelectorAll('.guide-step').forEach(x=>x.classList.toggle('active',+x.dataset.step===this.step));
+    this.el.querySelectorAll('#gDots i').forEach((d,i)=>d.classList.toggle('on',i===this.step));
+    document.getElementById('gPrev').style.visibility=this.step?'visible':'hidden';
+    document.getElementById('gNext').textContent=this.step===this.last?'시작하기':'다음';
+  },
+  next(){
+    if(this.step===0){
+      const n=document.getElementById('g-name'); if(!n.value.trim()){ n.classList.add('invalid'); n.focus(); return toast('이름을 입력해 주세요.'); }
+      n.classList.remove('invalid'); Prefs.set('name',n.value.trim()); Prefs.set('org',document.getElementById('g-org').value.trim()); renderProfile();
+    }
+    if(this.step<this.last){ this.step++; return this.render(); }
+    // 마지막 단계: 시작하기
+    if(TaskStore.hasSamples() && this.el.querySelector('[name=g-sample]:checked').value==='clear'){ AlertEngine.suppress=true; TaskStore.clearSamples(); AlertEngine.suppress=false; }
+    Prefs.set('onboarded',true); this.el.classList.remove('open'); App.render();
+    toast(`${Prefs.get('name')}님, 환영합니다!`);
+  },
+  prev(){ if(this.step>0){ this.step--; this.render(); } }
+};
+document.getElementById('gNext').onclick=()=>Guide.next();
+document.getElementById('gPrev').onclick=()=>Guide.prev();
+document.getElementById('g-name').addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); Guide.next(); } });
+document.getElementById('profileBtn').onclick=()=>Settings.open();
+document.getElementById('themeBtn').onclick=()=>Theme.toggle();
+document.getElementById('helpBtn').onclick=()=>Guide.open();
+
+/* 앱 설치 (PWA) — 지원 브라우저에서 '앱으로 설치하기' 버튼 표시 */
+let installEvt=null;
+window.addEventListener('beforeinstallprompt',e=>{ e.preventDefault(); installEvt=e; document.getElementById('installBtn').classList.add('show'); });
+document.getElementById('installBtn').onclick=async()=>{
+  if(!installEvt) return; installEvt.prompt(); const r=await installEvt.userChoice; installEvt=null;
+  document.getElementById('installBtn').classList.remove('show');
+  if(r.outcome==='accepted') toast('MY TASK가 앱으로 설치되었습니다.');
+};
+window.addEventListener('appinstalled',()=>document.getElementById('installBtn').classList.remove('show'));
+
+/* 서비스워커 — 오프라인 실행·시스템 알림용 (https 주소에서만 동작) */
+if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+  navigator.serviceWorker.addEventListener('message',e=>{ if(e.data?.type==='open-task' && e.data.id) Modal.open(TaskStore.get(e.data.id)); });
+}
+
+hydrateIcons();
+Theme.apply();
+renderProfile();
+renderSaveState();
+App.render();
+AlertEngine.start();
+if(!Prefs.get('onboarded')) Guide.open();
+</script>
+</body>
+</html>

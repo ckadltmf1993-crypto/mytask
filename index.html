@@ -450,6 +450,19 @@ textarea.input{height:96px;padding:10px 12px;resize:vertical}
 .save-state{font-size:11px;color:#6f7f9c;margin:-6px 0 12px;display:flex;align-items:center;gap:5px}
 .save-state i{width:6px;height:6px;border-radius:50%;background:#3fbf7f}
 .save-state.err i{background:var(--red)}
+.save-state.cloud i{background:#5b9dff}
+.save-state.wait i{background:#f5a04a;animation:blink 1s infinite}
+@keyframes blink{50%{opacity:.3}}
+.save-state span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cloud-btn{display:none;width:100%;margin-bottom:10px;height:34px;border-radius:6px;font-size:12px;font-weight:700;align-items:center;justify-content:center;gap:7px;
+  background:#fff;color:#1f2937;border:1px solid rgba(255,255,255,.2)}
+.cloud-btn.show{display:flex}
+.cloud-btn:hover{background:#f1f4f9}
+.g-logo{width:14px;height:14px;flex-shrink:0}
+.cloud-box{margin-top:18px;padding:14px 16px;border:1px solid var(--border);border-radius:10px;background:var(--surface-2);font-size:13px;color:var(--text-2)}
+.cloud-box b{color:var(--text)}
+.cloud-box .row{display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap}
+.cloud-box .row .btn{margin-left:auto}
 .sample-banner{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--primary-soft);border:1px solid #cfdcf6;
   color:var(--navy);border-radius:var(--radius);padding:12px 16px;margin-bottom:20px;font-size:13px}
 .sample-banner svg{color:var(--primary)}
@@ -653,7 +666,8 @@ textarea.input{height:96px;padding:10px 12px;resize:vertical}
     </div>
     <nav class="nav" id="nav"></nav>
     <div class="sidebar-footer">
-      <div class="save-state" id="saveState"><i></i>이 브라우저에 자동 저장 중</div>
+      <button type="button" class="cloud-btn" id="cloudBtn" data-action="cloudlogin"><svg class="g-logo" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.6 5.4 2.6 13.3l7.9 6.1C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.1 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.4c-.5 2.9-2.2 5.3-4.6 6.9l7.4 5.7c4.3-4 6.9-9.9 6.9-17.1z"/><path fill="#FBBC05" d="M10.5 28.6c-.5-1.4-.8-3-.8-4.6s.3-3.2.8-4.6l-7.9-6.1C1 16.5 0 20.1 0 24s1 7.5 2.6 10.7l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.4-5.7c-2.1 1.4-4.8 2.3-8.5 2.3-6.3 0-11.6-4.1-13.5-9.9l-7.9 6.1C6.6 42.6 14.6 48 24 48z"/></svg>구글 로그인 · PC·휴대폰 동기화</button>
+      <div class="save-state" id="saveState"><i></i><span>이 브라우저에 자동 저장 중</span></div>
       <div class="data-tools">
         <button type="button" id="backupBtn" title="모든 업무를 백업 파일로 저장"><span data-icon="download"></span>백업 저장</button>
         <button type="button" id="restoreBtn" title="백업 파일에서 업무 불러오기"><span data-icon="upload"></span>불러오기</button>
@@ -849,6 +863,7 @@ textarea.input{height:96px;padding:10px 12px;resize:vertical}
           <label><input type="radio" name="g-sample" value="keep" checked><b>예시 업무와 함께</b>기능을 둘러본 뒤 나중에 지울 수 있어요</label>
           <label><input type="radio" name="g-sample" value="clear"><b>빈 화면으로 시작</b>바로 내 업무를 등록할게요</label>
         </div>
+        <div class="perm-row" id="cloudRow"><span>PC와 휴대폰에서 같은 업무 보기</span><button type="button" class="btn btn-outline btn-sm" data-action="cloudlogin"><svg class="g-logo" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.6 5.4 2.6 13.3l7.9 6.1C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.1 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.4c-.5 2.9-2.2 5.3-4.6 6.9l7.4 5.7c4.3-4 6.9-9.9 6.9-17.1z"/><path fill="#FBBC05" d="M10.5 28.6c-.5-1.4-.8-3-.8-4.6s.3-3.2.8-4.6l-7.9-6.1C1 16.5 0 20.1 0 24s1 7.5 2.6 10.7l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.4-5.7c-2.1 1.4-4.8 2.3-8.5 2.3-6.3 0-11.6-4.1-13.5-9.9l-7.9 6.1C6.6 42.6 14.6 48 24 48z"/></svg>구글 로그인</button></div>
         <div class="perm-row" id="permRow"><span>컴퓨터 오른쪽 아래·휴대폰 알림으로도 받기</span><button type="button" class="btn btn-outline btn-sm" data-action="notiperm">알림 허용</button></div>
         <p class="ios-tip" id="iosTip">아이폰은 Safari 공유 버튼 → '홈 화면에 추가'로 설치해야 알림을 받을 수 있어요.</p>
       </div>
@@ -888,6 +903,7 @@ textarea.input{height:96px;padding:10px 12px;resize:vertical}
           </div>
         </div>
       </div>
+      <div class="cloud-box" id="cloudBox"></div>
       <button type="button" class="btn btn-outline btn-sm" id="reGuide" style="margin-top:18px"><span data-icon="help"></span>사용 가이드 다시 보기</button>
     </div>
     <div class="modal-footer">
@@ -1002,6 +1018,22 @@ const TaskStore = {
 
   STORAGE_KEY: 'mytask.tasks.v1',
   saveOk: true,
+  mode: 'local',        // 'local' = 이 브라우저에만 저장 / 'cloud' = 구글 계정(Firebase)과 동기화
+  uid: null,
+
+  /* 기기가 달라도 겹치지 않는 업무 번호 */
+  newId(){ let id; do{ id=Date.now()*1000+Math.floor(Math.random()*1000); }while(this._tasks.some(t=>t.id===id)); return id; },
+  _key(){ return this.mode==='cloud' ? 'mytask.cloud.'+this.uid : this.STORAGE_KEY; },
+  /* 로그인 전 이 기기에 저장된 업무 */
+  localTasks(){ if(this.mode==='local') return this.getAll(); const l=this._load(this.STORAGE_KEY); return l||[]; },
+  enterCloud(uid){ this.mode='cloud'; this.uid=uid; this._tasks=this._load()||[]; this._notify(); },
+  exitCloud(){ this.mode='local'; this.uid=null; this._tasks=this._load()||[]; this._notify(); },
+  /* 클라우드에서 받은 최신 목록 반영 (내용이 같으면 무시) */
+  applyRemote(list){
+    const norm=a=>JSON.stringify([...a].sort((x,y)=>String(x.id).localeCompare(String(y.id))));
+    if(norm(list)===norm(this._tasks)) return;
+    this._tasks=list; this._save(); this._notify();
+  },
 
   /* 저장된 데이터가 있으면 불러오고, 처음 실행이면 예시 데이터로 시작 */
   init(seedFn){
@@ -1010,12 +1042,12 @@ const TaskStore = {
     else { this._tasks=seedFn().map(t=>({ ...t, id:this._seq++, sample:true })); this._save(); }
     this._seq = this._tasks.reduce((m,t)=>Math.max(m,t.id),0)+1;
   },
-  _load(){
-    try{ const raw=localStorage.getItem(this.STORAGE_KEY); if(!raw) return null; const d=JSON.parse(raw); return Array.isArray(d.tasks)?d.tasks:null; }
+  _load(key=this._key()){
+    try{ const raw=localStorage.getItem(key); if(!raw) return null; const d=JSON.parse(raw); return Array.isArray(d.tasks)?d.tasks:null; }
     catch(e){ return null; }
   },
   _save(){
-    try{ localStorage.setItem(this.STORAGE_KEY, JSON.stringify({ version:1, savedAt:new Date().toISOString(), tasks:this._tasks })); this.saveOk=true; }
+    try{ localStorage.setItem(this._key(), JSON.stringify({ version:1, savedAt:new Date().toISOString(), tasks:this._tasks })); this.saveOk=true; }
     catch(e){ this.saveOk=false; }
   },
   /* 백업 파일 내용 / 복원 */
@@ -1023,12 +1055,13 @@ const TaskStore = {
   importData(data){
     const list = Array.isArray(data) ? data : data?.tasks;
     if(!Array.isArray(list) || list.some(t=>!t || !t.title || !t.dueDate)) throw new Error('형식 오류');
-    let seq=1; this._tasks=list.map(t=>({ ...t, id: Number(t.id)||seq++ }));
-    this._seq=this._tasks.reduce((m,t)=>Math.max(m,t.id),0)+1;
+    let seq=1; const next=list.map(t=>({ ...t, id: Number(t.id)||seq++ }));
+    if(this.mode==='cloud') Cloud.replaceAll(this._tasks, next);
+    this._tasks=next; this._seq=this._tasks.reduce((m,t)=>Math.max(m,t.id),0)+1;
     this._emit();
   },
   /* 삭제 되돌리기용: 원래 위치에 다시 넣기 */
-  restore(task,index){ this._tasks.splice(Math.min(index,this._tasks.length),0,task); this._emit(); },
+  restore(task,index){ this._tasks.splice(Math.min(index,this._tasks.length),0,task); Cloud.save(task); this._emit(); },
   indexOf(id){ return this._tasks.findIndex(t=>t.id===id); },
   /* 원클릭 완료 / 완료 취소 */
   toggleDone(id){
@@ -1037,12 +1070,12 @@ const TaskStore = {
     else this.update(id,{ prevStatus:t.status, status:'done', completedAt:DateUtil.toISO(new Date()) });
   },
   hasSamples(){ return this._tasks.some(t=>t.sample); },
-  clearSamples(){ this._tasks=this._tasks.filter(t=>!t.sample); this._emit(); },
+  clearSamples(){ this._tasks.filter(t=>t.sample).forEach(t=>Cloud.remove(t.id)); this._tasks=this._tasks.filter(t=>!t.sample); this._emit(); },
   getAll(){ return [...this._tasks]; },
   get(id){ return this._tasks.find(t=>t.id===id); },
-  add(data){ const t={ ...data, id:this._seq++ }; this._tasks.push(t); this._emit(); return t; },
-  update(id,data){ const i=this._tasks.findIndex(t=>t.id===id); if(i>-1){ this._tasks[i]={ ...this._tasks[i], ...data, sample:false }; this._emit(); } },
-  remove(id){ this._tasks=this._tasks.filter(t=>t.id!==id); this._emit(); },
+  add(data){ const t={ ...data, id:this.newId() }; this._tasks.push(t); Cloud.save(t); this._emit(); return t; },
+  update(id,data){ const i=this._tasks.findIndex(t=>t.id===id); if(i>-1){ this._tasks[i]={ ...this._tasks[i], ...data, sample:false }; Cloud.save(this._tasks[i]); this._emit(); } },
+  remove(id){ this._tasks=this._tasks.filter(t=>t.id!==id); Cloud.remove(id); this._emit(); },
 
   /* 검색/필터 — query: { category, status, priority, keyword, excludeDone } */
   query(q={}){
@@ -1056,7 +1089,8 @@ const TaskStore = {
     );
   },
   subscribe(fn){ this._listeners.push(fn); },
-  _emit(){ this._save(); this._listeners.forEach(fn=>fn()); }
+  _emit(){ this._save(); this._notify(); },
+  _notify(){ this._listeners.forEach(fn=>fn()); }
 };
 
 /* ---------------------------------------------------------
@@ -1588,6 +1622,8 @@ document.addEventListener('click',e=>{
       toast(`"${t.title}" 일정 파일을 저장했습니다. 파일을 열어 캘린더에 추가하세요.`); break;
     }
     case 'clearsamples': TaskStore.clearSamples(); toast('예시 데이터를 지웠습니다.'); break;
+    case 'cloudlogin': Settings.close(); Cloud.signIn(); break;
+    case 'cloudlogout': Settings.close(); Cloud.signOut(); break;
     case 'readall': AlertCenter.markAllRead(); App.render(); toast('모든 알림을 읽음 처리했습니다.'); break;
   }
 });
@@ -1885,6 +1921,141 @@ document.getElementById('exShare').onclick=()=>ExportModal.run('share');
 document.addEventListener('keydown',e=>{ if(e.key==='Escape') ExportModal.close(); });
 
 /* =========================================================
+   [Q] 클라우드 동기화 (Firebase · 구글 로그인)
+   ---------------------------------------------------------
+   · 데이터 위치: Firestore  users/{로그인한 사람 uid}/tasks/{업무 id}
+   · 보안 규칙으로 본인 데이터만 읽고 쓸 수 있음
+   · 인터넷 주소(https)에서만 동작 — 파일로 열면 기존처럼 브라우저에만 저장
+   ========================================================= */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyBjYKguttMQoxRlekgc9hEO2kB8cE7ULNc",
+  authDomain: "mytask-6571c.firebaseapp.com",
+  projectId: "mytask-6571c",
+  storageBucket: "mytask-6571c.firebasestorage.app",
+  messagingSenderId: "52426794689",
+  appId: "1:52426794689:web:3358c9b3090a682e4d1640"
+};
+const FIREBASE_SDK = 'https://www.gstatic.com/firebasejs/10.12.2/';
+
+const Cloud = {
+  fb:null, user:null, unsub:null, status:'local',
+  PENDING_KEY:'mytask.pending.v1',
+  available(){ return /^https?:$/.test(location.protocol) && !!FIREBASE_CONFIG.apiKey; },
+  setStatus(s){ this.status=s; renderSaveState(); },
+
+  /* Firebase 라이브러리는 필요할 때만 불러옴 */
+  async load(){
+    if(this.fb) return this.fb;
+    const [app,auth,fs]=await Promise.all(['firebase-app.js','firebase-auth.js','firebase-firestore.js'].map(f=>import(FIREBASE_SDK+f)));
+    const a=app.initializeApp(FIREBASE_CONFIG);
+    let db; try{ db=fs.initializeFirestore(a,{ localCache:fs.persistentLocalCache({ tabManager:fs.persistentMultipleTabManager() }) }); }catch(e){ db=fs.getFirestore(a); }
+    this.fb={ auth:auth.getAuth(a), db, A:auth, F:fs };
+    auth.onAuthStateChanged(this.fb.auth,u=>this.onAuth(u));
+    return this.fb;
+  },
+  async signIn(){
+    if(!this.available()) return toast('인터넷 주소(https)로 접속해야 로그인할 수 있어요.');
+    this.setStatus('connecting');
+    try{
+      const { auth, A }=await this.load();
+      const p=new A.GoogleAuthProvider(); p.setCustomParameters({ prompt:'select_account' });
+      await A.signInWithPopup(auth,p);
+    }catch(e){
+      this.setStatus(this.user?'synced':'local');
+      const c=e.code||'';
+      if(/popup-closed|cancelled-popup/.test(c)) return;
+      if(/popup-blocked/.test(c)) return toast('팝업이 차단되었어요. 주소창 오른쪽의 팝업 차단 아이콘에서 허용해 주세요.');
+      if(/unauthorized-domain/.test(c)) return toast('Firebase 승인된 도메인에 이 사이트 주소를 추가해야 합니다.');
+      toast('로그인하지 못했어요: '+(c||e.message));
+    }
+  },
+  async signOut(){
+    if(!this.fb) return;
+    if(!window.confirm('로그아웃할까요? 이 기기에서는 로그인 전 업무 목록으로 돌아가며, 클라우드의 업무는 그대로 보관됩니다.')) return;
+    await this.fb.A.signOut(this.fb.auth);
+  },
+  async onAuth(u){
+    if(u){ if(this.user?.uid===u.uid) return; this.user=u; return this.start(u); }
+    if(this.user || TaskStore.mode==='cloud'){ const was=!!this.user; this.stop(); if(was) toast('로그아웃했습니다.'); else toast('로그인이 만료되어 이 기기 업무로 돌아갑니다.'); }
+    else this.setStatus('local');
+  },
+  ref(id){ const { db, F }=this.fb; return F.doc(db,'users',this.user.uid,'tasks',String(id)); },
+  col(){ const { db, F }=this.fb; return F.collection(db,'users',this.user.uid,'tasks'); },
+  clean(t){ const o={ ...t }; delete o.sample; Object.keys(o).forEach(k=>{ if(o[k]===undefined) delete o[k]; }); return o; },
+
+  async start(u){
+    this.setStatus('connecting');
+    const { F, db }=this.fb;
+    try{
+      // 이 기기에서 이 계정으로 처음 로그인 → 기기에 있던 업무를 계정에 합칠지 물어봄
+      if(Prefs.get('cloudUid')!==u.uid){
+        const local=TaskStore.localTasks().filter(t=>!t.sample);
+        if(local.length && window.confirm(`이 기기에 있는 업무 ${local.length}건을 구글 계정(${u.email})에 합칠까요?\n\n확인: 합쳐서 모든 기기에서 보기\n취소: 합치지 않고 계정에 저장된 업무만 보기`)){
+          for(let i=0;i<local.length;i+=400){
+            const b=F.writeBatch(db);
+            local.slice(i,i+400).forEach(t=>{ const id=TaskStore.newId()+i; b.set(this.ref(id), this.clean({ ...t, id })); });
+            await b.commit();
+          }
+        }
+        Prefs.set('cloudUid',u.uid);
+      }
+      if(!Prefs.get('name') && u.displayName){ Prefs.set('name',u.displayName); renderProfile(); }
+      TaskStore.enterCloud(u.uid);
+      await this.flush();
+      this.unsub && this.unsub();
+      this.unsub=F.onSnapshot(this.col(),{ includeMetadataChanges:true },snap=>{
+        TaskStore.applyRemote(snap.docs.map(d=>({ ...d.data(), id:Number(d.id) })));
+        this.setStatus(snap.metadata.fromCache && !navigator.onLine ? 'offline' : 'synced');
+      },err=>{ this.setStatus('error'); toast('동기화 오류: '+(err.code||err.message)); });
+      toast(`${u.email} 계정과 동기화합니다.`);
+    }catch(e){ this.setStatus('error'); toast('클라우드 연결 실패: '+(e.code||e.message)); }
+  },
+  stop(){
+    this.unsub && this.unsub(); this.unsub=null; this.user=null;
+    Prefs.set('cloudUid',null); TaskStore.exitCloud(); this.setStatus('local');
+  },
+
+  /* 저장·삭제 — 라이브러리가 아직 없으면(오프라인 첫 실행 등) 대기열에 보관 후 나중에 전송 */
+  pending(){ try{ return JSON.parse(localStorage.getItem(this.PENDING_KEY)||'{}'); }catch(e){ return {}; } },
+  queue(id,task){ const p=this.pending(); p[id]=task; try{ localStorage.setItem(this.PENDING_KEY,JSON.stringify(p)); }catch(e){} },
+  async flush(){
+    const p=this.pending(), ids=Object.keys(p); if(!ids.length) return;
+    const b=this.fb.F.writeBatch(this.fb.db);
+    ids.forEach(id=>p[id] ? b.set(this.ref(id), this.clean(p[id])) : b.delete(this.ref(id)));
+    await b.commit(); localStorage.removeItem(this.PENDING_KEY);
+  },
+  save(t){
+    if(TaskStore.mode!=='cloud') return;
+    if(!this.user || !this.fb) return this.queue(t.id,this.clean(t));
+    this.fb.F.setDoc(this.ref(t.id), this.clean(t)).catch(e=>{ this.setStatus('error'); toast('클라우드 저장 실패: '+e.code); });
+  },
+  remove(id){
+    if(TaskStore.mode!=='cloud') return;
+    if(!this.user || !this.fb) return this.queue(id,null);
+    this.fb.F.deleteDoc(this.ref(id)).catch(e=>{ this.setStatus('error'); toast('클라우드 삭제 실패: '+e.code); });
+  },
+  /* 백업 불러오기: 클라우드 내용을 백업 내용으로 교체 */
+  async replaceAll(oldList,newList){
+    if(!this.user || !this.fb){ oldList.forEach(t=>this.queue(t.id,null)); newList.forEach(t=>this.queue(t.id,this.clean(t))); return; }
+    const keep=new Set(newList.map(t=>String(t.id))), ops=[];
+    oldList.forEach(t=>{ if(!keep.has(String(t.id))) ops.push(['del',t.id]); });
+    newList.forEach(t=>ops.push(['set',t]));
+    for(let i=0;i<ops.length;i+=400){
+      const b=this.fb.F.writeBatch(this.fb.db);
+      ops.slice(i,i+400).forEach(([k,v])=>k==='del'?b.delete(this.ref(v)):b.set(this.ref(v.id),this.clean(v)));
+      await b.commit();
+    }
+  },
+  /* 설정 화면의 동기화 영역 */
+  renderBox(){
+    const box=document.getElementById('cloudBox');
+    if(!this.available()) box.innerHTML='<b>PC·휴대폰 동기화</b><br>인터넷 주소(https)로 접속하면 구글 로그인으로 여러 기기에서 같은 업무를 볼 수 있어요.';
+    else if(this.user) box.innerHTML=`<b>PC·휴대폰 동기화 켜짐</b><div class="row"><span>${UI.esc(this.user.email)}</span><button type="button" class="btn btn-outline btn-sm" data-action="cloudlogout">로그아웃</button></div>`;
+    else box.innerHTML=`<b>PC·휴대폰 동기화</b><br>구글 계정으로 로그인하면 PC와 휴대폰에서 같은 업무를 볼 수 있어요.<div class="row"><button type="button" class="btn btn-outline btn-sm" data-action="cloudlogin">`+'<svg class="g-logo" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.6 5.4 2.6 13.3l7.9 6.1C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.1 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.4c-.5 2.9-2.2 5.3-4.6 6.9l7.4 5.7c4.3-4 6.9-9.9 6.9-17.1z"/><path fill="#FBBC05" d="M10.5 28.6c-.5-1.4-.8-3-.8-4.6s.3-3.2.8-4.6l-7.9-6.1C1 16.5 0 20.1 0 24s1 7.5 2.6 10.7l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.4-5.7c-2.1 1.4-4.8 2.3-8.5 2.3-6.3 0-11.6-4.1-13.5-9.9l-7.9 6.1C6.6 42.6 14.6 48 24 48z"/></svg>'+`구글 계정으로 로그인</button></div>`;
+  }
+};
+
+/* =========================================================
    [N] 데이터 백업 / 복원
    ========================================================= */
 const Backup = {
@@ -1911,9 +2082,19 @@ document.getElementById('restoreFile').onchange=e=>{
   if(f && (TaskStore.getAll().length===0 || window.confirm('현재 업무를 백업 파일 내용으로 바꿉니다. 계속할까요?'))) Backup.restore(f);
 };
 function renderSaveState(){
-  const el=document.getElementById('saveState');
-  el.classList.toggle('err',!TaskStore.saveOk);
-  el.lastChild.textContent = TaskStore.saveOk ? '이 브라우저에 자동 저장 중' : '자동 저장 불가 · 백업 저장을 이용하세요';
+  const el=document.getElementById('saveState'), st=Cloud.status;
+  const map={
+    local:  ['', TaskStore.saveOk ? '이 브라우저에 자동 저장 중' : '자동 저장 불가 · 백업 저장을 이용하세요'],
+    connecting:['wait','클라우드 연결 중…'],
+    synced: ['cloud', `클라우드 동기화됨 · ${Cloud.user?.email||''}`],
+    offline:['wait','오프라인 · 연결되면 자동 동기화'],
+    error:  ['err','동기화 오류 · 잠시 후 다시 시도']
+  };
+  const [cls,text]=map[st]||map.local;
+  el.className='save-state '+cls+(st==='local'&&!TaskStore.saveOk?' err':'');
+  el.querySelector('span').textContent=text; el.title=text;
+  document.getElementById('cloudBtn').classList.toggle('show', st==='local' && Cloud.available());
+  const row=document.getElementById('cloudRow'); if(row) row.style.display=(st==='local' && Cloud.available())?'flex':'none';
 }
 
 TaskStore.subscribe(()=>{ renderSaveState(); AlertEngine.onDataChange(); App.render(); });   // 데이터 변경 시 화면 자동 갱신
@@ -1975,7 +2156,7 @@ const Settings = {
     const f=this.form; f.name.value=Prefs.get('name'); f.org.value=Prefs.get('org');
     f.querySelector(`[name=theme][value=${Prefs.get('theme')}]`).checked=true;
     f.querySelector(`[name=sound][value=${Prefs.get('sound')?'on':'off'}]`).checked=true;
-    f.name.classList.remove('invalid'); this.el.classList.add('open'); App.closeSidebar();
+    f.name.classList.remove('invalid'); Cloud.renderBox(); this.el.classList.add('open'); App.closeSidebar();
   },
   close(){ this.el.classList.remove('open'); },
   save(e){
@@ -2040,6 +2221,12 @@ window.addEventListener('appinstalled',()=>document.getElementById('installBtn')
 if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){
   navigator.serviceWorker.register('sw.js').catch(()=>{});
   navigator.serviceWorker.addEventListener('message',e=>{ if(e.data?.type==='open-task' && e.data.id) Modal.open(TaskStore.get(e.data.id)); });
+}
+
+/* 이전에 로그인했던 기기면 저장된 사본으로 먼저 보여 주고 연결 */
+if(Prefs.get('cloudUid') && Cloud.available()){
+  TaskStore.enterCloud(Prefs.get('cloudUid')); Cloud.status='connecting';
+  Cloud.load().catch(()=>Cloud.setStatus('offline'));
 }
 
 hydrateIcons();

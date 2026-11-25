@@ -567,6 +567,82 @@ textarea.input{height:96px;padding:10px 12px;resize:vertical}
 }
 .cal-chip.done{background:var(--gray-soft) !important;color:var(--text-3) !important;opacity:.8}
 
+/* 중요(별표) 업무 — 은은한 크림색 배경 */
+.star{width:22px;height:22px;flex-shrink:0;display:grid;place-items:center;color:var(--border-strong);border-radius:4px;margin-top:0;transition:color .15s,transform .15s}
+.star svg{width:17px;height:17px}
+.star:hover{color:#e0a800;transform:scale(1.12)}
+.star.on{color:#e8ae00}
+.star.on svg{fill:currentColor}
+.tasks tr.task-star:not(.task-done) td{background:#fffcf0}
+.tasks tr.task-star:not(.task-done):hover td{background:#fff8e1}
+.tasks tr.task-done .star.on{color:#c5ccd6}
+@media (max-width:640px){
+  table.tasks tr.task-star:not(.task-done){background:#fffcf0}
+  table.tasks tr.task-star:not(.task-done) td{background:transparent}
+}
+[data-theme="dark"] .tasks tr.task-star:not(.task-done) td,[data-theme="dark"] table.tasks tr.task-star:not(.task-done){background:rgba(232,174,0,.07)}
+[data-theme="dark"] .tasks tr.task-star:not(.task-done):hover td{background:rgba(232,174,0,.11)}
+[data-theme="dark"] .star.on{color:#f2c230}
+.star-inline{color:#e8ae00;margin-right:3px}
+.deadline-item .star-inline{font-size:13px}
+.star-filter{cursor:pointer;font-size:13px;color:var(--text-2);user-select:none}
+.star-filter.on{border-color:#e8ae00 !important;background:#fff8e1 !important;color:#9a6b00}
+.star-filter svg{width:15px;height:15px}
+.star-filter.on svg{color:#e8ae00;fill:#e8ae00}
+[data-theme="dark"] .star-filter.on{background:rgba(232,174,0,.12) !important;color:#f2c230}
+.check-inline{display:flex;align-items:center;gap:8px;height:40px;font-size:14px;color:var(--text);cursor:pointer}
+.check-inline input{width:18px;height:18px;accent-color:#e8ae00}
+
+/* 메모장 */
+.notes-head{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:18px}
+.notes-head .field{flex:1;min-width:200px;display:flex;align-items:center;gap:8px;height:40px;padding:0 12px;border:1px solid var(--border);border-radius:8px;background:var(--surface)}
+.notes-head .field svg{width:16px;height:16px;color:var(--text-3)}
+.notes-head .field input{border:none;outline:none;background:none;flex:1;min-width:0;font-size:14px}
+.quick-note{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:12px 16px;margin-bottom:22px;cursor:text;color:var(--text-3);font-size:14px}
+.quick-note:hover{border-color:var(--border-strong)}
+.quick-note svg{width:18px;height:18px;color:var(--primary)}
+.note-section{font-size:12px;font-weight:700;color:var(--text-3);letter-spacing:.3px;margin:4px 0 10px}
+.note-grid{column-count:4;column-gap:14px;margin-bottom:24px}
+@media (max-width:1300px){ .note-grid{column-count:3} }
+@media (max-width:900px){ .note-grid{column-count:2} }
+@media (max-width:520px){ .note-grid{column-count:1} }
+.note-card{break-inside:avoid;margin-bottom:14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:14px 16px 10px;cursor:pointer;box-shadow:var(--shadow);transition:box-shadow .15s,transform .15s;position:relative}
+.note-card:hover{box-shadow:0 6px 18px rgba(16,24,40,.1);transform:translateY(-1px)}
+.note-card h4{font-size:14.5px;font-weight:700;margin-bottom:6px;padding-right:22px;word-break:break-word}
+.note-body{font-size:13px;color:var(--text-2);white-space:pre-wrap;word-break:break-word;display:-webkit-box;-webkit-line-clamp:10;-webkit-box-orient:vertical;overflow:hidden}
+.note-foot{display:flex;align-items:center;justify-content:space-between;margin-top:10px;font-size:11.5px;color:var(--text-3)}
+.note-pin{position:absolute;top:12px;right:12px;color:var(--text-3)}
+.note-pin svg{width:15px;height:15px}
+.note-card .note-pin{opacity:0} .note-card:hover .note-pin,.note-card .note-pin.on{opacity:1}
+.note-pin.on{color:var(--primary)}
+.note-pin.on svg{fill:currentColor}
+/* 메모 색상 (은은하게) */
+.nc-yellow{background:#fffbea;border-color:#f3e6b5} .nc-blue{background:#eef5ff;border-color:#cfe0fa}
+.nc-green{background:#eefaf3;border-color:#c8ead6} .nc-pink{background:#fff0f3;border-color:#f6d0d9}
+.nc-purple{background:#f5f1ff;border-color:#dcd2f7} .nc-gray{background:#f3f5f8;border-color:#dfe4ea}
+[data-theme="dark"] .nc-yellow{background:#2a2617;border-color:#4a4122} [data-theme="dark"] .nc-blue{background:#182538;border-color:#253a58}
+[data-theme="dark"] .nc-green{background:#16291f;border-color:#234433} [data-theme="dark"] .nc-pink{background:#2d1a20;border-color:#4a2a34}
+[data-theme="dark"] .nc-purple{background:#221d35;border-color:#382f57} [data-theme="dark"] .nc-gray{background:#1e2530;border-color:#303a48}
+/* 메모 편집 창 */
+.note-modal .modal{max-width:620px}
+.note-modal .modal-body{padding:18px 22px 10px}
+.note-title-input{width:100%;border:none;outline:none;background:transparent;font-size:19px;font-weight:700;padding:6px 0 10px;color:var(--text)}
+.note-body-input{width:100%;min-height:300px;border:none;outline:none;background:transparent;resize:vertical;font-size:14.5px;line-height:1.7;color:var(--text)}
+.note-modal .modal-footer{justify-content:space-between;align-items:center;flex-wrap:wrap}
+.color-dots{display:flex;gap:6px;align-items:center}
+.color-dots button{width:22px;height:22px;border-radius:50%;border:2px solid transparent;box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)}
+.color-dots button.on{border-color:var(--primary)}
+.note-tools{display:flex;gap:6px;align-items:center}
+.note-saved{font-size:12px;color:var(--text-3);margin-right:6px;white-space:nowrap}
+.dash-notes{list-style:none}
+.dash-notes li{padding:12px 20px;border-bottom:1px solid var(--border);cursor:pointer}
+.dash-notes li:last-child{border-bottom:none}
+.dash-notes li:hover{background:var(--surface-2)}
+.dash-notes b{display:block;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dash-notes span{display:block;font-size:12px;color:var(--text-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+
 /* 정렬 */
 .tasks th.sortable{cursor:pointer;user-select:none}
 .tasks th.sortable:hover{color:var(--text)}
@@ -764,6 +840,9 @@ textarea.input{height:96px;padding:10px 12px;resize:vertical}
           </select>
         </div>
         <div class="form-group full">
+          <label class="check-inline"><input type="checkbox" name="starred" id="f-starred"><span>★ 중요 업무로 표시</span></label>
+        </div>
+        <div class="form-group full">
           <label for="f-alert">마감 임박 알림</label>
           <select class="input" id="f-alert" name="alert"></select>
           <div class="custom-alert" id="customAlert">
@@ -913,6 +992,25 @@ textarea.input{height:96px;padding:10px 12px;resize:vertical}
   </form>
 </div>
 
+<!-- ===================== 메모 편집 창 ===================== -->
+<div class="overlay note-modal" id="noteModal">
+  <div class="modal" id="noteBox">
+    <div class="modal-body">
+      <input class="note-title-input" id="noteTitle" placeholder="제목" maxlength="100">
+      <textarea class="note-body-input" id="noteBody" placeholder="메모를 입력하세요…"></textarea>
+    </div>
+    <div class="modal-footer">
+      <div class="color-dots" id="noteColors"></div>
+      <div class="note-tools">
+        <span class="note-saved" id="noteSaved"></span>
+        <button type="button" class="icon-btn" id="notePin" title="상단 고정"></button>
+        <button type="button" class="icon-btn" id="noteDel" title="메모 삭제"></button>
+        <button type="button" class="btn btn-primary" id="noteDone">완료</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ===================== 화면 가운데 마감 알림창 ===================== -->
 <div class="center-alert" id="centerAlert" role="alertdialog" aria-modal="true">
   <div class="ca-box" id="caBox"></div>
@@ -956,6 +1054,9 @@ const ICONS = {
   help:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01"/></svg>',
   moon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>',
   sun:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
+  star:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1Z"/></svg>',
+  note:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15.5 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.5Z"/><path d="M15 3v6h6M7 13h8M7 17h5"/></svg>',
+  pin:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5M9 10.8V5h6v5.8l2.4 2.9a1 1 0 0 1-.8 1.6H7.4a1 1 0 0 1-.8-1.6Z"/><path d="M8 5h8"/></svg>',
   inbox:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5.1 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.5-6.9A2 2 0 0 0 16.7 4H7.3a2 2 0 0 0-1.8 1.1Z"/></svg>'
 };
 const icon = name => ICONS[name] || '';
@@ -1084,6 +1185,7 @@ const TaskStore = {
       (!q.category || t.category===q.category) &&
       (!q.status   || t.status===q.status) &&
       (!q.priority || t.priority===q.priority) &&
+      (!q.starOnly || t.starred) &&
       (!q.excludeDone || t.status!=='done') &&
       (!kw || t.title.toLowerCase().includes(kw) || (t.detail||'').toLowerCase().includes(kw))
     );
@@ -1092,6 +1194,43 @@ const TaskStore = {
   _emit(){ this._save(); this._notify(); },
   _notify(){ this._listeners.forEach(fn=>fn()); }
 };
+
+/* ---------------------------------------------------------
+   메모 저장소 (NoteStore) — TaskStore와 같은 방식 (브라우저 저장 / 클라우드 동기화)
+   메모: { id, title, body, color, pinned, createdAt, updatedAt }
+   --------------------------------------------------------- */
+const NoteStore = {
+  _notes:[], _listeners:[], mode:'local', uid:null, KEY:'mytask.notes.v1',
+  _key(){ return this.mode==='cloud' ? 'mytask.cloudnotes.'+this.uid : this.KEY; },
+  _load(key=this._key()){ try{ const d=JSON.parse(localStorage.getItem(key)||'null'); return Array.isArray(d)?d:null; }catch(e){ return null; } },
+  _save(){ try{ localStorage.setItem(this._key(), JSON.stringify(this._notes)); }catch(e){} },
+  init(){ this._notes=this._load()||[]; },
+  newId(){ let id; do{ id=Date.now()*1000+Math.floor(Math.random()*1000); }while(this._notes.some(n=>n.id===id)); return id; },
+  getAll(){ return [...this._notes]; },
+  get(id){ return this._notes.find(n=>n.id===id); },
+  sorted(keyword=''){
+    const kw=keyword.trim().toLowerCase();
+    return this._notes.filter(n=>!kw || (n.title||'').toLowerCase().includes(kw) || (n.body||'').toLowerCase().includes(kw))
+      .sort((a,b)=>(b.updatedAt||'').localeCompare(a.updatedAt||''));
+  },
+  add(data={}){ const now=new Date().toISOString(); const n={ title:'', body:'', color:'default', pinned:false, ...data, id:this.newId(), createdAt:now, updatedAt:now }; this._notes.push(n); Cloud.saveNote(n); this._emit(); return n; },
+  update(id,data,{ touch=true }={}){ const i=this._notes.findIndex(n=>n.id===id); if(i<0) return; this._notes[i]={ ...this._notes[i], ...data, ...(touch?{ updatedAt:new Date().toISOString() }:{}) }; Cloud.saveNote(this._notes[i]); this._emit(); },
+  remove(id){ this._notes=this._notes.filter(n=>n.id!==id); Cloud.removeNote(id); this._emit(); },
+  restore(n){ this._notes.push(n); Cloud.saveNote(n); this._emit(); },
+  importAll(list){ if(this.mode==='cloud') Cloud.replaceNotes(this._notes,list); this._notes=list; this._emit(); },
+  localNotes(){ return this.mode==='local' ? this.getAll() : (this._load(this.KEY)||[]); },
+  enterCloud(uid){ this.mode='cloud'; this.uid=uid; this._notes=this._load()||[]; this._notify(); },
+  exitCloud(){ this.mode='local'; this.uid=null; this._notes=this._load()||[]; this._notify(); },
+  applyRemote(list){
+    const norm=a=>JSON.stringify([...a].sort((x,y)=>String(x.id).localeCompare(String(y.id))));
+    if(norm(list)===norm(this._notes)) return;
+    this._notes=list; this._save(); this._notify();
+  },
+  subscribe(fn){ this._listeners.push(fn); },
+  _emit(){ this._save(); this._notify(); },
+  _notify(){ this._listeners.forEach(fn=>fn()); }
+};
+NoteStore.init();
 
 /* ---------------------------------------------------------
    사용자 설정 (알림음, 읽은 알림) — localStorage 저장
@@ -1141,6 +1280,7 @@ const TaskUtil = {
     priority:(a,b)=>PRIORITY_ORDER[a.priority]-PRIORITY_ORDER[b.priority],
     created:(a,b)=>a.createdAt.localeCompare(b.createdAt),
     title:(a,b)=>a.title.localeCompare(b.title,'ko'),
+    star:(a,b)=>(b.starred?1:0)-(a.starred?1:0),
     status:(a,b)=>({todo:0,progress:1,done:2}[a.status])-({todo:0,progress:1,done:2}[b.status]),
     category:(a,b)=>a.category.localeCompare(b.category)
   },
@@ -1200,6 +1340,7 @@ const MENU = [
   { id:'personal',  label:'개인 일정', icon:'user',      group:'업무 관리', count:()=>TaskStore.query({category:'personal',excludeDone:true}).length },
   { id:'calendar',  label:'캘린더',    icon:'calendar',  group:'업무 관리' },
   { id:'completed', label:'완료 업무', icon:'done',      group:'업무 관리', count:()=>TaskStore.query({status:'done'}).length },
+  { id:'notes',     label:'메모장',    icon:'note',      group:'기타', count:()=>NoteStore.getAll().length },
   { id:'alerts',    label:'알림 센터', icon:'bell',      group:'기타', count:()=>AlertCenter.unreadCount(), alert:true }
 ];
 
@@ -1229,9 +1370,10 @@ const UI = {
     };
     const rows=list.map(t=>{
       const st=TaskUtil.dueState(t);
-      return `<tr class="row-${st} ${t.status==='done'?'task-done':''}" data-id="${t.id}">
+      return `<tr class="row-${st} ${t.status==='done'?'task-done':''} ${t.starred?'task-star':''}" data-id="${t.id}">
         <td class="cell-title" data-label="업무명"><div class="title-wrap">
           <button class="chk ${t.status==='done'?'on':''}" data-action="toggle" data-id="${t.id}" title="${t.status==='done'?'완료 취소':'완료 처리'}" aria-label="완료 체크">${icon('check')}</button>
+          <button class="star ${t.starred?'on':''}" data-action="star" data-id="${t.id}" title="${t.starred?'중요 표시 해제':'중요 업무로 표시'}" aria-label="중요 표시">${icon('star')}</button>
           <div>
             <div class="task-name">${this.esc(t.title)}</div>
             ${t.detail?`<div class="task-desc">${this.esc(t.detail)}</div>`:''}
@@ -1265,6 +1407,7 @@ const UI = {
       ${showStatus?`<label class="field">${icon('filter')}<select data-filter="status">${opt(LABELS.status,state.status,'전체 상태')}</select></label>`:''}
       <label class="field"><select data-filter="priority">${opt(LABELS.priority,state.priority,'전체 우선순위')}</select></label>
       <label class="field">${icon('list')}<select data-filter="sort">${SORT_OPTIONS.map(([v,l])=>`<option value="${v}" ${state.sort===v?'selected':''}>${l}</option>`).join('')}${SORT_OPTIONS.some(o=>o[0]===state.sort)?'':`<option value="${state.sort}" selected>표 제목 기준 정렬</option>`}</select></label>
+      <button type="button" class="field star-filter ${state.starOnly?'on':''}" data-action="starfilter">${icon('star')}중요만</button>
       <span class="result" id="resultCount"></span>
     </div>`;
   }
@@ -1277,7 +1420,7 @@ const listState = {};   // 화면별 필터·정렬 상태 보관
 const SORT_OPTIONS = [
   ['due:asc','마감일 빠른 순'], ['due:desc','마감일 늦은 순'],
   ['priority:asc','우선순위 높은 순'], ['created:desc','최근 등록 순'],
-  ['created:asc','오래된 등록 순'], ['title:asc','업무명 가나다순'], ['status:asc','진행 상태 순']
+  ['created:asc','오래된 등록 순'], ['title:asc','업무명 가나다순'], ['status:asc','진행 상태 순'], ['star:asc','중요 업무 먼저']
 ];
 /* 목록 화면 설정 — 화면 추가 시 여기에 등록 */
 const LIST_VIEWS = {
@@ -1358,7 +1501,7 @@ const VIEWS = {
             return `<li class="deadline-item ${st}" data-action="edit" data-id="${t.id}">
               <div class="dday">${TaskUtil.remainText(t,{compact:true})}</div>
               <div class="deadline-info">
-                <div class="deadline-title">${UI.esc(t.title)}</div>
+                <div class="deadline-title">${t.starred?'<span class="star-inline">★</span>':''}${UI.esc(t.title)}</div>
                 <div class="deadline-meta">${UI.catBadge(t.category)}${UI.priBadge(t.priority)}<span>마감 ${TaskUtil.dueText(t)} · ${TaskUtil.alertLabel(t)}</span></div>
               </div></li>`;}).join('')}</ul>`
           : `<div class="empty">${icon('done')}<div>마감 임박 업무가 없습니다.</div></div>`}
@@ -1376,6 +1519,12 @@ const VIEWS = {
               <div class="progress"><i style="width:${pc.pct}%;background:var(--purple)"></i></div>
             </div>
           </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><div class="card-title">최근 메모</div><button class="link-btn" data-goto="notes">메모장 →</button></div>
+          ${NoteStore.getAll().length ? `<ul class="dash-notes">${NoteStore.sorted().slice(0,3).map(n=>`<li data-action="opennote" data-id="${n.id}"><b>${n.pinned?'📌 ':''}${UI.esc(n.title||(n.body||'').split('\n')[0]||'제목 없음')}</b><span>${UI.esc((n.title?(n.body||''):(n.body||'').split('\n').slice(1).join(' ')).replace(/\n/g,' ')||' ')}</span></li>`).join('')}</ul>`
+            : `<div class="empty" style="padding:28px 20px"><div>메모가 없습니다.</div><button class="btn btn-outline btn-sm" data-action="newnote" style="margin-top:10px">${icon('plus')}새 메모</button></div>`}
         </div>
       </div>
     </section>`;
@@ -1401,6 +1550,31 @@ const VIEWS = {
   personal(){ return this._list('personal'); },
   completed(){ return this._list('completed'); },
 
+  notes(){
+    const kw=listState.notesKeyword||'', list=NoteStore.sorted(kw);
+    const pinned=list.filter(n=>n.pinned), others=list.filter(n=>!n.pinned);
+    const card=n=>{
+      const title=n.title || (n.body||'').split('\n')[0].slice(0,40) || '제목 없음';
+      const body=n.title ? (n.body||'') : (n.body||'').split('\n').slice(1).join('\n');
+      const d=new Date(n.updatedAt);
+      return `<div class="note-card ${n.color&&n.color!=='default'?'nc-'+n.color:''}" data-action="opennote" data-id="${n.id}">
+        <button class="note-pin ${n.pinned?'on':''}" data-action="pinnote" data-id="${n.id}" title="${n.pinned?'고정 해제':'상단 고정'}">${icon('pin')}</button>
+        <h4>${UI.esc(title)}</h4>
+        ${body.trim()?`<div class="note-body">${UI.esc(body.trim())}</div>`:''}
+        <div class="note-foot"><span>${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}</span></div>
+      </div>`;
+    };
+    return `
+    <div class="notes-head">
+      <label class="field">${icon('search')}<input id="noteSearch" value="${UI.esc(kw)}" placeholder="메모 검색"></label>
+      <button class="btn btn-primary" data-action="newnote">${icon('plus')}새 메모</button>
+    </div>
+    ${kw?'':`<div class="quick-note" data-action="newnote">${icon('edit')}메모 작성…</div>`}
+    ${!list.length ? `<div class="card"><div class="empty">${icon('note')}<div>${kw?'검색 결과가 없습니다.':'아직 메모가 없습니다. 회의 내용, 아이디어, 할 말 등을 자유롭게 적어 보세요.'}</div></div></div>` : ''}
+    ${pinned.length?`<div class="note-section">📌 고정됨</div><div class="note-grid">${pinned.map(card).join('')}</div>`:''}
+    ${others.length?`${pinned.length?'<div class="note-section">기타 메모</div>':''}<div class="note-grid">${others.map(card).join('')}</div>`:''}`;
+  },
+
   calendar(){
     const y=calCursor.getFullYear(), m=calCursor.getMonth();
     const first=new Date(y,m,1), start=new Date(y,m,1-first.getDay());
@@ -1413,7 +1587,7 @@ const VIEWS = {
       const cls=['cal-cell', d.getMonth()!==m?'other':'', iso===todayISO?'today':''].join(' ');
       const chips=items.slice(0,3).map(t=>{
         const s=TaskUtil.dueState(t);
-        return `<div class="cal-chip ${t.category} ${s==='done'?'done':''} ${s==='overdue'?'overdue':''}" data-action="edit" data-id="${t.id}" title="${UI.esc(t.title)}">${t.dueTime?t.dueTime+' ':''}${UI.esc(t.title)}</div>`;
+        return `<div class="cal-chip ${t.category} ${s==='done'?'done':''} ${s==='overdue'?'overdue':''}" data-action="edit" data-id="${t.id}" title="${UI.esc(t.title)}">${t.starred?'★ ':''}${t.dueTime?t.dueTime+' ':''}${UI.esc(t.title)}</div>`;
       }).join('');
       cells+=`<div class="${cls}" ${d.getMonth()===m?`data-action="newdate" data-date="${iso}" title="${d.getMonth()+1}월 ${d.getDate()}일 마감 업무 등록"`:''}><span class="cal-day">${d.getDate()}</span>${d.getMonth()===m?`<span class="cal-add">${icon('plus')}</span>`:''}${chips}${items.length>3?`<span class="cal-more">+${items.length-3}건 더보기</span>`:''}</div>`;
     }
@@ -1540,6 +1714,7 @@ const Modal = {
     if(!isPreset){ const m=/^([mhd])(\d+)$/.exec(code); if(m){ f.alertUnit.value=m[1]; f.alertNum.value=m[2]; } }
     this.toggleCustom();
     f.dueTime.value = data.dueTime || '';
+    f.starred.checked = !!data.starred;
     f.id.value = task?task.id:'';
     f.title.value = data.title||''; f.detail.value=data.detail||'';
     f.createdAt.value=data.createdAt; f.dueDate.value=data.dueDate; f.status.value=data.status;
@@ -1565,7 +1740,7 @@ const Modal = {
       alert = fd.alertUnit + n;
     }
     if(fd.dueDate<fd.createdAt){ f.dueDate.classList.add('invalid'); return toast('마감일은 등록일 이후여야 합니다.'); }
-    const payload={ title:fd.title.trim(), category:fd.category, detail:fd.detail.trim(), createdAt:fd.createdAt, dueDate:fd.dueDate, priority:fd.priority, status:fd.status, dueTime:fd.dueTime||'', alert };
+    const payload={ title:fd.title.trim(), category:fd.category, detail:fd.detail.trim(), createdAt:fd.createdAt, dueDate:fd.dueDate, priority:fd.priority, status:fd.status, dueTime:fd.dueTime||'', alert, starred:f.starred.checked };
     if(fd.id){ TaskStore.update(Number(fd.id),payload); toast('업무가 수정되었습니다.'); }
     else { TaskStore.add(payload); toast('새 업무가 등록되었습니다.'); }
     this.close();
@@ -1624,6 +1799,11 @@ document.addEventListener('click',e=>{
     case 'clearsamples': TaskStore.clearSamples(); toast('예시 데이터를 지웠습니다.'); break;
     case 'cloudlogin': Settings.close(); Cloud.signIn(); break;
     case 'cloudlogout': Settings.close(); Cloud.signOut(); break;
+    case 'star': { const t=TaskStore.get(id); TaskStore.update(id,{ starred:!t.starred }); break; }
+    case 'starfilter': { const st=(listState[App.current] ||= {}); st.starOnly=!st.starOnly; App.render(); break; }
+    case 'newnote': { const n=NoteStore.add(); NoteEditor.open(n.id); break; }
+    case 'opennote': { if(e.target.closest('[data-action="pinnote"]')) break; NoteEditor.open(id); break; }
+    case 'pinnote': { const n=NoteStore.get(id); NoteStore.update(id,{ pinned:!n.pinned },{ touch:false }); break; }
     case 'readall': AlertCenter.markAllRead(); App.render(); toast('모든 알림을 읽음 처리했습니다.'); break;
   }
 });
@@ -1644,7 +1824,7 @@ document.getElementById('menuToggle').onclick=()=>App.openSidebar();
 backdrop.onclick=()=>App.closeSidebar();
 Modal.form.addEventListener('submit',e=>Modal.submit(e));
 Modal.el.addEventListener('click',e=>{ if(e.target===Modal.el || e.target.closest('[data-close]')) Modal.close(); });
-document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ Modal.close(); App.closeSidebar(); document.getElementById('settingsModal').classList.remove('open'); } });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ NoteEditor.close(); Modal.close(); App.closeSidebar(); document.getElementById('settingsModal').classList.remove('open'); } });
 
 Modal.form.alert.addEventListener('change',()=>Modal.toggleCustom());
 
@@ -1981,6 +2161,8 @@ const Cloud = {
   },
   ref(id){ const { db, F }=this.fb; return F.doc(db,'users',this.user.uid,'tasks',String(id)); },
   col(){ const { db, F }=this.fb; return F.collection(db,'users',this.user.uid,'tasks'); },
+  refN(id){ const { db, F }=this.fb; return F.doc(db,'users',this.user.uid,'notes',String(id)); },
+  colN(){ const { db, F }=this.fb; return F.collection(db,'users',this.user.uid,'notes'); },
   clean(t){ const o={ ...t }; delete o.sample; Object.keys(o).forEach(k=>{ if(o[k]===undefined) delete o[k]; }); return o; },
 
   async start(u){
@@ -1997,22 +2179,30 @@ const Cloud = {
             await b.commit();
           }
         }
+        const lnotes=NoteStore.localNotes();
+        if(lnotes.length && window.confirm(`이 기기에 있는 메모 ${lnotes.length}개도 계정에 합칠까요?`)){
+          const b=F.writeBatch(db); lnotes.slice(0,450).forEach(n=>b.set(this.refN(n.id), this.clean(n))); await b.commit();
+        }
         Prefs.set('cloudUid',u.uid);
       }
       if(!Prefs.get('name') && u.displayName){ Prefs.set('name',u.displayName); renderProfile(); }
-      TaskStore.enterCloud(u.uid);
+      TaskStore.enterCloud(u.uid); NoteStore.enterCloud(u.uid);
       await this.flush();
       this.unsub && this.unsub();
       this.unsub=F.onSnapshot(this.col(),{ includeMetadataChanges:true },snap=>{
         TaskStore.applyRemote(snap.docs.map(d=>({ ...d.data(), id:Number(d.id) })));
         this.setStatus(snap.metadata.fromCache && !navigator.onLine ? 'offline' : 'synced');
       },err=>{ this.setStatus('error'); toast('동기화 오류: '+(err.code||err.message)); });
+      this.unsubN && this.unsubN();
+      this.unsubN=F.onSnapshot(this.colN(),{ includeMetadataChanges:false },snap=>{
+        NoteStore.applyRemote(snap.docs.map(d=>({ ...d.data(), id:Number(d.id) })));
+      },err=>toast('메모 동기화 오류: '+(err.code||err.message)));
       toast(`${u.email} 계정과 동기화합니다.`);
     }catch(e){ this.setStatus('error'); toast('클라우드 연결 실패: '+(e.code||e.message)); }
   },
   stop(){
-    this.unsub && this.unsub(); this.unsub=null; this.user=null;
-    Prefs.set('cloudUid',null); TaskStore.exitCloud(); this.setStatus('local');
+    this.unsub && this.unsub(); this.unsub=null; this.unsubN && this.unsubN(); this.unsubN=null; this.user=null;
+    Prefs.set('cloudUid',null); TaskStore.exitCloud(); NoteStore.exitCloud(); this.setStatus('local');
   },
 
   /* 저장·삭제 — 라이브러리가 아직 없으면(오프라인 첫 실행 등) 대기열에 보관 후 나중에 전송 */
@@ -2021,7 +2211,7 @@ const Cloud = {
   async flush(){
     const p=this.pending(), ids=Object.keys(p); if(!ids.length) return;
     const b=this.fb.F.writeBatch(this.fb.db);
-    ids.forEach(id=>p[id] ? b.set(this.ref(id), this.clean(p[id])) : b.delete(this.ref(id)));
+    ids.forEach(k=>{ const isN=k.startsWith('n:'), id=isN?k.slice(2):k, r=isN?this.refN(id):this.ref(id); p[k] ? b.set(r, this.clean(p[k])) : b.delete(r); });
     await b.commit(); localStorage.removeItem(this.PENDING_KEY);
   },
   save(t){
@@ -2033,6 +2223,22 @@ const Cloud = {
     if(TaskStore.mode!=='cloud') return;
     if(!this.user || !this.fb) return this.queue(id,null);
     this.fb.F.deleteDoc(this.ref(id)).catch(e=>{ this.setStatus('error'); toast('클라우드 삭제 실패: '+e.code); });
+  },
+  saveNote(n){
+    if(NoteStore.mode!=='cloud') return;
+    if(!this.user || !this.fb) return this.queue('n:'+n.id,this.clean(n));
+    this.fb.F.setDoc(this.refN(n.id), this.clean(n)).catch(e=>{ this.setStatus('error'); toast('메모 저장 실패: '+e.code); });
+  },
+  removeNote(id){
+    if(NoteStore.mode!=='cloud') return;
+    if(!this.user || !this.fb) return this.queue('n:'+id,null);
+    this.fb.F.deleteDoc(this.refN(id)).catch(e=>{ this.setStatus('error'); toast('메모 삭제 실패: '+e.code); });
+  },
+  async replaceNotes(oldList,newList){
+    if(!this.user || !this.fb){ oldList.forEach(n=>this.queue('n:'+n.id,null)); newList.forEach(n=>this.queue('n:'+n.id,this.clean(n))); return; }
+    const b=this.fb.F.writeBatch(this.fb.db), keep=new Set(newList.map(n=>String(n.id)));
+    oldList.forEach(n=>{ if(!keep.has(String(n.id))) b.delete(this.refN(n.id)); });
+    newList.slice(0,450).forEach(n=>b.set(this.refN(n.id),this.clean(n))); await b.commit();
   },
   /* 백업 불러오기: 클라우드 내용을 백업 내용으로 교체 */
   async replaceAll(oldList,newList){
@@ -2056,11 +2262,74 @@ const Cloud = {
 };
 
 /* =========================================================
+   [R] 메모 편집기 — 입력하면 자동 저장
+   ========================================================= */
+const NOTE_COLORS = [['default','#ffffff','기본'],['yellow','#fff3c4','노랑'],['blue','#dbe8ff','파랑'],['green','#d7f3e3','초록'],['pink','#ffdce4','분홍'],['purple','#e6ddff','보라'],['gray','#e6eaf0','회색']];
+const NoteEditor = {
+  el:document.getElementById('noteModal'), box:document.getElementById('noteBox'),
+  title:document.getElementById('noteTitle'), body:document.getElementById('noteBody'),
+  id:null, timer:null,
+  open(id){
+    const n=NoteStore.get(id); if(!n) return;
+    this.id=id; this.title.value=n.title||''; this.body.value=n.body||'';
+    this.paint(n); document.getElementById('noteSaved').textContent='';
+    this.el.classList.add('open');
+    setTimeout(()=>(n.title||n.body?this.body:this.title).focus(),60);
+  },
+  paint(n){
+    this.box.className='modal'+(n.color&&n.color!=='default'?' nc-'+n.color:'');
+    document.getElementById('noteColors').innerHTML=NOTE_COLORS.map(([k,c,l])=>`<button type="button" style="background:${c}" class="${(n.color||'default')===k?'on':''}" data-color="${k}" title="${l}"></button>`).join('');
+    const pin=document.getElementById('notePin'); pin.innerHTML=icon('pin'); pin.title=n.pinned?'고정 해제':'상단 고정';
+    pin.style.color=n.pinned?'var(--primary)':''; pin.querySelector('svg').style.fill=n.pinned?'currentColor':'none';
+  },
+  schedule(){
+    clearTimeout(this.timer); document.getElementById('noteSaved').textContent='입력 중…';
+    this.timer=setTimeout(()=>this.save(),500);
+  },
+  save(){
+    clearTimeout(this.timer); if(!this.id) return;
+    const n=NoteStore.get(this.id); if(!n) return;
+    if(n.title!==this.title.value || n.body!==this.body.value){
+      NoteStore.update(this.id,{ title:this.title.value, body:this.body.value });
+    }
+    document.getElementById('noteSaved').textContent='저장됨';
+  },
+  close(){
+    if(!this.id) return; this.save();
+    const n=NoteStore.get(this.id);
+    if(n && !n.title.trim() && !n.body.trim()) NoteStore.remove(this.id);    // 빈 메모는 자동 삭제
+    this.id=null; this.el.classList.remove('open'); App.render();
+  },
+  remove(){
+    const n=NoteStore.get(this.id); if(!n) return;
+    this.id=null; this.el.classList.remove('open'); NoteStore.remove(n.id);
+    if(n.title.trim()||n.body.trim()) toast('메모를 삭제했습니다.',{ action:'되돌리기', onAction:()=>NoteStore.restore(n) });
+  }
+};
+document.getElementById('noteDel').innerHTML=icon('trash');
+NoteEditor.title.addEventListener('input',()=>NoteEditor.schedule());
+NoteEditor.body.addEventListener('input',()=>NoteEditor.schedule());
+NoteEditor.title.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); NoteEditor.body.focus(); } });
+document.getElementById('noteColors').addEventListener('click',e=>{
+  const b=e.target.closest('[data-color]'); if(!b) return;
+  NoteStore.update(NoteEditor.id,{ color:b.dataset.color },{ touch:false }); NoteEditor.paint(NoteStore.get(NoteEditor.id));
+});
+document.getElementById('notePin').onclick=()=>{ const n=NoteStore.get(NoteEditor.id); NoteStore.update(n.id,{ pinned:!n.pinned },{ touch:false }); NoteEditor.paint(NoteStore.get(n.id)); };
+document.getElementById('noteDel').onclick=()=>NoteEditor.remove();
+document.getElementById('noteDone').onclick=()=>NoteEditor.close();
+NoteEditor.el.addEventListener('click',e=>{ if(e.target===NoteEditor.el) NoteEditor.close(); });
+document.addEventListener('input',e=>{ if(e.target.id==='noteSearch'){
+  listState.notesKeyword=e.target.value; const pos=e.target.selectionStart; App.render();
+  const el=document.getElementById('noteSearch'); el.focus(); el.setSelectionRange(pos,pos);
+} });
+NoteStore.subscribe(()=>{ if(!NoteEditor.el.classList.contains('open') || App.current!=='notes') App.render(); else App.renderNav(); });
+
+/* =========================================================
    [N] 데이터 백업 / 복원
    ========================================================= */
 const Backup = {
   save(){
-    const blob=new Blob([JSON.stringify(TaskStore.exportData(),null,2)],{ type:'application/json' });
+    const blob=new Blob([JSON.stringify({ ...TaskStore.exportData(), notes:NoteStore.getAll() },null,2)],{ type:'application/json' });
     const url=URL.createObjectURL(blob), a=document.createElement('a');
     a.href=url; a.download=`mytask_backup_${DateUtil.toISO(new Date()).replace(/-/g,'')}.json`;
     document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),1500);
@@ -2069,7 +2338,7 @@ const Backup = {
   restore(file){
     const r=new FileReader();
     r.onload=()=>{
-      try{ AlertEngine.suppress=true; TaskStore.importData(JSON.parse(r.result)); AlertEngine.suppress=false; toast(`${TaskStore.getAll().length}건의 업무를 불러왔습니다.`); }
+      try{ const data=JSON.parse(r.result); AlertEngine.suppress=true; TaskStore.importData(data); AlertEngine.suppress=false; if(Array.isArray(data.notes)) NoteStore.importAll(data.notes); toast(`업무 ${TaskStore.getAll().length}건${Array.isArray(data.notes)?`, 메모 ${data.notes.length}개`:''}를 불러왔습니다.`); }
       catch(e){ AlertEngine.suppress=false; toast('MY TASK 백업 파일이 아니거나 손상된 파일입니다.'); }
     };
     r.readAsText(file,'utf-8');
@@ -2225,7 +2494,7 @@ if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){
 
 /* 이전에 로그인했던 기기면 저장된 사본으로 먼저 보여 주고 연결 */
 if(Prefs.get('cloudUid') && Cloud.available()){
-  TaskStore.enterCloud(Prefs.get('cloudUid')); Cloud.status='connecting';
+  TaskStore.enterCloud(Prefs.get('cloudUid')); NoteStore.enterCloud(Prefs.get('cloudUid')); Cloud.status='connecting';
   Cloud.load().catch(()=>Cloud.setStatus('offline'));
 }
 

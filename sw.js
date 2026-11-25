@@ -1,6 +1,6 @@
 /* MY TASK 서비스워커 — 오프라인 실행과 시스템 알림 클릭 처리
    index.html을 고친 뒤에는 아래 VERSION 숫자를 올려 주면 사용자에게 새 버전이 확실히 반영됩니다. */
-const VERSION = 'mytask-v2';
+const VERSION = 'mytask-v4';
 const FILES = ['./', './index.html', './manifest.webmanifest',
   './icons/icon-192.png', './icons/icon-512.png', './icons/icon-maskable-512.png', './icons/apple-touch-icon.png'];
 

@@ -2151,7 +2151,8 @@ const VIEWS = {
 
         <div class="card">
           <div class="card-header"><div class="card-title">최근 메모</div><button class="link-btn" data-goto="notes">메모장 →</button></div>
-          ${NoteStore.getAll().length ? `<ul class="dash-notes">${NoteStore.sorted().slice(0,3).map(n=>`<li data-action="opennote" data-id="${n.id}"><b>${n.pinned?'📌 ':''}${UI.esc(n.title||(n.body||'').split('\n')[0]||'제목 없음')}</b><span>${UI.esc((n.title?(n.body||''):(n.body||'').split('\n').slice(1).join(' ')).replace(/\n/g,' ')||' ')}</span></li>`).join('')}</ul>`
+          ${NoteStore.getAll().length ? `<ul class="dash-notes">${NoteStore.sorted().slice(0,3).map(n=>{ const pv=RichNote.preview(n);
+            return `<li data-action="opennote" data-id="${n.id}"><b>${n.pinned?'📌 ':''}${pv?pv.title:UI.esc(n.title||(n.body||'').split('\n')[0]||'제목 없음')}</b><span>${pv?(pv.body.replace(/<br>/g,' ')||' '):UI.esc((n.title?(n.body||''):(n.body||'').split('\n').slice(1).join(' ')).replace(/\n/g,' ')||' ')}</span></li>`; }).join('')}</ul>`
             : `<div class="empty" style="padding:24px 20px"><div>메모가 없습니다.</div><button class="btn btn-outline btn-sm" data-action="newnote" style="margin-top:10px">${icon('plus')}새 메모</button></div>`}
         </div>
       </div>
@@ -2254,13 +2255,14 @@ const VIEWS = {
     const kw=listState.notesKeyword||'', list=NoteStore.sorted(kw);
     const pinned=list.filter(n=>n.pinned), others=list.filter(n=>!n.pinned);
     const card=n=>{
+      const pv=RichNote.preview(n);
       const title=n.title || (n.body||'').split('\n')[0].slice(0,40) || '제목 없음';
       const body=n.title ? (n.body||'') : (n.body||'').split('\n').slice(1).join('\n');
       const d=new Date(n.updatedAt);
       return `<div class="note-card ${n.color&&n.color!=='default'?'nc-'+n.color:''}" data-action="opennote" data-id="${n.id}">
         <button class="note-pin ${n.pinned?'on':''}" data-action="pinnote" data-id="${n.id}" title="${n.pinned?'고정 해제':'상단 고정'}">${icon('pin')}</button>
-        <h4>${UI.esc(title)}</h4>
-        ${body.trim()?`<div class="note-body">${n.title && n.html ? RichNote.htmlOf(n) : UI.esc(body.trim())}</div>`:''}
+        <h4>${pv?pv.title:UI.esc(title)}</h4>
+        ${pv ? (pv.body?`<div class="note-body rich">${pv.body}</div>`:'') : (body.trim()?`<div class="note-body">${UI.esc(body.trim())}</div>`:'')}
         <div class="note-foot"><span>${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}</span></div>
       </div>`;
     };
@@ -3203,6 +3205,28 @@ const RichNote = {
     walk(t.content); return out;
   },
   fromText(text){ return UI.esc(text||'').replace(/\n/g,'<br>'); },
+  /* 서식 내용을 줄 단위로 나눔 (각 줄에 굵게·색 유지) — 제목 없는 메모의 첫 줄을 제목으로 쓸 때 사용 */
+  lines(html){
+    const t=document.createElement('template'); t.innerHTML=this.sanitize(html);
+    const out=['']; let plain='';
+    const walk=(node,wrap)=>node.childNodes.forEach(ch=>{
+      if(ch.nodeType===3){ if(ch.nodeValue){ out[out.length-1]+=wrap(UI.esc(ch.nodeValue)); plain+=ch.nodeValue; } return; }
+      if(ch.nodeType!==1) return;
+      if(ch.tagName==='BR'){ out.push(''); plain+='\n'; return; }
+      if(ch.tagName==='DIV'){ if(plain && !plain.endsWith('\n')){ out.push(''); plain+='\n'; } walk(ch,wrap); return; }
+      if(ch.tagName==='B'){ walk(ch,x=>wrap(`<b>${x}</b>`)); return; }
+      const c=this.allowed(ch.style.color);
+      walk(ch, c ? x=>wrap(`<span style="color:${c}">${x}</span>`) : wrap);
+    });
+    walk(t.content,x=>x); return out;
+  },
+  /* 메모 미리보기용: { title, body } (서식 포함 html). 서식이 없거나 맞지 않으면 null */
+  preview(n){
+    if(!n.html) return null; const h=this.sanitize(n.html); if(this.toText(h)!==(n.body||'')) return null;
+    let ls=this.lines(h); const trim=a=>{ while(a.length && !a[0].replace(/<[^>]+>/g,'').trim()) a.shift(); while(a.length && !a[a.length-1].replace(/<[^>]+>/g,'').trim()) a.pop(); return a; };
+    if(n.title) return { title:UI.esc(n.title), body:trim(ls).join('<br>') };
+    ls=trim(ls); return { title:ls[0]||'제목 없음', body:trim(ls.slice(1)).join('<br>') };
+  },
   hasFormat(html){ return /<(b|span)\b/i.test(html||''); },
   /* 저장된 메모를 화면용 서식 내용으로 (html이 body와 맞을 때만 사용) */
   htmlOf(n){ if(n.html){ const h=this.sanitize(n.html); if(this.toText(h)===(n.body||'')) return h; } return this.fromText(n.body); }

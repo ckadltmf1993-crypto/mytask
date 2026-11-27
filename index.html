@@ -668,6 +668,90 @@ button.tag:hover{filter:brightness(.95)}
 .cl-item button:hover{background:var(--red-soft);color:var(--red)}
 .cl-item button svg{width:15px;height:15px}
 
+/* 오늘 할 일 */
+.today-card{margin-bottom:24px}
+.today-card .card-title svg{width:18px;height:18px;color:#d99400}
+.t-tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:16px 20px;border-bottom:1px solid var(--border)}
+.t-tile{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:12px 14px;border:1px solid var(--border);border-radius:8px;background:var(--surface);text-align:left;transition:border-color .15s,background .15s}
+.t-tile:hover{border-color:var(--primary);background:var(--primary-soft)}
+.t-tile span{font-size:12.5px;color:var(--text-2);font-weight:500;display:flex;align-items:center;gap:5px}
+.t-tile span svg{width:14px;height:14px}
+.t-tile b{font-size:24px;font-weight:800;line-height:1.2}
+.t-tile b small{font-size:13px;color:var(--text-3);font-weight:600;margin-left:2px}
+.t-tile.t-main{background:var(--primary-soft);border-color:#cfdcf6}
+[data-theme="dark"] .t-tile.t-main{border-color:rgba(91,139,255,.3)}
+.t-empty{padding:28px 20px;text-align:center;color:var(--text-3);font-size:13.5px}
+.t-empty b{display:block;color:var(--text);font-size:15px;margin-bottom:4px}
+.sunbtn{width:22px;height:22px;flex-shrink:0;display:grid;place-items:center;color:var(--border-strong);border-radius:4px;transition:color .15s,transform .15s}
+.sunbtn svg{width:17px;height:17px}
+.sunbtn:hover{color:#d99400;transform:scale(1.12)}
+.sunbtn.on{color:#d99400}
+.sunbtn.on svg{fill:#ffd766}
+.tag.today{background:#fff4d6;color:#9a6500}
+.tag.duetoday{background:var(--orange-soft);color:var(--orange)}
+[data-theme="dark"] .tag.today{background:rgba(255,200,60,.14);color:#f2c94c}
+.chips-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:14px 20px;border-bottom:1px solid var(--border);background:var(--surface-2)}
+.star-list{list-style:none}
+.star-list li{display:flex;gap:10px;align-items:center;padding:11px 20px;border-bottom:1px solid var(--border);cursor:pointer}
+.star-list li:last-child{border-bottom:none}
+.star-list li:hover{background:var(--surface-2)}
+.star-list .st-t{font-weight:600;font-size:13.5px;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.star-list .st-d{font-size:12px;white-space:nowrap}
+@media (max-width:900px){ .t-tiles{grid-template-columns:repeat(2,1fr);padding:14px 16px} }
+
+/* 지연 업무 */
+.tag.late{background:var(--red-soft);color:var(--red)}
+.late-card{margin-bottom:24px;border-color:#f3c9c9}
+[data-theme="dark"] .late-card{border-color:rgba(242,107,107,.35)}
+.late-card .card-header{background:var(--red-soft)}
+.late-card .card-title{color:var(--red)}
+.late-card .card-title svg{width:18px;height:18px}
+.late-list{list-style:none}
+.late-list li{display:flex;align-items:center;gap:12px;padding:11px 20px;border-bottom:1px solid var(--border)}
+.late-list li:last-child{border-bottom:none}
+.late-list .lt-body{flex:1;min-width:0;cursor:pointer}
+.late-list .lt-title{font-weight:600;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.late-list .lt-meta{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:4px;font-size:12px;color:var(--text-3)}
+.late-days{font-weight:700;color:var(--red);font-size:12.5px;white-space:nowrap}
+.late-banner{display:flex;align-items:center;gap:10px;padding:10px 20px;background:var(--red-soft);color:var(--red);font-size:13px;font-weight:600;border-bottom:1px solid var(--border)}
+.late-banner svg{width:16px;height:16px}
+.late-banner button{margin-left:auto;font-size:12.5px;font-weight:700;color:var(--red);text-decoration:underline}
+
+/* 미루기 메뉴 */
+.pp-menu{position:fixed;z-index:72;background:var(--surface);border:1px solid var(--border);border-radius:10px;box-shadow:var(--shadow-lg);width:236px;padding:6px;display:none}
+.pp-menu.open{display:block}
+.pp-head{font-size:12px;font-weight:700;color:var(--text-3);padding:6px 10px 4px}
+.pp-menu button.pp-opt{display:flex;justify-content:space-between;align-items:center;width:100%;padding:9px 10px;border-radius:6px;font-size:13.5px;color:var(--text);text-align:left}
+.pp-menu button.pp-opt:hover{background:var(--primary-soft)}
+.pp-menu button.pp-opt span{font-size:12px;color:var(--text-3)}
+.pp-menu button.pp-opt.cur{color:var(--text-3)}
+.pp-custom{display:flex;gap:6px;padding:8px 6px 4px;border-top:1px solid var(--border);margin-top:4px}
+.pp-custom .input{height:34px;font-size:13px;padding:0 8px}
+.pp-custom .btn{height:34px}
+.pp-btn{display:inline-flex;align-items:center;gap:4px;height:28px;padding:0 10px;border:1px solid var(--border-strong);border-radius:6px;font-size:12px;font-weight:600;color:var(--text-2);background:var(--surface);white-space:nowrap}
+.pp-btn:hover{border-color:var(--primary);color:var(--primary)}
+.pp-btn svg{width:13px;height:13px}
+
+/* 빠른 등록 · 상세 설정 */
+.qa-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:12px 20px;border-bottom:1px solid var(--border);background:var(--surface)}
+.qa-input{flex:1;min-width:200px;display:flex;align-items:center;gap:8px;height:40px;padding:0 12px;border:1.5px solid var(--border-strong);border-radius:8px;background:var(--surface)}
+.qa-input:focus-within{border-color:var(--primary);box-shadow:0 0 0 3px rgba(36,83,199,.12)}
+.qa-input svg{width:17px;height:17px;color:var(--primary);flex-shrink:0}
+.qa-input input{border:none;outline:none;background:none;flex:1;min-width:0;font-size:14px}
+.qa-bar select{height:40px;border:1px solid var(--border);border-radius:8px;padding:0 8px;font-size:13px;background:var(--surface)}
+.qa-bar .seg-chips{padding:2px}
+.qa-bar .seg-chips button{height:34px;padding:0 10px}
+.qa-hint{font-size:11.5px;color:var(--text-3);width:100%}
+.adv-toggle{display:flex;align-items:center;gap:8px;width:100%;margin-top:18px;padding:10px 12px;border:1px dashed var(--border-strong);border-radius:8px;color:var(--text-2);text-align:left}
+.adv-toggle:hover{border-color:var(--primary);color:var(--primary)}
+.adv-toggle svg{width:16px;height:16px;transition:transform .15s;flex-shrink:0}
+.adv-toggle[aria-expanded="true"] svg{transform:rotate(90deg)}
+.adv-toggle b{font-size:13.5px}
+.adv-toggle small{font-size:12px;color:var(--text-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.adv-box{display:none;margin-top:16px}
+.adv-box.open{display:block}
+@media (max-width:640px){ .qa-bar{padding:12px 16px} .qa-bar .seg-chips{flex:1} .qa-bar .seg-chips button{flex:1} .qa-bar select{flex:1} .adv-toggle small{display:none} }
+
 /* 칸반 보드 */
 .kb-toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
 .seg-chips{display:flex;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:3px}
@@ -689,7 +773,7 @@ button.tag:hover{filter:brightness(.95)}
 .kb-card.soon{box-shadow:inset 3px 0 0 var(--orange),var(--shadow)}
 .kb-card.done{opacity:.6}
 .kb-card.done .kb-title{text-decoration:line-through;color:var(--text-3)}
-.kb-title{font-weight:600;font-size:13.5px;padding-right:20px;word-break:break-word}
+.kb-title{font-weight:600;font-size:13.5px;padding-right:48px;word-break:break-word}
 .kb-title .star-inline{margin-right:4px}
 .kb-meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;align-items:center}
 .kb-foot{display:flex;align-items:center;justify-content:space-between;margin-top:10px}
@@ -791,7 +875,7 @@ button.tag:hover{filter:brightness(.95)}
   table.tasks tr:last-child{border-bottom:none}
   .tasks td,table.tasks td{padding:3px 0;border:none;display:flex;justify-content:space-between;align-items:center;gap:12px}
   .tasks td::before{content:attr(data-label);font-size:12px;color:var(--text-3);font-weight:500;flex-shrink:0}
-  table.tasks td.cell-title{display:block;padding:0 104px 8px 0}
+  table.tasks td.cell-title{display:block;padding:0 140px 8px 0}
   .tasks td.cell-title::before{display:none}
   table.tasks td.cell-actions{position:absolute;top:10px;right:10px;width:auto;padding:0}
   .tasks td.cell-actions::before{display:none}
@@ -890,14 +974,6 @@ button.tag:hover{filter:brightness(.95)}
           </div>
         </div>
         <div class="form-group full">
-          <label for="f-detail">상세 내용</label>
-          <textarea class="input" id="f-detail" name="detail" placeholder="업무에 대한 상세 내용을 입력하세요"></textarea>
-        </div>
-        <div class="form-group">
-          <label for="f-created">등록일<span class="req">*</span></label>
-          <input class="input" type="date" id="f-created" name="createdAt">
-        </div>
-        <div class="form-group">
           <label for="f-due">마감일<span class="req">*</span></label>
           <div class="dt-row">
             <input class="input" type="date" id="f-due" name="dueDate">
@@ -905,13 +981,25 @@ button.tag:hover{filter:brightness(.95)}
           </div>
           <span class="form-hint">시간은 선택 항목이며, 비워 두면 23:59로 계산합니다.</span>
         </div>
-        <div class="form-group">
+        <div class="form-group full">
           <label>우선순위</label>
           <div class="segmented">
             <label><input type="radio" name="priority" value="high"><span>높음</span></label>
             <label><input type="radio" name="priority" value="medium" checked><span>보통</span></label>
             <label><input type="radio" name="priority" value="low"><span>낮음</span></label>
           </div>
+        </div>
+      </div>
+      <button type="button" class="adv-toggle" id="advToggle" aria-expanded="false"><span data-icon="chevR"></span><b>상세 설정</b><small>상세 내용 · 등록일 · 진행 상태 · 중요 · 반복 · 체크리스트 · 알림</small></button>
+      <div class="adv-box" id="advBox">
+      <div class="form-grid">
+        <div class="form-group full">
+          <label for="f-detail">상세 내용</label>
+          <textarea class="input" id="f-detail" name="detail" placeholder="업무에 대한 상세 내용을 입력하세요"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="f-created">등록일<span class="req">*</span></label>
+          <input class="input" type="date" id="f-created" name="createdAt">
         </div>
         <div class="form-group">
           <label for="f-status">진행 상태</label>
@@ -949,6 +1037,7 @@ button.tag:hover{filter:brightness(.95)}
           </div>
           <span class="form-hint">설정한 시점부터 이 업무가 '마감 임박'(주황색)으로 표시되고, 화면을 켜 두면 그 시점에 알림 팝업이 뜹니다.</span>
         </div>
+      </div>
       </div>
       <p class="form-hint" style="margin-top:14px">* 표시 항목은 필수 입력입니다. 입력한 내용은 이 브라우저에 자동 저장됩니다.</p>
     </div>
@@ -1160,6 +1249,7 @@ const ICONS = {
   columns:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18"/></svg>',
   report:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>',
   copy:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>',
+  postpone:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M10 16h6M14 13.5l2.5 2.5-2.5 2.5"/></svg>',
   inbox:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5.1 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.5-6.9A2 2 0 0 0 16.7 4H7.3a2 2 0 0 0-1.8 1.1Z"/></svg>'
 };
 const icon = name => ICONS[name] || '';
@@ -1285,7 +1375,7 @@ const TaskStore = {
   /* 반복 업무: 완료 시 다음 업무 만들기 */
   _makeNext(t){
     const n={ ...t, id:this.newId(), status:'todo', completedAt:null, nextId:null, prevStatus:null, sample:false,
-      createdAt:DateUtil.toISO(DateUtil.today()), dueDate:Repeat.nextDate(t),
+      createdAt:DateUtil.toISO(DateUtil.today()), dueDate:Repeat.nextDate(t), repeatDay:t.repeat==='monthly'?Repeat.anchor(t):(t.repeatDay||null),
       checklist:(t.checklist||[]).map(c=>({ ...c, done:false })) };
     return n;
   },
@@ -1391,22 +1481,54 @@ const Repeat = {
   label(t){
     if(!t.repeat) return '';
     const d=DateUtil.parse(t.dueDate);
-    return { daily:'매일', weekdays:'평일', weekly:`매주 ${'일월화수목금토'[d.getDay()]}요일`, monthly:`매월 ${d.getDate()}일` }[t.repeat] || '';
+    const anchor=this.anchor(t);
+    return { daily:'매일', weekdays:'평일', weekly:`매주 ${'일월화수목금토'[d.getDay()]}요일`, monthly:`매월 ${anchor>=29?anchor+'일(없으면 말일)':anchor+'일'}` }[t.repeat] || '';
   },
-  step(iso,rule){
+  /* 매월 반복 기준일: 처음 정한 날짜(repeatDay). 없으면(이전 버전 데이터) 현재 마감일의 날짜 */
+  anchor(t){ return Number(t.repeatDay) || DateUtil.parse(t.dueDate).getDate(); },
+  step(iso,rule,anchorDay){
     const d=DateUtil.parse(iso);
     if(rule==='daily') d.setDate(d.getDate()+1);
     else if(rule==='weekdays'){ do{ d.setDate(d.getDate()+1); }while(d.getDay()===0||d.getDay()===6); }
     else if(rule==='weekly') d.setDate(d.getDate()+7);
-    else if(rule==='monthly'){ const day=d.getDate(); d.setDate(1); d.setMonth(d.getMonth()+1); const last=new Date(d.getFullYear(),d.getMonth()+1,0).getDate(); d.setDate(Math.min(day,last)); }
+    else if(rule==='monthly' && anchorDay){
+      const lastThis=new Date(d.getFullYear(),d.getMonth()+1,0).getDate(), cand=new Date(d.getFullYear(),d.getMonth(),Math.min(anchorDay,lastThis));
+      if(cand>d) return DateUtil.toISO(cand);                        // 미뤄진 업무: 이번 달 기준일이 아직 남음
+      const day=anchorDay; d.setDate(1); d.setMonth(d.getMonth()+1); const last=new Date(d.getFullYear(),d.getMonth()+1,0).getDate(); d.setDate(Math.min(day,last));
+    }
+    else if(rule==='monthly'){ const day=anchorDay||d.getDate(); d.setDate(1); d.setMonth(d.getMonth()+1); const last=new Date(d.getFullYear(),d.getMonth()+1,0).getDate(); d.setDate(Math.min(day,last)); }
     return DateUtil.toISO(d);
   },
   /* 다음 마감일: 늦게 완료했으면 오늘 이후가 될 때까지 넘김 */
   nextDate(t){
-    const today=DateUtil.toISO(DateUtil.today()); let n=this.step(t.dueDate,t.repeat), guard=0;
-    while(n<today && guard++<400) n=this.step(n,t.repeat);
+    const today=DateUtil.toISO(DateUtil.today()); const a=this.anchor(t); let n=this.step(t.dueDate,t.repeat,a), guard=0;
+    while(n<today && guard++<400) n=this.step(n,t.repeat,a);
     return n;
   }
+};
+
+/* ---------------------------------------------------------
+   오늘 할 일 — 오늘 마감 / 직접 지정(☀) / 오늘 완료
+   (원래 마감일은 바꾸지 않음. 직접 지정은 todayDate=오늘 날짜로 저장되어 다음 날 자동으로 빠짐)
+   --------------------------------------------------------- */
+const Today = {
+  iso(){ return DateUtil.toISO(DateUtil.today()); },
+  isDue(t){ return t.status!=='done' && t.dueDate===this.iso(); },
+  isPinned(t){ return t.status!=='done' && t.todayDate===this.iso(); },
+  isDone(t){ return t.status==='done' && t.completedAt===this.iso(); },
+  open(){ return TaskUtil.sortBy(TaskStore.getAll().filter(t=>this.isDue(t)||this.isPinned(t)),'due:asc'); },
+  due(){ return TaskUtil.sortBy(TaskStore.getAll().filter(t=>this.isDue(t)),'due:asc'); },
+  pinned(){ return TaskUtil.sortBy(TaskStore.getAll().filter(t=>this.isPinned(t)),'due:asc'); },
+  done(){ return TaskStore.getAll().filter(t=>this.isDone(t)); },
+  label(){ const d=DateUtil.today(); return `${d.getMonth()+1}월 ${d.getDate()}일 (${'일월화수목금토'[d.getDay()]})`; }
+};
+
+/* ---------------------------------------------------------
+   지연 업무 — 마감이 지났는데 완료되지 않은 업무 (마감일은 자동으로 바꾸지 않음)
+   --------------------------------------------------------- */
+const Late = {
+  list(){ return TaskStore.getAll().filter(t=>TaskUtil.dueState(t)==='overdue').sort((a,b)=>DateUtil.dueAt(a)-DateUtil.dueAt(b) || PRIORITY_ORDER[a.priority]-PRIORITY_ORDER[b.priority]); },
+  text(t){ const n=DateUtil.diffFromToday(t.dueDate); return n<0 ? `${-n}일 지남` : `${DateUtil.duration(Date.now()-DateUtil.dueAt(t).getTime())} 지남`; }
 };
 
 /* 업무 상태 계산 */
@@ -1499,6 +1621,8 @@ TaskStore.init(()=>[
    ========================================================= */
 const MENU = [
   { id:'dashboard', label:'대시보드',  icon:'dashboard', group:'메인' },
+  { id:'today',     label:'오늘 할 일', icon:'sun',      group:'메인', count:()=>Today.open().length },
+  { id:'overdue',   label:'지연 업무', icon:'alert',     group:'메인', count:()=>Late.list().length, alert:true },
   { id:'all',       label:'전체 업무', icon:'list',      group:'업무 관리', count:()=>TaskStore.query({excludeDone:true}).length },
   { id:'company',   label:'회사 업무', icon:'briefcase', group:'업무 관리', count:()=>TaskStore.query({category:'company',excludeDone:true}).length },
   { id:'personal',  label:'개인 일정', icon:'user',      group:'업무 관리', count:()=>TaskStore.query({category:'personal',excludeDone:true}).length },
@@ -1527,8 +1651,23 @@ const UI = {
   },
 
   /* 반복 · 체크리스트 태그 */
+  /* 빠른 등록 줄: 업무명 + Enter (기본: 오늘 마감, 보고 있는 화면의 구분) */
+  quickAdd(){
+    const cat=listState.qaCat || (App.current==='personal'?'personal':'company');
+    const dates=Postpone.options();
+    return `<div class="qa-bar" data-qa>
+      <label class="qa-input">${icon('plus')}<input id="qaInput" placeholder="빠른 등록: 업무명 입력 후 Enter" maxlength="80" autocomplete="off"></label>
+      <div class="seg-chips">${[['company','회사'],['personal','개인']].map(([v,l])=>`<button type="button" class="${cat===v?'on':''}" data-action="qacat" data-c="${v}">${l}</button>`).join('')}</div>
+      <select id="qaDate" aria-label="마감일">${dates.map(([l,iso],i)=>`<option value="${iso}" ${i===(listState['qa_'+App.current]||0)?'selected':''}>${l} ${Postpone.fmt(iso)}</option>`).join('')}</select>
+      <button type="button" class="btn btn-primary btn-sm" data-action="qaadd">등록</button>
+      <button type="button" class="btn btn-outline btn-sm" data-action="qadetail" title="입력한 업무명으로 상세 등록 창 열기">상세 입력</button>
+    </div>`;
+  },
   metaTags(t,{ inline=false }={}){
     const tags=[];
+    if(TaskUtil.dueState(t)==='overdue') tags.push(`<span class="tag late">${icon('alert')}지연 · ${Late.text(t)}</span>`);
+    else if(Today.isDue(t)) tags.push(`<span class="tag duetoday">${icon('clock')}오늘 마감</span>`);
+    else if(Today.isPinned(t)) tags.push(`<span class="tag today">${icon('sun')}오늘 할 일</span>`);
     if(t.repeat) tags.push(`<span class="tag repeat" title="반복 업무">${icon('repeat')}${Repeat.label(t)}</span>`);
     const cl=t.checklist||[];
     if(cl.length){
@@ -1558,6 +1697,7 @@ const UI = {
         <td class="cell-title" data-label="업무명"><div class="title-wrap">
           <button class="chk ${t.status==='done'?'on':''}" data-action="toggle" data-id="${t.id}" title="${t.status==='done'?'완료 취소':'완료 처리'}" aria-label="완료 체크">${icon('check')}</button>
           <button class="star ${t.starred?'on':''}" data-action="star" data-id="${t.id}" title="${t.starred?'중요 표시 해제':'중요 업무로 표시'}" aria-label="중요 표시">${icon('star')}</button>
+          ${t.status!=='done'?`<button class="sunbtn ${Today.isPinned(t)?'on':''}" data-action="pintoday" data-id="${t.id}" title="${Today.isPinned(t)?'오늘 할 일에서 빼기':'오늘 할 일로 지정'}" aria-label="오늘 할 일 지정">${icon('sun')}</button>`:''}
           <div>
             <div class="task-name">${this.esc(t.title)}</div>
             ${t.detail?`<div class="task-desc">${this.esc(t.detail)}</div>`:''}
@@ -1570,7 +1710,7 @@ const UI = {
         <td data-label="진행 상태">${this.statusBadge(t.status)}</td>
         <td data-label="우선순위">${this.priBadge(t.priority)}</td>
         <td class="cell-actions"><div class="row-actions">
-          ${t.status!=='done'?`<button data-action="ics" data-id="${t.id}" title="캘린더에 추가">${icon('calPlus')}</button>`:''}
+          ${t.status!=='done'?`<button data-action="postpone" data-id="${t.id}" title="미루기 (마감일 변경)">${icon('postpone')}</button><button data-action="ics" data-id="${t.id}" title="캘린더에 추가">${icon('calPlus')}</button>`:''}
           <button data-action="edit" data-id="${t.id}" title="수정">${icon('edit')}</button>
           <button class="del" data-action="delete" data-id="${t.id}" title="삭제">${icon('trash')}</button>
         </div></td>
@@ -1623,11 +1763,90 @@ function listFor(viewId){
 let calCursor = (()=>{ const d=DateUtil.today(); return new Date(d.getFullYear(),d.getMonth(),1); })();
 
 const VIEWS = {
+  /* 대시보드 맨 위 '오늘 할 일' */
+  _todayCard(){
+    const open=Today.open(), due=Today.due(), pinned=Today.pinned(), done=Today.done();
+    const tile=(f,label,ic,n,main)=>`<button class="t-tile ${main?'t-main':''}" data-action="gotoday" data-f="${f}" title="${label} 목록 보기"><span>${icon(ic)}${label}</span><b>${n}<small>건</small></b></button>`;
+    const list=[...open.slice(0,8), ...done];
+    return `<section class="card today-card">
+      <div class="card-header">
+        <div class="card-title">${icon('sun')}오늘 할 일 <span class="sub">${Today.label()}</span></div>
+        <button class="link-btn" data-action="gotoday" data-f="">오늘 할 일 전체 보기 →</button>
+      </div>
+      ${UI.quickAdd()}
+      <div class="t-tiles">
+        ${tile('','남은 업무','list',open.length,true)}
+        ${tile('due','오늘 마감','clock',due.length)}
+        ${tile('pinned','직접 지정','sun',pinned.length)}
+        ${tile('done','오늘 완료','done',done.length)}
+      </div>
+      ${list.length ? UI.taskTable(list) + (open.length>8?`<div class="kb-more">외 ${open.length-8}건 더 있어요 · '오늘 할 일 전체 보기'에서 확인</div>`:'')
+        : `<div class="t-empty"><b>오늘 처리할 업무가 없어요</b>오늘 할 업무 옆의 ☀ 버튼을 누르면 여기에 추가돼요.</div>`}
+    </section>`;
+  },
+  _lateBanner(){ const n=Late.list().length; return n?`<div class="late-banner">${icon('alert')}마감이 지난 지연 업무가 ${n}건 있어요.<button data-goto="overdue">지연 업무 보기</button></div>`:''; },
+  /* 대시보드 '지연 업무' (있을 때만) */
+  _lateCard(){
+    const list=Late.list(); if(!list.length) return '';
+    return `<section class="card late-card">
+      <div class="card-header">
+        <div class="card-title">${icon('alert')}지연 업무 ${list.length}건 <span class="sub">마감일이 지났지만 완료되지 않은 업무 · 마감일은 그대로 유지</span></div>
+        <button class="link-btn" data-goto="overdue" style="color:var(--red)">모두 보기 →</button>
+      </div>
+      <ul class="late-list">${list.slice(0,5).map(t=>`<li>
+        <button class="chk" data-action="toggle" data-id="${t.id}" title="완료 처리" aria-label="완료 체크">${icon('check')}</button>
+        <div class="lt-body" data-action="edit" data-id="${t.id}">
+          <div class="lt-title">${t.starred?'<span class="star-inline">★</span>':''}${UI.esc(t.title)}</div>
+          <div class="lt-meta">${UI.catBadge(t.category)}${UI.priBadge(t.priority)}<span>원래 마감 ${TaskUtil.dueText(t)}</span></div>
+        </div>
+        <span class="late-days">${icon('alert')} ${Late.text(t)}</span>
+        <button class="pp-btn" data-action="postpone" data-id="${t.id}" title="마감일 변경">${icon('postpone')}미루기</button>
+      </li>`).join('')}</ul>
+      ${list.length>5?`<div class="kb-more">외 ${list.length-5}건 · '모두 보기'에서 확인</div>`:''}
+    </section>`;
+  },
+  /* 대시보드 '중요 업무' */
+  _starCard(){
+    const list=TaskUtil.sortBy(TaskStore.query({ starOnly:true, excludeDone:true }),'due:asc');
+    return `<div class="card">
+      <div class="card-header"><div class="card-title"><span class="star-inline">★</span>중요 업무 <span class="badge no-dot b-todo">${list.length}</span></div>${list.length?`<button class="link-btn" data-action="gostar">모두 보기 →</button>`:''}</div>
+      ${list.length?`<ul class="star-list">${list.slice(0,5).map(t=>`<li data-action="edit" data-id="${t.id}"><span class="st-t">${UI.esc(t.title)}</span>${UI.catBadge(t.category)}<span class="st-d">${UI.due(t)}</span></li>`).join('')}</ul>`
+        :`<div class="t-empty">업무의 ☆ 버튼을 누르면 중요 업무로 모여요.</div>`}
+    </div>`;
+  },
+
+  /* '지연 업무' 화면 */
+  overdue(){
+    const list=Late.list();
+    return `<div class="card">
+      <div class="card-header">
+        <div class="card-title">${icon('alert')}지연 업무 <span class="sub">마감이 지났지만 완료되지 않은 업무 ${list.length}건 · 오래된 순 · 원래 마감일은 바뀌지 않아요</span></div>
+      </div>
+      ${UI.taskTable(list,{ empty:'지연된 업무가 없어요. 잘하고 계세요!' })}
+    </div>`;
+  },
+  /* '오늘 할 일' 화면 */
+  today(){
+    const st=listState.today ||= { f:'' };
+    const map={ '':[...Today.open(), ...Today.done()], due:Today.due(), pinned:Today.pinned(), done:Today.done() };
+    const chips=[['','전체',Today.open().length+Today.done().length],['due','오늘 마감',Today.due().length],['pinned','직접 지정',Today.pinned().length],['done','오늘 완료',Today.done().length]];
+    const empty={ '':'오늘 처리할 업무가 없어요. 업무 옆 ☀ 버튼으로 오늘 할 일을 추가해 보세요.', due:'오늘 마감인 업무가 없어요.', pinned:'직접 지정한 업무가 없어요. 업무 옆 ☀ 버튼을 눌러 보세요.', done:'오늘 완료한 업무가 아직 없어요.' }[st.f];
+    return `<div class="card">
+      <div class="card-header">
+        <div class="card-title">${icon('sun')}오늘 할 일 <span class="sub">${Today.label()} · 오늘 마감 + 직접 지정 + 오늘 완료</span></div>
+        <button class="btn btn-primary btn-sm" data-action="new">${icon('plus')}업무 등록</button>
+      </div>
+      ${VIEWS._lateBanner()}
+      ${UI.quickAdd()}
+      <div class="chips-row"><div class="seg-chips">${chips.map(([v,l,n])=>`<button class="${st.f===v?'on':''}" data-action="todayf" data-f="${v}">${l} ${n}</button>`).join('')}</div></div>
+      ${UI.taskTable(map[st.f]||[],{ empty })}
+    </div>`;
+  },
   dashboard(){
     const s=TaskUtil.stats(), today=DateUtil.today();
     const rate = s.total ? Math.round(s.done/s.total*100) : 0;
     const todayTasks = TaskUtil.sortByDue(TaskStore.query({excludeDone:true})).filter(t=>DateUtil.diffFromToday(t.dueDate)<=7).slice(0,8);
-    const urgent = TaskUtil.sortByDue(TaskStore.getAll().filter(t=>['soon','overdue'].includes(TaskUtil.dueState(t))));
+    const urgent = TaskUtil.sortByDue(TaskStore.getAll().filter(t=>TaskUtil.dueState(t)==='soon'));
     const cat = c => { const all=TaskStore.query({category:c}); const d=all.filter(t=>t.status==='done').length; return { all:all.length, done:d, pct: all.length?Math.round(d/all.length*100):0 }; };
     const cc=cat('company'), pc=cat('personal');
 
@@ -1637,6 +1856,9 @@ const VIEWS = {
       <div><h2>안녕하세요, ${Prefs.get('name')?UI.esc(Prefs.get('name'))+'님':'반가워요'} 👋</h2><p>오늘 처리할 업무와 마감 일정을 확인하세요.</p></div>
       <button class="btn btn-outline" data-goto="calendar">${icon('calendar')}캘린더 보기</button>
     </div>
+
+    ${VIEWS._lateCard()}
+    ${VIEWS._todayCard()}
 
     <section class="stats">
       <div class="card stat today">
@@ -1669,17 +1891,18 @@ const VIEWS = {
     <section class="dash-grid">
       <div class="card">
         <div class="card-header">
-          <div class="card-title">오늘의 업무 <span class="sub">7일 이내 마감 · 미완료</span></div>
+          <div class="card-title">다가오는 업무 <span class="sub">7일 이내 마감 · 미완료</span></div>
           <button class="link-btn" data-goto="all">전체 보기 →</button>
         </div>
         ${UI.taskTable(todayTasks,{empty:'7일 이내 마감 예정인 업무가 없습니다.'})}
       </div>
 
       <div class="side-stack">
+        ${VIEWS._starCard()}
         <div class="card">
           <div class="card-header">
             <div class="card-title">마감 임박 업무 <span class="badge no-dot b-high">${urgent.length}</span></div>
-            <div class="legend"><span><i style="background:var(--orange)"></i>알림 기간</span><span><i style="background:var(--red)"></i>마감 경과</span></div>
+            <span class="sub" style="font-size:12px;color:var(--text-3)">알림 시점이 지난 미완료 업무</span>
           </div>
           ${urgent.length ? `<ul class="deadline-list">${urgent.map(t=>{
             const st=TaskUtil.dueState(t);
@@ -1726,6 +1949,7 @@ const VIEWS = {
           <button class="btn btn-primary btn-sm" data-action="new" ${cat?`data-category="${cat}"`:''}>${icon('plus')}업무 등록</button>
         </div>
       </div>
+      ${cfg.fixedStatus?'':UI.quickAdd()}
       ${UI.toolbar(st,{ showStatus:!cfg.fixedStatus })}
       <div data-list>${UI.taskTable(list,{ empty:cfg.empty, sort:st.sort })}</div>
     </div>`;
@@ -1743,10 +1967,12 @@ const VIEWS = {
       const ds=TaskUtil.dueState(t), idx=['todo','progress','done'].indexOf(t.status);
       return `<div class="kb-card ${t.starred?'starred':''} ${ds}" draggable="true" data-kb="${t.id}" data-action="edit" data-id="${t.id}">
         <button class="star ${t.starred?'on':''}" data-action="star" data-id="${t.id}" style="position:absolute;top:8px;right:8px" title="중요 표시">${icon('star')}</button>
+        ${t.status!=='done'?`<button class="sunbtn ${Today.isPinned(t)?'on':''}" data-action="pintoday" data-id="${t.id}" style="position:absolute;top:8px;right:34px" title="${Today.isPinned(t)?'오늘 할 일에서 빼기':'오늘 할 일로 지정'}">${icon('sun')}</button>`:''}
         <div class="kb-title">${UI.esc(t.title)}</div>
         <div class="kb-meta">${UI.catBadge(t.category)}${UI.priBadge(t.priority)}${this._tagsInline(t)}</div>
         <div class="kb-foot">${t.status==='done'?`<span class="due done">${DateUtil.short(t.completedAt||t.dueDate)} 완료</span>`:UI.due(t)}
           <div class="kb-move">
+            ${t.status!=='done'?`<button data-action="postpone" data-id="${t.id}" title="미루기 (마감일 변경)">${icon('postpone')}</button>`:''}
             ${idx>0?`<button data-action="kbmove" data-id="${t.id}" data-to="${['todo','progress','done'][idx-1]}" title="이전 단계로">${icon('chevL')}</button>`:''}
             ${idx<2?`<button data-action="kbmove" data-id="${t.id}" data-to="${['todo','progress','done'][idx+1]}" title="다음 단계로">${icon('chevR')}</button>`:''}
           </div>
@@ -1963,7 +2189,7 @@ const Modal = {
   open(task, preset={}){
     const f=this.form; f.reset();
     f.querySelectorAll('.invalid').forEach(e=>e.classList.remove('invalid'));
-    const data = task || { category:preset.category||'company', createdAt:DateUtil.offset(0), dueDate:preset.dueDate||DateUtil.offset(3), priority:'medium', status:'todo' };
+    const data = task || { category:preset.category||'company', createdAt:DateUtil.offset(0), dueDate:preset.dueDate||DateUtil.offset(3), priority:'medium', status:'todo', title:preset.title||'' };
     const defLabel = ALERT_OPTIONS.flatMap(g=>g.items).find(i=>i[0]===DEFAULT_ALERT)?.[1] || DEFAULT_ALERT;
     f.alert.innerHTML = `<option value="">기본값 (${defLabel})</option>` + ALERT_OPTIONS.map(g=>`<optgroup label="${g.group}">${g.items.map(([v,l])=>`<option value="${v}">${l}</option>`).join('')}</optgroup>`).join('');
     const code = data.alert || '';
@@ -1973,6 +2199,7 @@ const Modal = {
     this.toggleCustom();
     f.dueTime.value = data.dueTime || '';
     f.starred.checked = !!data.starred;
+    this.setAdv(!!task);
     f.repeat.value = data.repeat || '';
     this.cl = (data.checklist||[]).map(c=>({ ...c }));
     this.renderCl(); document.getElementById('clNew').value='';
@@ -1988,24 +2215,32 @@ const Modal = {
   },
   close(){ this.el.classList.remove('open'); },
   cl:[],
+  setAdv(open){ document.getElementById('advBox').classList.toggle('open',open); document.getElementById('advToggle').setAttribute('aria-expanded',String(open)); },
   renderCl(){
     document.getElementById('clEditor').innerHTML=this.cl.map((c,i)=>`<div class="cl-item"><input type="checkbox" data-cli="${i}" ${c.done?'checked':''}><input class="input" data-clt="${i}" value="${UI.esc(c.text)}"><button type="button" data-cld="${i}" title="항목 삭제">${icon('x')}</button></div>`).join('');
   },
   toggleCustom(){ document.getElementById('customAlert').classList.toggle('show', this.form.alert.value==='custom'); },
+  /* 매월 반복 기준일: 마감일·반복이 그대로면 기존 기준일 유지, 바뀌면 새 마감일의 날짜 */
+  repeatDayFor(fd){
+    if(fd.repeat!=='monthly') return null;
+    const old=fd.id ? TaskStore.get(Number(fd.id)) : null;
+    if(old && old.repeat==='monthly' && old.dueDate===fd.dueDate && old.repeatDay) return old.repeatDay;
+    return DateUtil.parse(fd.dueDate).getDate();
+  },
   submit(e){
     e.preventDefault();
     const f=this.form, fd=Object.fromEntries(new FormData(f));
     let ok=true;
     ['title','createdAt','dueDate'].forEach(k=>{ const bad=!fd[k]?.trim(); f[k].classList.toggle('invalid',bad); if(bad) ok=false; });
-    if(!ok) return toast('필수 항목을 입력해 주세요.');
+    if(!ok){ if(!fd.createdAt?.trim()) this.setAdv(true); return toast('필수 항목을 입력해 주세요.'); }
     let alert = fd.alert || null;
     if(alert==='custom'){
       const n=parseInt(fd.alertNum,10);
       if(!(n>=1)){ f.alertNum.classList.add('invalid'); return toast('알림 시점을 숫자로 입력해 주세요.'); }
       alert = fd.alertUnit + n;
     }
-    if(fd.dueDate<fd.createdAt){ f.dueDate.classList.add('invalid'); return toast('마감일은 등록일 이후여야 합니다.'); }
-    const payload={ title:fd.title.trim(), category:fd.category, detail:fd.detail.trim(), createdAt:fd.createdAt, dueDate:fd.dueDate, priority:fd.priority, status:fd.status, dueTime:fd.dueTime||'', alert, starred:f.starred.checked, repeat:fd.repeat||'', checklist:this.cl.filter(c=>c.text.trim()).map(c=>({ ...c, text:c.text.trim() })) };
+    if(fd.dueDate<fd.createdAt){ this.setAdv(true); f.dueDate.classList.add('invalid'); return toast('마감일은 등록일 이후여야 합니다.'); }
+    const payload={ title:fd.title.trim(), category:fd.category, detail:fd.detail.trim(), createdAt:fd.createdAt, dueDate:fd.dueDate, priority:fd.priority, status:fd.status, dueTime:fd.dueTime||'', alert, starred:f.starred.checked, repeat:fd.repeat||'', repeatDay: Modal.repeatDayFor(fd), checklist:this.cl.filter(c=>c.text.trim()).map(c=>({ ...c, text:c.text.trim() })) };
     if(fd.id){ TaskStore.update(Number(fd.id),payload); toast('업무가 수정되었습니다.'); }
     else { TaskStore.add(payload); toast('새 업무가 등록되었습니다.'); }
     this.close();
@@ -2054,6 +2289,71 @@ const Report = {
     }
   }
 };
+
+/* =========================================================
+   [T] 업무 미루기 — 마감일만 바꾸고 시간·알림 설정·반복 기준일은 유지
+   (알림은 바뀐 마감일 기준으로 다시 계산됨, 직접 지정한 '오늘 할 일'은 오늘이 아닌 날로 옮기면 해제)
+   ========================================================= */
+const Postpone = {
+  el:null, id:null,
+  fmt(iso){ const d=DateUtil.parse(iso); return `${d.getMonth()+1}/${d.getDate()}(${'일월화수목금토'[d.getDay()]})`; },
+  options(){
+    const t0=DateUtil.today(), add=n=>{ const d=new Date(t0); d.setDate(d.getDate()+n); return DateUtil.toISO(d); };
+    const mon=new Date(t0); mon.setDate(mon.getDate()+((8-mon.getDay())%7||7));
+    return [['오늘',add(0)],['내일',add(1)],['3일 뒤',add(3)],['다음 주 월요일',DateUtil.toISO(mon)]];
+  },
+  open(id,btn){
+    const t=TaskStore.get(id); if(!t) return;
+    if(!this.el){ this.el=document.createElement('div'); this.el.className='pp-menu'; this.el.id='ppMenu'; document.body.appendChild(this.el); }
+    this.id=id; this.sy=scrollY;
+    this.el.innerHTML=`<div class="pp-head">마감일 옮기기 · 현재 ${this.fmt(t.dueDate)}${t.dueTime?' '+t.dueTime:''}</div>
+      ${this.options().map(([l,iso])=>`<button type="button" class="pp-opt ${iso===t.dueDate?'cur':''}" data-pp="${iso}">${l}<span>${this.fmt(iso)}</span></button>`).join('')}
+      <div class="pp-custom"><input type="date" class="input" id="ppDate" value="${t.dueDate}" aria-label="날짜 직접 선택"><button type="button" class="btn btn-primary btn-sm" data-pp="custom">적용</button></div>`;
+    this.el.classList.add('open');
+    const r=btn.getBoundingClientRect(), w=236, h=this.el.offsetHeight;
+    let left=Math.min(r.right-w, innerWidth-w-8); left=Math.max(8,left);
+    let top=r.bottom+6; if(top+h>innerHeight-8) top=Math.max(8, r.top-h-6);
+    this.el.style.left=left+'px'; this.el.style.top=top+'px';
+  },
+  close(){ if(this.el) this.el.classList.remove('open'); this.id=null; },
+  apply(id,iso){
+    const t=TaskStore.get(id); if(!t || !/^\d{4}-\d{2}-\d{2}$/.test(iso)) return toast('날짜를 다시 선택해 주세요.');
+    this.close();
+    if(iso===t.dueDate) return toast('마감일이 그대로입니다.');
+    const prev={ dueDate:t.dueDate, todayDate:t.todayDate||null };
+    const todayIso=Today.iso();
+    TaskStore.update(id,{ dueDate:iso, todayDate: iso===todayIso ? (t.todayDate||null) : (t.todayDate===todayIso ? null : (t.todayDate||null)) });
+    toast(`"${t.title}" 마감일을 ${this.fmt(iso)}로 옮겼어요.`,{ action:'되돌리기', onAction:()=>TaskStore.update(id,prev) });
+  }
+};
+document.addEventListener('click',e=>{
+  if(!Postpone.el || !Postpone.el.classList.contains('open')) return;
+  const opt=e.target.closest('[data-pp]');
+  if(opt && Postpone.el.contains(opt)){ const v=opt.dataset.pp; Postpone.apply(Postpone.id, v==='custom' ? document.getElementById('ppDate').value : v); return; }
+  if(!Postpone.el.contains(e.target) && !e.target.closest('[data-action="postpone"]')) Postpone.close();
+},true);
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') Postpone.close(); });
+window.addEventListener('resize',()=>Postpone.close());
+document.addEventListener('scroll',e=>{ if(Postpone.el && Postpone.id!==null && !Postpone.el.contains(e.target) && Math.abs(scrollY-(Postpone.sy||0))>60) Postpone.close(); },true);
+
+/* 빠른 등록 */
+const QuickAdd = {
+  add(openDetail){
+    const inp=document.getElementById('qaInput'); if(!inp) return;
+    const title=inp.value.trim(), sel=document.getElementById('qaDate');
+    const cat=listState.qaCat || (App.current==='personal'?'personal':'company');
+    if(openDetail){ Modal.open(null,{ category:cat, dueDate:sel.value, title }); return; }
+    if(!title){ inp.focus(); return toast('업무명을 입력해 주세요.'); }
+    listState['qa_'+App.current]=sel.selectedIndex;
+    const t=TaskStore.add({ title, category:cat, detail:'', createdAt:Today.iso(), dueDate:sel.value, priority:'medium', status:'todo' });
+    toast(`"${title}" 등록했어요 (${Postpone.fmt(t.dueDate)} 마감).`,{ action:'상세 설정', onAction:()=>Modal.open(TaskStore.get(t.id)) });
+    setTimeout(()=>{ const n=document.getElementById('qaInput'); if(n){ n.value=''; n.focus(); } },0);
+  }
+};
+document.addEventListener('keydown',e=>{
+  if(e.target.id!=='qaInput' || e.key!=='Enter' || e.isComposing || e.keyCode===229) return;
+  e.preventDefault(); QuickAdd.add(false);
+});
 
 /* 업무 완료 공통 처리 (토스트 + 반복 안내 + 되돌리기) */
 function completeWithToast(id){
@@ -2151,6 +2451,14 @@ document.addEventListener('click',e=>{
     case 'newnote': { const n=NoteStore.add(); NoteEditor.open(n.id); break; }
     case 'opennote': { if(e.target.closest('[data-action="pinnote"]')) break; NoteEditor.open(id); break; }
     case 'pinnote': { const n=NoteStore.get(id); NoteStore.update(id,{ pinned:!n.pinned },{ touch:false }); break; }
+    case 'pintoday': { const t=TaskStore.get(id), on=Today.isPinned(t); TaskStore.update(id,{ todayDate: on?null:Today.iso() }); toast(on?`"${t.title}" 오늘 할 일에서 뺐습니다.`:`"${t.title}" 오늘 할 일에 추가했습니다.`); break; }
+    case 'gotoday': listState.today={ f:act.dataset.f||'' }; if(App.current==='today') App.render(); else App.go('today'); break;
+    case 'todayf': listState.today.f=act.dataset.f; App.render(); break;
+    case 'gostar': listState.all={ ...(listState.all||{}), starOnly:true }; App.go('all'); break;
+    case 'postpone': e.stopPropagation(); if(Postpone.id===id) Postpone.close(); else Postpone.open(id,act); break;
+    case 'qaadd': QuickAdd.add(false); break;
+    case 'qadetail': QuickAdd.add(true); break;
+    case 'qacat': { const v=document.getElementById('qaInput')?.value||''; listState.qaCat=act.dataset.c; App.render(); const n=document.getElementById('qaInput'); if(n){ n.value=v; n.focus(); } break; }
     case 'readall': AlertCenter.markAllRead(); App.render(); toast('모든 알림을 읽음 처리했습니다.'); break;
   }
 });
@@ -2174,6 +2482,7 @@ Modal.el.addEventListener('click',e=>{ if(e.target===Modal.el || e.target.closes
 document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ NoteEditor.close(); Modal.close(); App.closeSidebar(); document.getElementById('settingsModal').classList.remove('open'); } });
 
 Modal.form.alert.addEventListener('change',()=>Modal.toggleCustom());
+document.getElementById('advToggle').addEventListener('click',()=>Modal.setAdv(!document.getElementById('advBox').classList.contains('open')));
 /* 체크리스트 편집 */
 document.getElementById('clNew').addEventListener('keydown',e=>{
   if(e.key!=='Enter' || e.isComposing) return; e.preventDefault();
@@ -2226,7 +2535,7 @@ const CenterAlert = {
   },
   render(){
     // 이미 완료·삭제된 업무는 건너뜀
-    this.queue=this.queue.filter(q=>{ const t=TaskStore.get(q.id); return t && t.status!=='done'; });
+    this.queue=this.queue.filter(q=>{ const t=TaskStore.get(q.id); return t && t.status!=='done' && (!q.key || AlertCenter.key(t)===q.key); });
     if(!this.queue.length){ this.el.classList.remove('open'); return; }
     const q=this.queue[0], t=TaskStore.get(q.id), over=TaskUtil.dueState(t)==='overdue';
     const remain=TaskUtil.remainText(t);
@@ -2691,11 +3000,29 @@ const Backup = {
     document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),1500);
     toast('백업 파일을 저장했습니다.');
   },
+  /* 현재 데이터를 파일로 저장 (복원 직전 자동 보관용) */
+  download(prefix){
+    const now=new Date(), stamp=`${DateUtil.toISO(now).replace(/-/g,'')}_${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}`;
+    const blob=new Blob([JSON.stringify({ ...TaskStore.exportData(), notes:NoteStore.getAll() },null,2)],{ type:'application/json' });
+    const url=URL.createObjectURL(blob), a=document.createElement('a');
+    a.href=url; a.download=`${prefix}_${stamp}.json`; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),1500);
+  },
   restore(file){
     const r=new FileReader();
     r.onload=()=>{
-      try{ const data=JSON.parse(r.result); AlertEngine.suppress=true; TaskStore.importData(data); AlertEngine.suppress=false; if(Array.isArray(data.notes)) NoteStore.importAll(data.notes); toast(`업무 ${TaskStore.getAll().length}건${Array.isArray(data.notes)?`, 메모 ${data.notes.length}개`:''}를 불러왔습니다.`); }
-      catch(e){ AlertEngine.suppress=false; toast('MY TASK 백업 파일이 아니거나 손상된 파일입니다.'); }
+      let data;
+      try{ data=JSON.parse(r.result); const l=Array.isArray(data)?data:data?.tasks; if(!Array.isArray(l) || l.some(t=>!t || !t.title || !t.dueDate)) throw 0; }
+      catch(e){ return toast('MY TASK 백업 파일이 아니거나 손상된 파일입니다. 현재 데이터는 그대로입니다.'); }
+      const list=Array.isArray(data)?data:data.tasks, notes=Array.isArray(data.notes)?data.notes:null;
+      const when=data.exportedAt ? new Date(data.exportedAt).toLocaleString('ko-KR') : '알 수 없음';
+      const msg=`백업 파일 내용으로 현재 데이터를 바꿉니다.\n\n· 백업 만든 시각: ${when}\n· 백업 파일: 업무 ${list.length}건${notes?`, 메모 ${notes.length}개`:''}\n· 현재 데이터: 업무 ${TaskStore.getAll().length}건, 메모 ${NoteStore.getAll().length}개${Cloud.user?'\n· 로그인 상태라 클라우드 데이터도 함께 바뀝니다.':''}\n\n바꾸기 직전에 현재 데이터를 'mytask_before-restore_backup' 파일로 먼저 저장합니다. 계속할까요?`;
+      if(!window.confirm(msg)) return toast('복원을 취소했습니다. 현재 데이터는 그대로입니다.');
+      try{ this.download('mytask_before-restore_backup'); }catch(e){}
+      try{
+        AlertEngine.suppress=true; TaskStore.importData(data); AlertEngine.suppress=false;
+        if(notes) NoteStore.importAll(notes);
+        toast(`업무 ${TaskStore.getAll().length}건${notes?`, 메모 ${notes.length}개`:''}를 불러왔습니다. 이전 데이터는 'mytask_before-restore_backup' 파일로 저장했습니다.`,{ duration:6000 });
+      }catch(e){ AlertEngine.suppress=false; toast('복원 중 오류가 발생했습니다: '+(e.message||e)); }
     };
     r.readAsText(file,'utf-8');
   }
@@ -2704,7 +3031,7 @@ document.getElementById('backupBtn').onclick=()=>Backup.save();
 document.getElementById('restoreBtn').onclick=()=>document.getElementById('restoreFile').click();
 document.getElementById('restoreFile').onchange=e=>{
   const f=e.target.files[0]; e.target.value='';
-  if(f && (TaskStore.getAll().length===0 || window.confirm('현재 업무를 백업 파일 내용으로 바꿉니다. 계속할까요?'))) Backup.restore(f);
+  if(f) Backup.restore(f);
 };
 function renderSaveState(){
   const el=document.getElementById('saveState'), st=Cloud.status;
@@ -2722,7 +3049,7 @@ function renderSaveState(){
   const row=document.getElementById('cloudRow'); if(row) row.style.display=(st==='local' && Cloud.available())?'flex':'none';
 }
 
-TaskStore.subscribe(()=>{ renderSaveState(); AlertEngine.onDataChange(); App.render(); });   // 데이터 변경 시 화면 자동 갱신
+TaskStore.subscribe(()=>{ renderSaveState(); AlertEngine.onDataChange(); App.render(); if(CenterAlert.queue.length) CenterAlert.render(); });   // 데이터 변경 시 화면 자동 갱신
 window.addEventListener('hashchange',()=>App.render());
 
 /* =========================================================

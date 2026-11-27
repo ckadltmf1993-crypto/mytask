@@ -629,7 +629,21 @@ textarea.input{height:96px;padding:10px 12px;resize:vertical}
 .note-modal .modal{max-width:620px}
 .note-modal .modal-body{padding:18px 22px 10px}
 .note-title-input{width:100%;border:none;outline:none;background:transparent;font-size:19px;font-weight:700;padding:6px 0 10px;color:var(--text)}
-.note-body-input{width:100%;min-height:300px;border:none;outline:none;background:transparent;resize:vertical;font-size:14.5px;line-height:1.7;color:var(--text)}
+.note-body-input{width:100%;min-height:300px;max-height:56vh;overflow-y:auto;border:none;outline:none;background:transparent;font-size:14.5px;line-height:1.7;color:var(--text);white-space:pre-wrap;word-break:break-word;cursor:text}
+.note-body-input.is-empty::before{content:attr(data-placeholder);color:var(--text-3);pointer-events:none;position:absolute}
+.note-body-input b,.note-body-input strong,.note-body b{font-weight:700;color:inherit}
+.note-fmt{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:6px 0 8px;margin-bottom:4px;border-bottom:1px solid var(--border)}
+.fmt-btn{width:30px;height:30px;border-radius:6px;display:grid;place-items:center;color:var(--text-2);font-size:15px;border:1px solid transparent}
+.fmt-btn:hover{background:var(--gray-soft)}
+.fmt-btn.on{background:var(--primary-soft);color:var(--primary);border-color:#cfdcf6}
+.fmt-sep{width:1px;height:18px;background:var(--border);margin:0 2px}
+.fmt-label{font-size:12px;color:var(--text-3)}
+.fmt-colors{display:flex;gap:5px}
+.fmt-colors button{width:22px;height:22px;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(0,0,0,.12);display:grid;place-items:center;font-size:11px;font-weight:700}
+.fmt-colors button:hover{transform:scale(1.12)}
+.fmt-colors button.fc-default{background:var(--surface);color:var(--text);box-shadow:inset 0 0 0 1.5px var(--border-strong)}
+.fmt-hint{font-size:11.5px;color:var(--text-3);margin-left:auto}
+@media (max-width:640px){ .fmt-hint{display:none} }
 .note-modal .modal-footer{justify-content:space-between;align-items:center;flex-wrap:wrap}
 .color-dots{display:flex;gap:6px;align-items:center}
 .color-dots button{width:22px;height:22px;border-radius:50%;border:2px solid transparent;box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)}
@@ -1363,7 +1377,14 @@ tr:hover .xp-ic{opacity:1}
   <div class="modal" id="noteBox">
     <div class="modal-body">
       <input class="note-title-input" id="noteTitle" placeholder="제목" maxlength="100">
-      <textarea class="note-body-input" id="noteBody" placeholder="메모를 입력하세요…"></textarea>
+      <div class="note-fmt" id="noteFmt" role="toolbar" aria-label="글자 서식">
+        <button type="button" class="fmt-btn fmt-bold" data-fmt="bold" title="굵게 (Ctrl+B)"><b>B</b></button>
+        <span class="fmt-sep"></span>
+        <span class="fmt-label">글자색</span>
+        <div class="fmt-colors" id="noteFmtColors"></div>
+        <span class="fmt-hint">글자를 드래그해 고른 뒤 누르세요</span>
+      </div>
+      <div class="note-body-input" id="noteBody" contenteditable="true" role="textbox" aria-multiline="true" data-placeholder="메모를 입력하세요…" spellcheck="false"></div>
     </div>
     <div class="modal-footer">
       <div class="color-dots" id="noteColors"></div>
@@ -2220,7 +2241,7 @@ const VIEWS = {
       return `<div class="note-card ${n.color&&n.color!=='default'?'nc-'+n.color:''}" data-action="opennote" data-id="${n.id}">
         <button class="note-pin ${n.pinned?'on':''}" data-action="pinnote" data-id="${n.id}" title="${n.pinned?'고정 해제':'상단 고정'}">${icon('pin')}</button>
         <h4>${UI.esc(title)}</h4>
-        ${body.trim()?`<div class="note-body">${UI.esc(body.trim())}</div>`:''}
+        ${body.trim()?`<div class="note-body">${n.title && n.html ? RichNote.htmlOf(n) : UI.esc(body.trim())}</div>`:''}
         <div class="note-foot"><span>${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}</span></div>
       </div>`;
     };
@@ -3120,13 +3141,61 @@ const Cloud = {
    [R] 메모 편집기 — 입력하면 자동 저장
    ========================================================= */
 const NOTE_COLORS = [['default','#ffffff','기본'],['yellow','#fff3c4','노랑'],['blue','#dbe8ff','파랑'],['green','#d7f3e3','초록'],['pink','#ffdce4','분홍'],['purple','#e6ddff','보라'],['gray','#e6eaf0','회색']];
+/* 메모 서식 (굵게 · 글자색)
+   · 저장: body = 서식 없는 글자(검색·미리보기·이전 버전용, 그대로 유지), html = 서식 포함 내용(새 항목)
+   · 이전 버전에서 메모를 고치면 body와 html이 달라지므로, 그때는 html을 쓰지 않고 body를 그대로 보여 줌 */
+const NOTE_TEXT_COLORS = [['#e03131','빨강'],['#e8590c','주황'],['#2f9e44','초록'],['#1c7ed6','파랑'],['#7048e8','보라'],['#868e96','회색']];
+const RichNote = {
+  hex(c){ c=String(c||'').trim().toLowerCase(); if(/^#[0-9a-f]{6}$/.test(c)) return c;
+    const m=/^rgba?\((\d+),\s*(\d+),\s*(\d+)/.exec(c); return m ? '#'+[m[1],m[2],m[3]].map(x=>(+x).toString(16).padStart(2,'0')).join('') : ''; },
+  allowed(c){ const h=this.hex(c); return NOTE_TEXT_COLORS.some(([x])=>x===h) ? h : ''; },
+  /* 허용: 굵게, 글자색(정해진 색만), 줄바꿈. 그 밖의 태그·속성은 모두 제거하고 글자만 남김 */
+  sanitize(html){
+    const src=document.createElement('template'); src.innerHTML=String(html||'');
+    const walk=(node)=>{ let out='';
+      node.childNodes.forEach(ch=>{
+        if(ch.nodeType===3){ out+=UI.esc(ch.nodeValue); return; }
+        if(ch.nodeType!==1) return;
+        if(['SCRIPT','STYLE','TEMPLATE','IFRAME','OBJECT','NOSCRIPT'].includes(ch.tagName)) return;
+        const tag=ch.tagName, inner=walk(ch);
+        if(tag==='BR'){ out+='<br>'; return; }
+        if(tag==='DIV'||tag==='P'){ out+=`<div>${inner||'<br>'}</div>`; return; }
+        let res=inner;
+        const st=ch.getAttribute('style')||'', fw=/font-weight\s*:\s*(bold|[6-9]00)/i.test(st);
+        const col=this.allowed(ch.getAttribute('color') || (/(?:^|;)\s*color\s*:\s*([^;]+)/i.exec(st)||[])[1]);
+        if(col && res) res=`<span style="color:${col}">${res}</span>`;
+        if((tag==='B'||tag==='STRONG'||fw) && res) res=`<b>${res}</b>`;
+        out+=res;
+      });
+      return out; };
+    return walk(src.content);
+  },
+  /* 서식 내용 → 줄바꿈이 있는 일반 글자 */
+  toText(html){
+    const t=document.createElement('template'); t.innerHTML=String(html||''); let out='';
+    const walk=(node)=>node.childNodes.forEach(ch=>{
+      if(ch.nodeType===3){ out+=ch.nodeValue; return; }
+      if(ch.nodeType!==1) return;
+      if(ch.tagName==='BR'){ out+='\n'; return; }
+      const block=ch.tagName==='DIV'||ch.tagName==='P';
+      if(block && out && !out.endsWith('\n')) out+='\n';
+      walk(ch);
+    });
+    walk(t.content); return out;
+  },
+  fromText(text){ return UI.esc(text||'').replace(/\n/g,'<br>'); },
+  hasFormat(html){ return /<(b|span)\b/i.test(html||''); },
+  /* 저장된 메모를 화면용 서식 내용으로 (html이 body와 맞을 때만 사용) */
+  htmlOf(n){ if(n.html){ const h=this.sanitize(n.html); if(this.toText(h)===(n.body||'')) return h; } return this.fromText(n.body); }
+};
+
 const NoteEditor = {
   el:document.getElementById('noteModal'), box:document.getElementById('noteBox'),
   title:document.getElementById('noteTitle'), body:document.getElementById('noteBody'),
   id:null, timer:null,
   open(id){
     const n=NoteStore.get(id); if(!n) return;
-    this.id=id; this.title.value=n.title||''; this.body.value=n.body||'';
+    this.id=id; this.title.value=n.title||''; this.body.innerHTML=RichNote.htmlOf(n); this.syncEmpty(); this.fmtState();
     this.paint(n); document.getElementById('noteSaved').textContent='';
     this.el.classList.add('open');
     setTimeout(()=>(n.title||n.body?this.body:this.title).focus(),60);
@@ -3141,11 +3210,15 @@ const NoteEditor = {
     clearTimeout(this.timer); document.getElementById('noteSaved').textContent='입력 중…';
     this.timer=setTimeout(()=>this.save(),500);
   },
+  syncEmpty(){ this.body.classList.toggle('is-empty', !this.body.textContent && !this.body.querySelector('img')); },
+  fmtState(){ const b=document.querySelector('#noteFmt [data-fmt=bold]'); if(b) b.classList.toggle('on', this.id!==null && document.activeElement===this.body && document.queryCommandState('bold')); },
+  content(){ const html=RichNote.sanitize(this.body.innerHTML), body=RichNote.toText(html); return { body, html: RichNote.hasFormat(html) ? html : '' }; },
   save(){
     clearTimeout(this.timer); if(!this.id) return;
     const n=NoteStore.get(this.id); if(!n) return;
-    if(n.title!==this.title.value || n.body!==this.body.value){
-      NoteStore.update(this.id,{ title:this.title.value, body:this.body.value });
+    const c=this.content();
+    if(n.title!==this.title.value || n.body!==c.body || (n.html||'')!==c.html){
+      NoteStore.update(this.id,{ title:this.title.value, body:c.body, html:c.html });
     }
     document.getElementById('noteSaved').textContent='저장됨';
   },
@@ -3163,7 +3236,24 @@ const NoteEditor = {
 };
 document.getElementById('noteDel').innerHTML=icon('trash');
 NoteEditor.title.addEventListener('input',()=>NoteEditor.schedule());
-NoteEditor.body.addEventListener('input',()=>NoteEditor.schedule());
+NoteEditor.body.addEventListener('input',()=>{ NoteEditor.syncEmpty(); NoteEditor.schedule(); });
+/* 붙여넣기는 서식 없이 글자만 (다른 곳의 글꼴·배경이 섞이지 않게) */
+NoteEditor.body.addEventListener('paste',e=>{ e.preventDefault(); const t=(e.clipboardData||window.clipboardData).getData('text/plain'); document.execCommand('insertText',false,t); });
+document.addEventListener('selectionchange',()=>{ if(NoteEditor.id!==null) NoteEditor.fmtState(); });
+document.getElementById('noteFmtColors').innerHTML = `<button type="button" class="fc-default" data-color="" title="기본 색">A</button>` + NOTE_TEXT_COLORS.map(([c,l])=>`<button type="button" style="background:${c}" data-color="${c}" title="${l}"></button>`).join('');
+/* 버튼을 눌러도 선택한 글자가 풀리지 않도록 mousedown 기본 동작을 막음 */
+document.getElementById('noteFmt').addEventListener('mousedown',e=>{ if(e.target.closest('button')) e.preventDefault(); });
+document.getElementById('noteFmt').addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b) return;
+  const ed=NoteEditor.body; if(document.activeElement!==ed){ ed.focus(); }
+  document.execCommand('styleWithCSS',false,false);
+  if(b.dataset.fmt==='bold') document.execCommand('bold');
+  else if(b.dataset.color!==undefined){
+    document.execCommand('foreColor',false,b.dataset.color||'#000001');
+    if(!b.dataset.color) ed.querySelectorAll('[style*="color"],font[color]').forEach(el=>{ if(RichNote.hex(el.style.color||el.getAttribute('color'))==='#000001'){ el.style.color=''; el.removeAttribute('color'); } });
+  }
+  NoteEditor.syncEmpty(); NoteEditor.fmtState(); NoteEditor.schedule();
+});
 NoteEditor.title.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); NoteEditor.body.focus(); } });
 document.getElementById('noteColors').addEventListener('click',e=>{
   const b=e.target.closest('[data-color]'); if(!b) return;

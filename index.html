@@ -734,7 +734,7 @@ button.tag:hover{filter:brightness(.95)}
 
 /* 빠른 등록 · 상세 설정 */
 .qa-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:12px 20px;border-bottom:1px solid var(--border);background:var(--surface)}
-.qa-input{flex:1;min-width:200px;display:flex;align-items:center;gap:8px;height:40px;padding:0 12px;border:1.5px solid var(--border-strong);border-radius:8px;background:var(--surface)}
+.qa-input{flex:1;min-width:150px;display:flex;align-items:center;gap:8px;height:40px;padding:0 12px;border:1.5px solid var(--border-strong);border-radius:8px;background:var(--surface)}
 .qa-input:focus-within{border-color:var(--primary);box-shadow:0 0 0 3px rgba(36,83,199,.12)}
 .qa-input svg{width:17px;height:17px;color:var(--primary);flex-shrink:0}
 .qa-input input{border:none;outline:none;background:none;flex:1;min-width:0;font-size:14px}
@@ -895,6 +895,175 @@ button.tag:hover{filter:brightness(.95)}
   .modal-footer{border-radius:0}
   .modal-footer .btn{flex:1}
 }
+/* =========================================================
+   10. 화면 정리 (v7) — 메인 화면 간소화 · 목록 가독성 · 크기/색 통일
+   ========================================================= */
+/* 공통 크기 통일: 입력·선택·버튼 36px(작은 버튼 32px), 배지·태그 22px */
+.badge,.tag{height:22px;padding:0 8px;font-size:11.5px;line-height:22px;border-radius:11px}
+.badge::before{width:5px;height:5px}
+.tag.icon-only{padding:0 6px}
+.qa-input,.qa-bar select{height:36px}
+.toolbar .btn,.qa-bar .btn{height:36px}
+/* 색 정리: 우선순위 '보통'은 무채색 (주황은 마감 임박 전용) */
+.b-medium{background:var(--gray-soft);color:var(--text-2)}
+.b-low{background:transparent;color:var(--text-3);box-shadow:inset 0 0 0 1px var(--border)}
+.tag.repeat{background:var(--gray-soft);color:var(--text-2)}
+[data-theme="dark"] .tag.repeat{background:var(--gray-soft);color:var(--text-2)}
+.c-red{color:var(--red)} .c-orange{color:var(--orange)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.muted{color:var(--text-3);font-weight:400}
+
+/* 대시보드 머리 */
+.welcome{margin-bottom:16px;align-items:center}
+.welcome h2{font-size:20px}
+.welcome p{font-size:13px;display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+.sum-link{color:var(--text-2);font-size:13px;border-radius:4px;padding:0 2px}
+.sum-link:hover{color:var(--primary);text-decoration:underline}
+.welcome p b{font-weight:700;color:var(--text)}
+.welcome p b.c-red{color:var(--red)} .welcome p b.c-orange{color:var(--orange)}
+
+/* 대시보드 2단: 왼쪽 업무 목록(중심) · 오른쪽 요약 */
+.dash-main{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:20px;align-items:start}
+.dash-col{display:flex;flex-direction:column;gap:20px;min-width:0}
+.dash-main .side-stack{gap:16px}
+.today-card{margin-bottom:0}
+.side-stack .card-header{padding:14px 16px}
+.side-stack .card-header .sub{font-size:11.5px;color:var(--text-3)}
+.side-stack .card-title{font-size:14px}
+.side-stack .card-body{padding:16px}
+.cnt-red,.cnt-orange{font-size:12px;font-weight:700;border-radius:10px;padding:0 7px;line-height:20px}
+.cnt-red{background:var(--red-soft);color:var(--red)} .cnt-orange{background:var(--orange-soft);color:var(--orange)}
+.urgent-card .card-title svg{width:16px;height:16px;color:var(--orange)}
+.side-stack .deadline-item{padding:10px 16px;gap:12px}
+.side-stack .deadline-item.soon{background:transparent}
+.side-stack .deadline-item.soon:hover{background:var(--surface-2)}
+.side-stack .dday{min-width:44px;height:24px;font-size:11.5px;padding:0 6px}
+.side-stack .deadline-item.soon .dday{background:var(--orange-soft);color:var(--orange)}
+.tn-text{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.empty .btn svg{width:16px;height:16px;margin:0;color:inherit}
+.side-stack .star-list li{padding:10px 16px}
+.side-stack .dash-notes li{padding:10px 16px}
+.side-stack .t-empty{padding:20px 16px;font-size:13px}
+
+/* 오늘 할 일: 숫자 칸을 머리줄의 작은 버튼으로 */
+.today-card .t-tiles{display:flex;gap:6px;padding:0;border:none;flex-wrap:wrap}
+.today-card .t-tile{flex-direction:row;align-items:center;gap:6px;padding:0 10px;height:30px;border-radius:15px;background:var(--surface-2)}
+.today-card .t-tile span{font-size:12px}
+.today-card .t-tile b{font-size:13px;font-weight:700;line-height:1}
+.today-card .t-tile.t-main{background:var(--primary-soft);border-color:transparent}
+.today-card .t-tile.t-main b{color:var(--primary)}
+.today-card .kb-more{display:flex;justify-content:center;gap:6px;align-items:center}
+
+/* 지연 업무 (오른쪽, 간결) */
+.late-card{border-color:#f3c9c9;margin-bottom:0}
+[data-theme="dark"] .late-card{border-color:rgba(255,99,99,.3)}
+.late-card .card-header{background:transparent}
+.late-card .card-title{color:var(--red)}
+.late-card .card-title svg{width:16px;height:16px}
+.late-list li{padding:10px 16px;gap:10px}
+.late-list .lt-title{font-size:13px}
+.late-list .lt-meta{font-size:11.5px;gap:8px;margin-top:2px}
+.late-list .late-days{font-size:11.5px;font-weight:700;color:var(--red)}
+.late-list .pp-btn{height:28px;padding:0 8px;font-size:11.5px}
+
+/* 업무 현황 */
+.mini-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.mini-stats div{background:var(--surface-2);border-radius:8px;padding:8px 10px}
+.mini-stats span{display:block;font-size:11.5px;color:var(--text-3)}
+.mini-stats b{font-size:17px;font-weight:700}
+
+/* 업무 목록 표 */
+table.tasks{table-layout:fixed}
+.tasks td{padding:11px 14px}
+.tasks th{padding:10px 14px}
+.title-wrap{align-items:center}
+.tw-body{flex:0 1 auto;min-width:0;cursor:pointer}
+.table-wrap{container-type:inline-size}
+col.c-due{width:116px} col.c-cat{width:72px} col.c-pri{width:80px} col.c-st{width:92px} col.c-act{width:108px}
+.inl-badges{display:none;gap:4px;margin-top:4px}
+@media (min-width:641px){
+  @container (max-width:740px){
+    table.tasks th:nth-child(3),table.tasks th:nth-child(4),table.tasks td:nth-child(3),table.tasks td:nth-child(4){display:none}
+    table.tasks{table-layout:auto} table.tasks colgroup{display:none}
+    table.tasks td:nth-child(2){width:116px} table.tasks td:nth-child(5){width:92px} table.tasks td.cell-actions{width:100px}
+    .inl-badges{display:flex}
+    .tn-text{white-space:normal}
+  }
+}
+.task-name{display:flex;align-items:center;gap:4px;min-width:0}
+.task-name{overflow:hidden;text-overflow:ellipsis}
+.xp-ic{display:inline-grid;place-items:center;color:var(--text-3);opacity:.45;transition:transform .15s,opacity .15s;flex-shrink:0}
+.xp-ic svg{width:14px;height:14px}
+.xp-ic.on{transform:rotate(90deg);opacity:1;color:var(--primary)}
+tr:hover .xp-ic{opacity:1}
+.meta-row{margin-top:4px}
+.due small{font-size:11px}
+.row-open>td{background:var(--surface-2)}
+/* PC: 관리 버튼·☀ 버튼은 줄에 마우스를 올렸을 때만 진하게 */
+@media (hover:hover){
+  .row-actions{opacity:0;transition:opacity .12s}
+  .tasks tr:hover .row-actions,.tasks tr:focus-within .row-actions,.tasks tr.row-open .row-actions{opacity:1}
+  .sunbtn:not(.on){opacity:0;transition:opacity .12s}
+  .tasks tr:hover .sunbtn,.tasks tr:focus-within .sunbtn{opacity:1}
+}
+/* 펼친 상세 */
+.tasks tr.detail-row>td{background:var(--surface-2);padding:4px 14px 16px 76px;border-bottom:1px solid var(--border)}
+.dt-wrap{display:grid;grid-template-columns:minmax(0,1fr) 220px;gap:10px 24px}
+.dt-label{font-size:11.5px;font-weight:700;color:var(--text-3);margin:8px 0 4px}
+.dt-text{font-size:13px;white-space:pre-wrap;word-break:break-word;color:var(--text-2)}
+.dt-meta{display:flex;flex-direction:column;gap:6px;margin-top:8px;font-size:12.5px}
+.dt-meta div{display:flex;gap:10px}
+.dt-meta dt{width:48px;color:var(--text-3);flex-shrink:0}
+.dt-meta dd{color:var(--text)}
+.dt-actions{grid-column:1/-1;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.dt-actions .link-btn{margin-left:4px}
+
+/* 캘린더 → 대시보드 */
+.view-nav{margin-bottom:12px}
+.back-btn svg{width:15px;height:15px}
+
+/* 왼쪽 아래 도구 모음 */
+.save-state{cursor:pointer;border-radius:4px}
+.save-state:hover span{color:#c9d3e6}
+.tools-toggle{display:flex;align-items:center;gap:8px;width:100%;height:34px;padding:0 10px;border-radius:6px;background:rgba(255,255,255,.06);color:#c9d3e6;font-size:12px;font-weight:600;margin-bottom:12px}
+.tools-toggle:hover{background:rgba(255,255,255,.12);color:#fff}
+.tools-toggle svg{width:15px;height:15px}
+.tools-toggle .tt-chev{margin-left:auto;display:grid;transition:transform .15s}
+.tools-toggle[aria-expanded="true"] .tt-chev{transform:rotate(-90deg)}
+.tools-panel{display:none;margin:-4px 0 12px;padding:4px 0 2px}
+.tools-panel.open{display:block}
+.tp-label{font-size:10.5px;font-weight:700;color:#6f7f9c;letter-spacing:.4px;margin:8px 2px 6px}
+.tp-note{font-size:11px;color:#8796b4;margin:0 2px 4px;line-height:1.5}
+.tp-note:empty{display:none}
+.tools-panel .data-tools{margin-bottom:4px}
+.tools-panel .cloud-btn{margin-bottom:4px}
+.tools-panel .install-btn{margin:8px 0 0}
+.tool-item{display:flex;align-items:center;gap:8px;width:100%;height:32px;padding:0 10px;border-radius:6px;color:#c9d3e6;font-size:12px}
+.tool-item:hover{background:rgba(255,255,255,.08);color:#fff}
+.tool-item svg{width:14px;height:14px}
+
+@media (max-width:1200px){
+  .dash-main{grid-template-columns:1fr}
+  .dash-main .side-stack{display:grid;grid-template-columns:1fr 1fr}
+}
+@media (max-width:900px){
+  .dash-main .side-stack{grid-template-columns:1fr}
+}
+@media (max-width:640px){
+  .welcome .btn{display:inline-flex}
+  .welcome{align-items:flex-start}
+  table.tasks{table-layout:auto}
+  table.tasks colgroup{display:none}
+  table.tasks td.cell-title{padding:0 110px 8px 0}
+  .tn-text{white-space:normal;word-break:keep-all}
+  .tasks tr.detail-row{padding:0 16px 14px}
+  .tasks tr.detail-row>td{display:block;padding:10px 0 0;background:transparent}
+  .tasks tr.detail-row>td::before{display:none}
+  .row-open{background:var(--surface-2)}
+  .dt-wrap{grid-template-columns:1fr}
+  .mini-stats{grid-template-columns:repeat(2,1fr)}
+  .today-card .card-header{gap:10px}
+}
 </style>
 </head>
 <body>
@@ -908,14 +1077,24 @@ button.tag:hover{filter:brightness(.95)}
     </div>
     <nav class="nav" id="nav"></nav>
     <div class="sidebar-footer">
-      <button type="button" class="cloud-btn" id="cloudBtn" data-action="cloudlogin"><svg class="g-logo" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.6 5.4 2.6 13.3l7.9 6.1C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.1 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.4c-.5 2.9-2.2 5.3-4.6 6.9l7.4 5.7c4.3-4 6.9-9.9 6.9-17.1z"/><path fill="#FBBC05" d="M10.5 28.6c-.5-1.4-.8-3-.8-4.6s.3-3.2.8-4.6l-7.9-6.1C1 16.5 0 20.1 0 24s1 7.5 2.6 10.7l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.4-5.7c-2.1 1.4-4.8 2.3-8.5 2.3-6.3 0-11.6-4.1-13.5-9.9l-7.9 6.1C6.6 42.6 14.6 48 24 48z"/></svg>구글 로그인 · PC·휴대폰 동기화</button>
-      <div class="save-state" id="saveState"><i></i><span>이 브라우저에 자동 저장 중</span></div>
-      <div class="data-tools">
-        <button type="button" id="backupBtn" title="모든 업무를 백업 파일로 저장"><span data-icon="download"></span>백업 저장</button>
-        <button type="button" id="restoreBtn" title="백업 파일에서 업무 불러오기"><span data-icon="upload"></span>불러오기</button>
-        <input type="file" id="restoreFile" accept=".json,application/json" hidden>
+      <div class="save-state" id="saveState" data-action="tools" role="button" tabindex="0"><i></i><span>이 브라우저에 자동 저장 중</span></div>
+      <button type="button" class="tools-toggle" id="toolsToggle" data-action="tools" aria-expanded="false" aria-controls="toolsPanel"><span data-icon="layers"></span><span class="tt-label">백업 · 동기화 · 내보내기</span><span class="tt-chev" data-icon="chevR"></span></button>
+      <div class="tools-panel" id="toolsPanel">
+        <div class="tp-label">동기화</div>
+        <button type="button" class="cloud-btn" id="cloudBtn" data-action="cloudlogin"><svg class="g-logo" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.6 5.4 2.6 13.3l7.9 6.1C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.1 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.4c-.5 2.9-2.2 5.3-4.6 6.9l7.4 5.7c4.3-4 6.9-9.9 6.9-17.1z"/><path fill="#FBBC05" d="M10.5 28.6c-.5-1.4-.8-3-.8-4.6s.3-3.2.8-4.6l-7.9-6.1C1 16.5 0 20.1 0 24s1 7.5 2.6 10.7l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.4-5.7c-2.1 1.4-4.8 2.3-8.5 2.3-6.3 0-11.6-4.1-13.5-9.9l-7.9 6.1C6.6 42.6 14.6 48 24 48z"/></svg>구글 로그인 · PC·휴대폰 동기화</button>
+        <div class="tp-note" id="syncNote"></div>
+        <div class="tp-label">데이터 백업</div>
+        <div class="data-tools">
+          <button type="button" id="backupBtn" title="모든 업무를 백업 파일로 저장"><span data-icon="download"></span>백업 저장</button>
+          <button type="button" id="restoreBtn" title="백업 파일에서 업무 불러오기"><span data-icon="upload"></span>불러오기</button>
+          <input type="file" id="restoreFile" accept=".json,application/json" hidden>
+        </div>
+        <div class="tp-label">내보내기 · 화면</div>
+        <button type="button" class="tool-item" data-action="export" title="업무를 구글·아웃룩 캘린더용 파일(.ics)로 저장"><span data-icon="calendar"></span><span>캘린더로 내보내기</span></button>
+        <button type="button" class="tool-item" id="themeBtn" aria-label="화면 테마 변경" title="라이트/다크 모드"></button>
+        <button type="button" class="tool-item" id="helpBtn" title="사용 가이드"><span data-icon="help"></span><span>사용 가이드</span></button>
+        <button type="button" class="install-btn" id="installBtn"><span data-icon="download"></span>앱으로 설치하기</button>
       </div>
-      <button type="button" class="install-btn" id="installBtn"><span data-icon="download"></span>앱으로 설치하기</button>
       <button type="button" class="profile" id="profileBtn" title="내 정보·화면 설정">
         <div class="avatar" id="avatar">나</div>
         <div style="min-width:0">
@@ -940,8 +1119,6 @@ button.tag:hover{filter:brightness(.95)}
         <span data-icon="search"></span>
         <input id="globalSearch" type="text" placeholder="업무명, 내용으로 검색">
       </label>
-      <button class="icon-btn" id="themeBtn" aria-label="화면 테마 변경" title="라이트/다크 모드"></button>
-      <button class="icon-btn hide-sm" id="helpBtn" aria-label="사용 가이드" title="사용 가이드"><span data-icon="help"></span></button>
       <button class="icon-btn" id="bellBtn" aria-label="알림">
         <span data-icon="bell"></span><span class="dot" id="bellCount">0</span>
       </button>
@@ -1620,16 +1797,16 @@ TaskStore.init(()=>[
    [F] 메뉴 정의 — 메뉴 추가 시 여기에 한 줄 + VIEWS에 렌더 함수 추가
    ========================================================= */
 const MENU = [
-  { id:'dashboard', label:'대시보드',  icon:'dashboard', group:'메인' },
-  { id:'today',     label:'오늘 할 일', icon:'sun',      group:'메인', count:()=>Today.open().length },
-  { id:'overdue',   label:'지연 업무', icon:'alert',     group:'메인', count:()=>Late.list().length, alert:true },
-  { id:'all',       label:'전체 업무', icon:'list',      group:'업무 관리', count:()=>TaskStore.query({excludeDone:true}).length },
-  { id:'company',   label:'회사 업무', icon:'briefcase', group:'업무 관리', count:()=>TaskStore.query({category:'company',excludeDone:true}).length },
-  { id:'personal',  label:'개인 일정', icon:'user',      group:'업무 관리', count:()=>TaskStore.query({category:'personal',excludeDone:true}).length },
-  { id:'calendar',  label:'캘린더',    icon:'calendar',  group:'업무 관리' },
-  { id:'kanban',    label:'칸반 보드', icon:'columns',   group:'업무 관리' },
-  { id:'report',    label:'주간 리포트', icon:'report',  group:'업무 관리' },
-  { id:'completed', label:'완료 업무', icon:'done',      group:'업무 관리', count:()=>TaskStore.query({status:'done'}).length },
+  { id:'dashboard', label:'대시보드',  icon:'dashboard', group:'홈' },
+  { id:'today',     label:'오늘 할 일', icon:'sun',      group:'홈', count:()=>Today.open().length },
+  { id:'overdue',   label:'지연 업무', icon:'alert',     group:'홈', count:()=>Late.list().length, alert:true },
+  { id:'all',       label:'전체 업무', icon:'list',      group:'업무 목록', count:()=>TaskStore.query({excludeDone:true}).length },
+  { id:'company',   label:'회사 업무', icon:'briefcase', group:'업무 목록', count:()=>TaskStore.query({category:'company',excludeDone:true}).length },
+  { id:'personal',  label:'개인 일정', icon:'user',      group:'업무 목록', count:()=>TaskStore.query({category:'personal',excludeDone:true}).length },
+  { id:'completed', label:'완료 업무', icon:'done',      group:'업무 목록', count:()=>TaskStore.query({status:'done'}).length },
+  { id:'calendar',  label:'캘린더',    icon:'calendar',  group:'일정 보기' },
+  { id:'kanban',    label:'칸반 보드', icon:'columns',   group:'일정 보기' },
+  { id:'report',    label:'주간 리포트', icon:'report',  group:'일정 보기' },
   { id:'notes',     label:'메모장',    icon:'note',      group:'기타', count:()=>NoteStore.getAll().length },
   { id:'alerts',    label:'알림 센터', icon:'bell',      group:'기타', count:()=>AlertCenter.unreadCount(), alert:true }
 ];
@@ -1642,10 +1819,10 @@ const UI = {
   catBadge(c){ return `<span class="badge no-dot b-${c}">${LABELS.category[c]}</span>`; },
   statusBadge(s){ return `<span class="badge b-${s}">${LABELS.status[s]}</span>`; },
   priBadge(p){ return `<span class="badge no-dot b-${p}">${LABELS.priority[p]}</span>`; },
-  due(t){
+  due(t,{ alert=true }={}){
     const st=TaskUtil.dueState(t);
     const tag = st==='done' ? '' : `<small>${TaskUtil.remainText(t)}</small>`;
-    const custom = (t.alert && st!=='done')
+    const custom = (alert && t.alert && st!=='done')
       ? `<span class="alert-tag ${t.alert==='off'?'off':''}" title="업무별 알림 설정">${icon('bell')}${TaskUtil.alertLabel(t)}</span>` : '';
     return `<span class="due ${st}">${DateUtil.short(t.dueDate)}${t.dueTime?`<span class="time">${t.dueTime}</span>`:''}${tag}</span>${custom}`;
   },
@@ -1656,7 +1833,7 @@ const UI = {
     const cat=listState.qaCat || (App.current==='personal'?'personal':'company');
     const dates=Postpone.options();
     return `<div class="qa-bar" data-qa>
-      <label class="qa-input">${icon('plus')}<input id="qaInput" placeholder="빠른 등록: 업무명 입력 후 Enter" maxlength="80" autocomplete="off"></label>
+      <label class="qa-input">${icon('plus')}<input id="qaInput" placeholder="빠른 등록: 업무명 입력 후 Enter" maxlength="80" autocomplete="off" value="${UI.esc(listState['qat_'+App.current]||'')}"></label>
       <div class="seg-chips">${[['company','회사'],['personal','개인']].map(([v,l])=>`<button type="button" class="${cat===v?'on':''}" data-action="qacat" data-c="${v}">${l}</button>`).join('')}</div>
       <select id="qaDate" aria-label="마감일">${dates.map(([l,iso],i)=>`<option value="${iso}" ${i===(listState['qa_'+App.current]||0)?'selected':''}>${l} ${Postpone.fmt(iso)}</option>`).join('')}</select>
       <button type="button" class="btn btn-primary btn-sm" data-action="qaadd">등록</button>
@@ -1668,7 +1845,7 @@ const UI = {
     if(TaskUtil.dueState(t)==='overdue') tags.push(`<span class="tag late">${icon('alert')}지연 · ${Late.text(t)}</span>`);
     else if(Today.isDue(t)) tags.push(`<span class="tag duetoday">${icon('clock')}오늘 마감</span>`);
     else if(Today.isPinned(t)) tags.push(`<span class="tag today">${icon('sun')}오늘 할 일</span>`);
-    if(t.repeat) tags.push(`<span class="tag repeat" title="반복 업무">${icon('repeat')}${Repeat.label(t)}</span>`);
+    if(t.repeat) tags.push(`<span class="tag repeat icon-only" title="반복: ${Repeat.label(t)}" aria-label="반복 업무">${icon('repeat')}</span>`);
     const cl=t.checklist||[];
     if(cl.length){
       const d=cl.filter(c=>c.done).length;
@@ -1677,10 +1854,31 @@ const UI = {
     if(!tags.length) return '';
     return inline ? tags.join('') : `<div class="meta-row">${tags.join('')}</div>`;
   },
-  checkRow(t){
-    if(!UI.expanded.has(t.id) || !(t.checklist||[]).length) return '';
-    return `<tr class="cl-row"><td colspan="7"><ul class="cl-list">${t.checklist.map(c=>`<li><label><input type="checkbox" data-action="clcheck" data-id="${t.id}" data-item="${c.id}" ${c.done?'checked':''}><span class="${c.done?'done-text':''}">${this.esc(c.text)}</span></label></li>`).join('')}</ul></td></tr>`;
+  /* 펼친 업무의 상세 영역: 상세 내용 · 체크리스트 전체 · 등록일 · 반복 · 알림 */
+  detailRow(t){
+    if(!UI.expanded.has(t.id)) return '';
+    const cl=t.checklist||[], d=cl.filter(c=>c.done).length;
+    return `<tr class="detail-row" data-detail="${t.id}"><td colspan="6"><div class="dt-wrap">
+      <div class="dt-main">
+        <div class="dt-label">상세 내용</div>
+        <div class="dt-text">${t.detail?this.esc(t.detail):'<span class="muted">입력된 상세 내용이 없어요.</span>'}</div>
+        ${cl.length?`<div class="dt-label">체크리스트 <span class="muted">${d}/${cl.length} 완료</span></div>
+        <ul class="cl-list">${cl.map(c=>`<li><label><input type="checkbox" data-action="clcheck" data-id="${t.id}" data-item="${c.id}" ${c.done?'checked':''}><span class="${c.done?'done-text':''}">${this.esc(c.text)}</span></label></li>`).join('')}</ul>`:''}
+      </div>
+      <dl class="dt-meta">
+        <div><dt>등록일</dt><dd>${DateUtil.short(t.createdAt)}</dd></div>
+        <div><dt>마감</dt><dd>${TaskUtil.dueText(t)}</dd></div>
+        <div><dt>반복</dt><dd>${t.repeat?Repeat.label(t):'반복 안 함'}</dd></div>
+        <div><dt>알림</dt><dd>${t.status==='done'?'-':TaskUtil.alertLabel(t)}</dd></div>
+      </dl>
+      <div class="dt-actions">
+        <button type="button" class="btn btn-outline btn-sm" data-action="edit" data-id="${t.id}">${icon('edit')}수정</button>
+        ${t.status!=='done'?`<button type="button" class="btn btn-outline btn-sm" data-action="ics" data-id="${t.id}" title="이 업무만 캘린더 파일(.ics)로 저장">${icon('calPlus')}캘린더에 추가</button>`:''}
+        <button type="button" class="link-btn" data-action="rowexpand" data-id="${t.id}">접기</button>
+      </div>
+    </div></td></tr>`;
   },
+  checkRow(t){ return this.detailRow(t); },
   expanded:new Set(),
 
   taskTable(list,{ empty='표시할 업무가 없습니다.', sort=null }={}){
@@ -1692,36 +1890,36 @@ const UI = {
       return `<th class="sortable ${on?'sorted':''}" data-sort="${key}" title="눌러서 정렬">${label}<span class="arrow">${on?(sd==='desc'?'▼':'▲'):'▲'}</span></th>`;
     };
     const rows=list.map(t=>{
-      const st=TaskUtil.dueState(t);
-      return `<tr class="row-${st} ${t.status==='done'?'task-done':''} ${t.starred?'task-star':''}" data-id="${t.id}">
+      const st=TaskUtil.dueState(t), open=UI.expanded.has(t.id);
+      return `<tr class="row-${st} ${t.status==='done'?'task-done':''} ${t.starred?'task-star':''} ${open?'row-open':''}" data-id="${t.id}">
         <td class="cell-title" data-label="업무명"><div class="title-wrap">
           <button class="chk ${t.status==='done'?'on':''}" data-action="toggle" data-id="${t.id}" title="${t.status==='done'?'완료 취소':'완료 처리'}" aria-label="완료 체크">${icon('check')}</button>
           <button class="star ${t.starred?'on':''}" data-action="star" data-id="${t.id}" title="${t.starred?'중요 표시 해제':'중요 업무로 표시'}" aria-label="중요 표시">${icon('star')}</button>
-          ${t.status!=='done'?`<button class="sunbtn ${Today.isPinned(t)?'on':''}" data-action="pintoday" data-id="${t.id}" title="${Today.isPinned(t)?'오늘 할 일에서 빼기':'오늘 할 일로 지정'}" aria-label="오늘 할 일 지정">${icon('sun')}</button>`:''}
-          <div>
-            <div class="task-name">${this.esc(t.title)}</div>
-            ${t.detail?`<div class="task-desc">${this.esc(t.detail)}</div>`:''}
+          <div class="tw-body" data-action="rowexpand" data-id="${t.id}" title="${open?'상세 접기':'눌러서 상세 보기'}">
+            <div class="task-name"><span class="tn-text">${this.esc(t.title)}</span><span class="xp-ic ${open?'on':''}" aria-hidden="true">${icon('chevR')}</span></div>
             ${this.metaTags(t)}
+            <div class="inl-badges">${this.catBadge(t.category)}${this.priBadge(t.priority)}</div>
           </div>
+          ${t.status!=='done'?`<button class="sunbtn ${Today.isPinned(t)?'on':''}" data-action="pintoday" data-id="${t.id}" title="${Today.isPinned(t)?'오늘 할 일에서 빼기':'오늘 할 일로 지정'}" aria-label="오늘 할 일 지정">${icon('sun')}</button>`:''}
         </div></td>
+        <td data-label="마감일">${this.due(t,{ alert:false })}</td>
         <td data-label="업무 구분">${this.catBadge(t.category)}</td>
-        <td data-label="등록일"><span class="date">${DateUtil.short(t.createdAt)}</span></td>
-        <td data-label="마감일">${this.due(t)}</td>
-        <td data-label="진행 상태">${this.statusBadge(t.status)}</td>
         <td data-label="우선순위">${this.priBadge(t.priority)}</td>
+        <td data-label="진행 상태">${this.statusBadge(t.status)}</td>
         <td class="cell-actions"><div class="row-actions">
-          ${t.status!=='done'?`<button data-action="postpone" data-id="${t.id}" title="미루기 (마감일 변경)">${icon('postpone')}</button><button data-action="ics" data-id="${t.id}" title="캘린더에 추가">${icon('calPlus')}</button>`:''}
+          ${t.status!=='done'?`<button data-action="postpone" data-id="${t.id}" title="미루기 (마감일 변경)">${icon('postpone')}</button>`:''}
           <button data-action="edit" data-id="${t.id}" title="수정">${icon('edit')}</button>
           <button class="del" data-action="delete" data-id="${t.id}" title="삭제">${icon('trash')}</button>
         </div></td>
-      </tr>${this.checkRow(t)}`;
+      </tr>${this.detailRow(t)}`;
     });
     /* 진행 중 업무와 완료 업무 사이에 구분선 */
     const firstDone=list.findIndex(t=>t.status==='done');
     if(firstDone>0 && list.slice(firstDone).every(t=>t.status==='done'))
-      rows.splice(firstDone,0,`<tr class="done-sep"><td colspan="7">완료된 업무 ${list.length-firstDone}건</td></tr>`);
+      rows.splice(firstDone,0,`<tr class="done-sep"><td colspan="6">완료된 업무 ${list.length-firstDone}건</td></tr>`);
     return `<div class="table-wrap"><table class="tasks">
-      <thead><tr>${th('업무명','title')}${th('업무 구분','category')}${th('등록일','created')}${th('마감일','due')}${th('진행 상태','status')}${th('우선순위','priority')}${th('관리',null,'text-align:right')}</tr></thead>
+      <colgroup><col><col class="c-due"><col class="c-cat"><col class="c-pri"><col class="c-st"><col class="c-act"></colgroup>
+      <thead><tr>${th('업무명','title')}${th('마감일','due')}${th('구분','category')}${th('우선순위','priority')}${th('진행 상태','status')}${th('<span class="sr">관리</span>',null,'text-align:right')}</tr></thead>
       <tbody>${rows.join('')}</tbody></table></div>`;
   },
 
@@ -1766,22 +1964,21 @@ const VIEWS = {
   /* 대시보드 맨 위 '오늘 할 일' */
   _todayCard(){
     const open=Today.open(), due=Today.due(), pinned=Today.pinned(), done=Today.done();
-    const tile=(f,label,ic,n,main)=>`<button class="t-tile ${main?'t-main':''}" data-action="gotoday" data-f="${f}" title="${label} 목록 보기"><span>${icon(ic)}${label}</span><b>${n}<small>건</small></b></button>`;
+    const tile=(f,label,n,main)=>`<button class="t-tile ${main?'t-main':''}" data-action="gotoday" data-f="${f}" title="${label} 목록 보기"><span>${label}</span><b>${n}</b></button>`;
     const list=[...open.slice(0,8), ...done];
     return `<section class="card today-card">
       <div class="card-header">
         <div class="card-title">${icon('sun')}오늘 할 일 <span class="sub">${Today.label()}</span></div>
-        <button class="link-btn" data-action="gotoday" data-f="">오늘 할 일 전체 보기 →</button>
+        <div class="t-tiles">
+          ${tile('','남은 업무',open.length,true)}
+          ${tile('due','오늘 마감',due.length)}
+          ${tile('pinned','직접 지정',pinned.length)}
+          ${tile('done','오늘 완료',done.length)}
+        </div>
       </div>
       ${UI.quickAdd()}
-      <div class="t-tiles">
-        ${tile('','남은 업무','list',open.length,true)}
-        ${tile('due','오늘 마감','clock',due.length)}
-        ${tile('pinned','직접 지정','sun',pinned.length)}
-        ${tile('done','오늘 완료','done',done.length)}
-      </div>
-      ${list.length ? UI.taskTable(list) + (open.length>8?`<div class="kb-more">외 ${open.length-8}건 더 있어요 · '오늘 할 일 전체 보기'에서 확인</div>`:'')
-        : `<div class="t-empty"><b>오늘 처리할 업무가 없어요</b>오늘 할 업무 옆의 ☀ 버튼을 누르면 여기에 추가돼요.</div>`}
+      ${list.length ? UI.taskTable(list) + (open.length>8?`<div class="kb-more">외 ${open.length-8}건 더 있어요 · <button class="link-btn" data-action="gotoday" data-f="">오늘 할 일 전체 보기 →</button></div>`:'')
+        : `<div class="t-empty"><b>오늘 처리할 업무가 없어요</b>업무 이름 오른쪽의 ☀ 버튼을 누르면 여기에 추가돼요.</div>`}
     </section>`;
   },
   _lateBanner(){ const n=Late.list().length; return n?`<div class="late-banner">${icon('alert')}마감이 지난 지연 업무가 ${n}건 있어요.<button data-goto="overdue">지연 업무 보기</button></div>`:''; },
@@ -1790,16 +1987,15 @@ const VIEWS = {
     const list=Late.list(); if(!list.length) return '';
     return `<section class="card late-card">
       <div class="card-header">
-        <div class="card-title">${icon('alert')}지연 업무 ${list.length}건 <span class="sub">마감일이 지났지만 완료되지 않은 업무 · 마감일은 그대로 유지</span></div>
-        <button class="link-btn" data-goto="overdue" style="color:var(--red)">모두 보기 →</button>
+        <div class="card-title">${icon('alert')}지연 업무 <span class="cnt-red">${list.length}</span></div>
+        <button class="link-btn" data-goto="overdue">모두 보기 →</button>
       </div>
       <ul class="late-list">${list.slice(0,5).map(t=>`<li>
         <button class="chk" data-action="toggle" data-id="${t.id}" title="완료 처리" aria-label="완료 체크">${icon('check')}</button>
-        <div class="lt-body" data-action="edit" data-id="${t.id}">
+        <div class="lt-body" data-action="edit" data-id="${t.id}" title="눌러서 수정">
           <div class="lt-title">${t.starred?'<span class="star-inline">★</span>':''}${UI.esc(t.title)}</div>
-          <div class="lt-meta">${UI.catBadge(t.category)}${UI.priBadge(t.priority)}<span>원래 마감 ${TaskUtil.dueText(t)}</span></div>
+          <div class="lt-meta"><span class="late-days">${Late.text(t)}</span><span>원래 마감 ${TaskUtil.dueText(t)}</span></div>
         </div>
-        <span class="late-days">${icon('alert')} ${Late.text(t)}</span>
         <button class="pp-btn" data-action="postpone" data-id="${t.id}" title="마감일 변경">${icon('postpone')}미루기</button>
       </li>`).join('')}</ul>
       ${list.length>5?`<div class="kb-more">외 ${list.length-5}건 · '모두 보기'에서 확인</div>`:''}
@@ -1834,7 +2030,6 @@ const VIEWS = {
     return `<div class="card">
       <div class="card-header">
         <div class="card-title">${icon('sun')}오늘 할 일 <span class="sub">${Today.label()} · 오늘 마감 + 직접 지정 + 오늘 완료</span></div>
-        <button class="btn btn-primary btn-sm" data-action="new">${icon('plus')}업무 등록</button>
       </div>
       ${VIEWS._lateBanner()}
       ${UI.quickAdd()}
@@ -1843,87 +2038,70 @@ const VIEWS = {
     </div>`;
   },
   dashboard(){
-    const s=TaskUtil.stats(), today=DateUtil.today();
+    const s=TaskUtil.stats();
     const rate = s.total ? Math.round(s.done/s.total*100) : 0;
-    const todayTasks = TaskUtil.sortByDue(TaskStore.query({excludeDone:true})).filter(t=>DateUtil.diffFromToday(t.dueDate)<=7).slice(0,8);
+    /* 다가오는 업무: 내일부터 7일 이내 마감 (오늘 업무는 위 '오늘 할 일'에, 지연은 오른쪽에 표시) */
+    const upcoming = TaskUtil.sortByDue(TaskStore.query({excludeDone:true})).filter(t=>{ const n=DateUtil.diffFromToday(t.dueDate); return n>=1 && n<=7 && !Today.isPinned(t); }).slice(0,8);
     const urgent = TaskUtil.sortByDue(TaskStore.getAll().filter(t=>TaskUtil.dueState(t)==='soon'));
     const cat = c => { const all=TaskStore.query({category:c}); const d=all.filter(t=>t.status==='done').length; return { all:all.length, done:d, pct: all.length?Math.round(d/all.length*100):0 }; };
-    const cc=cat('company'), pc=cat('personal');
+    const cc=cat('company'), pc=cat('personal'), late=Late.list().length;
+    const sum=[[`오늘 할 일 <b>${Today.open().length}</b>건`,'today'],[`마감 임박 <b class="c-orange">${urgent.length}</b>건`,null],[`지연 <b class="${late?'c-red':''}">${late}</b>건`,'overdue']];
 
     return `
     ${TaskStore.hasSamples()?`<div class="sample-banner">${icon('info')}<span>지금 보이는 업무 중 일부는 <b>예시 데이터</b>입니다. 직접 수정한 업무는 남고 나머지 예시만 지울 수 있습니다.</span><button class="btn btn-outline btn-sm" data-action="clearsamples">예시 데이터 지우기</button></div>`:''}
     <div class="welcome">
-      <div><h2>안녕하세요, ${Prefs.get('name')?UI.esc(Prefs.get('name'))+'님':'반가워요'} 👋</h2><p>오늘 처리할 업무와 마감 일정을 확인하세요.</p></div>
+      <div><h2>안녕하세요, ${Prefs.get('name')?UI.esc(Prefs.get('name'))+'님':'반가워요'}</h2>
+        <p>${DateUtil.full(DateUtil.today())} · ${sum.map(([h,g])=>g?`<button class="sum-link" data-goto="${g}">${h}</button>`:`<span>${h}</span>`).join(' · ')}</p></div>
       <button class="btn btn-outline" data-goto="calendar">${icon('calendar')}캘린더 보기</button>
     </div>
 
-    ${VIEWS._lateCard()}
-    ${VIEWS._todayCard()}
-
-    <section class="stats">
-      <div class="card stat today">
-        <div class="stat-top"><span class="stat-label">오늘 날짜</span><span class="stat-icon">${icon('calendar')}</span></div>
-        <div class="stat-value">${DateUtil.full(today)}</div>
-        <div class="stat-foot">전체 완료율 ${rate}%</div>
-      </div>
-      <div class="card stat">
-        <div class="stat-top"><span class="stat-label">전체 업무</span><span class="stat-icon si-blue">${icon('layers')}</span></div>
-        <div class="stat-value">${s.total}<span>건</span></div>
-        <div class="stat-foot">예정 ${s.todo}건 포함</div>
-      </div>
-      <div class="card stat">
-        <div class="stat-top"><span class="stat-label">진행 중</span><span class="stat-icon si-indigo">${icon('activity')}</span></div>
-        <div class="stat-value">${s.progress}<span>건</span></div>
-        <div class="progress"><i style="width:${s.total?s.progress/s.total*100:0}%"></i></div>
-      </div>
-      <div class="card stat">
-        <div class="stat-top"><span class="stat-label">완료</span><span class="stat-icon si-green">${icon('done')}</span></div>
-        <div class="stat-value">${s.done}<span>건</span></div>
-        <div class="progress"><i style="width:${rate}%;background:var(--green)"></i></div>
-      </div>
-      <div class="card stat">
-        <div class="stat-top"><span class="stat-label">마감 임박</span><span class="stat-icon si-orange">${icon('alert')}</span></div>
-        <div class="stat-value" style="color:var(--orange)">${s.urgent}<span>건</span></div>
-        <div class="stat-foot">마감 경과 <b style="color:var(--red)">${s.overdue}건</b></div>
-      </div>
-    </section>
-
-    <section class="dash-grid">
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">다가오는 업무 <span class="sub">7일 이내 마감 · 미완료</span></div>
-          <button class="link-btn" data-goto="all">전체 보기 →</button>
+    <section class="dash-main">
+      <div class="dash-col">
+        ${VIEWS._todayCard()}
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">다가오는 업무 <span class="sub">내일부터 7일 이내 마감 · 미완료</span></div>
+            <button class="link-btn" data-goto="all">전체 업무 보기 →</button>
+          </div>
+          ${UI.taskTable(upcoming,{empty:'내일부터 7일 이내에 마감되는 업무가 없습니다.'})}
         </div>
-        ${UI.taskTable(todayTasks,{empty:'7일 이내 마감 예정인 업무가 없습니다.'})}
       </div>
 
       <div class="side-stack">
-        ${VIEWS._starCard()}
-        <div class="card">
+        <div class="card urgent-card">
           <div class="card-header">
-            <div class="card-title">마감 임박 업무 <span class="badge no-dot b-high">${urgent.length}</span></div>
-            <span class="sub" style="font-size:12px;color:var(--text-3)">알림 시점이 지난 미완료 업무</span>
+            <div class="card-title">${icon('clock')}마감 임박 <span class="cnt-orange">${urgent.length}</span></div>
+            <span class="sub">알림 시점이 지난 미완료 업무</span>
           </div>
           ${urgent.length ? `<ul class="deadline-list">${urgent.map(t=>{
             const st=TaskUtil.dueState(t);
-            return `<li class="deadline-item ${st}" data-action="edit" data-id="${t.id}">
+            return `<li class="deadline-item ${st}" data-action="edit" data-id="${t.id}" title="눌러서 수정">
               <div class="dday">${TaskUtil.remainText(t,{compact:true})}</div>
               <div class="deadline-info">
                 <div class="deadline-title">${t.starred?'<span class="star-inline">★</span>':''}${UI.esc(t.title)}</div>
-                <div class="deadline-meta">${UI.catBadge(t.category)}${UI.priBadge(t.priority)}<span>마감 ${TaskUtil.dueText(t)} · ${TaskUtil.alertLabel(t)}</span></div>
+                <div class="deadline-meta">${UI.catBadge(t.category)}<span>마감 ${TaskUtil.dueText(t)}</span></div>
               </div></li>`;}).join('')}</ul>`
-          : `<div class="empty">${icon('done')}<div>마감 임박 업무가 없습니다.</div></div>`}
+          : `<div class="t-empty">마감 임박 업무가 없습니다.</div>`}
         </div>
 
+        ${VIEWS._lateCard()}
+        ${VIEWS._starCard()}
+
         <div class="card">
-          <div class="card-header"><div class="card-title">구분별 진행률</div></div>
+          <div class="card-header"><div class="card-title">업무 현황</div><span class="sub">전체 ${s.total}건 · 완료율 ${rate}%</span></div>
           <div class="card-body">
+            <div class="mini-stats">
+              <div><span>예정</span><b>${s.todo}</b></div>
+              <div><span>진행 중</span><b>${s.progress}</b></div>
+              <div><span>완료</span><b>${s.done}</b></div>
+              <div><span>마감 경과</span><b class="${s.overdue?'c-red':''}">${s.overdue}</b></div>
+            </div>
             <div class="split-block">
-              <div class="split-row"><span>${UI.catBadge('company')} 회사 업무</span><span><b>${cc.done}</b> / ${cc.all}건 · ${cc.pct}%</span></div>
+              <div class="split-row"><span>회사 업무</span><span><b>${cc.done}</b> / ${cc.all}건 · ${cc.pct}%</span></div>
               <div class="progress"><i style="width:${cc.pct}%"></i></div>
             </div>
             <div class="split-block">
-              <div class="split-row"><span>${UI.catBadge('personal')} 개인 일정</span><span><b>${pc.done}</b> / ${pc.all}건 · ${pc.pct}%</span></div>
+              <div class="split-row"><span>개인 일정</span><span><b>${pc.done}</b> / ${pc.all}건 · ${pc.pct}%</span></div>
               <div class="progress"><i style="width:${pc.pct}%;background:var(--purple)"></i></div>
             </div>
           </div>
@@ -1932,7 +2110,7 @@ const VIEWS = {
         <div class="card">
           <div class="card-header"><div class="card-title">최근 메모</div><button class="link-btn" data-goto="notes">메모장 →</button></div>
           ${NoteStore.getAll().length ? `<ul class="dash-notes">${NoteStore.sorted().slice(0,3).map(n=>`<li data-action="opennote" data-id="${n.id}"><b>${n.pinned?'📌 ':''}${UI.esc(n.title||(n.body||'').split('\n')[0]||'제목 없음')}</b><span>${UI.esc((n.title?(n.body||''):(n.body||'').split('\n').slice(1).join(' ')).replace(/\n/g,' ')||' ')}</span></li>`).join('')}</ul>`
-            : `<div class="empty" style="padding:28px 20px"><div>메모가 없습니다.</div><button class="btn btn-outline btn-sm" data-action="newnote" style="margin-top:10px">${icon('plus')}새 메모</button></div>`}
+            : `<div class="empty" style="padding:24px 20px"><div>메모가 없습니다.</div><button class="btn btn-outline btn-sm" data-action="newnote" style="margin-top:10px">${icon('plus')}새 메모</button></div>`}
         </div>
       </div>
     </section>`;
@@ -1944,10 +2122,6 @@ const VIEWS = {
     return `<div class="card">
       <div class="card-header">
         <div class="card-title">${cfg.title}</div>
-        <div class="header-actions">
-          ${cfg.fixedStatus?'':`<button class="btn btn-outline btn-sm" data-action="export" data-scope="${cat||'all'}">${icon('calendar')}<span class="hide-sm">캘린더로 </span>내보내기</button>`}
-          <button class="btn btn-primary btn-sm" data-action="new" ${cat?`data-category="${cat}"`:''}>${icon('plus')}업무 등록</button>
-        </div>
       </div>
       ${cfg.fixedStatus?'':UI.quickAdd()}
       ${UI.toolbar(st,{ showStatus:!cfg.fixedStatus })}
@@ -2075,7 +2249,8 @@ const VIEWS = {
       }).join('');
       cells+=`<div class="${cls}" ${d.getMonth()===m?`data-action="newdate" data-date="${iso}" title="${d.getMonth()+1}월 ${d.getDate()}일 마감 업무 등록"`:''}><span class="cal-day">${d.getDate()}</span>${d.getMonth()===m?`<span class="cal-add">${icon('plus')}</span>`:''}${chips}${items.length>3?`<span class="cal-more">+${items.length-3}건 더보기</span>`:''}</div>`;
     }
-    return `<div class="card">
+    return `<div class="view-nav"><button type="button" class="btn btn-outline btn-sm back-btn" data-action="backdash" title="대시보드 화면으로 돌아갑니다">${icon('chevL')}대시보드로 돌아가기</button></div>
+    <div class="card">
       <div class="card-header">
         <div class="cal-head">
           <button class="icon-btn" data-cal="-1" aria-label="이전 달">${icon('chevL')}</button>
@@ -2146,14 +2321,21 @@ const AlertCenter = {
 const App = {
   current:'dashboard',
   go(id){ if(!VIEWS[id]) id='dashboard'; location.hash=id; },
+  scrollMem:{},
+  back(id){ this.restoreScroll=true; if(this.current===id) this.render(); else this.go(id); },
   render(){
     const id=(location.hash.slice(1)||'dashboard');
-    this.current = VIEWS[id] ? id : 'dashboard';
+    const next = VIEWS[id] ? id : 'dashboard';
+    const changed = next!==this.current;
+    if(changed) this.scrollMem[this.current]=window.scrollY;
+    this.current = next;
     const menu=MENU.find(m=>m.id===this.current);
     document.getElementById('pageTitle').textContent=menu.label;
     document.getElementById('crumb').textContent=menu.label;
     document.getElementById('view').innerHTML=VIEWS[this.current]();
     this.renderNav(); this.updateCount(); this.closeSidebar();
+    if(this.restoreScroll){ this.restoreScroll=false; const y=this.scrollMem[this.current]||0; requestAnimationFrame(()=>window.scrollTo(0,y)); }
+    else if(changed) window.scrollTo(0,0);   // 다른 화면으로 이동하면 맨 위부터
   },
   renderNav(){
     let html='', group='';
@@ -2347,9 +2529,13 @@ const QuickAdd = {
     listState['qa_'+App.current]=sel.selectedIndex;
     const t=TaskStore.add({ title, category:cat, detail:'', createdAt:Today.iso(), dueDate:sel.value, priority:'medium', status:'todo' });
     toast(`"${title}" 등록했어요 (${Postpone.fmt(t.dueDate)} 마감).`,{ action:'상세 설정', onAction:()=>Modal.open(TaskStore.get(t.id)) });
+    listState['qat_'+App.current]='';
     setTimeout(()=>{ const n=document.getElementById('qaInput'); if(n){ n.value=''; n.focus(); } },0);
   }
 };
+/* 빠른 등록 입력값·마감일 선택은 화면을 오가도 유지 */
+document.addEventListener('input',e=>{ if(e.target.id==='qaInput') listState['qat_'+App.current]=e.target.value; });
+document.addEventListener('change',e=>{ if(e.target.id==='qaDate') listState['qa_'+App.current]=e.target.selectedIndex; });
 document.addEventListener('keydown',e=>{
   if(e.target.id!=='qaInput' || e.key!=='Enter' || e.isComposing || e.keyCode===229) return;
   e.preventDefault(); QuickAdd.add(false);
@@ -2418,7 +2604,9 @@ document.addEventListener('click',e=>{
       break;
     }
     case 'toggle': completeWithToast(id); break;
-    case 'clexpand': UI.expanded.has(id) ? UI.expanded.delete(id) : UI.expanded.add(id); App.render(); break;
+    case 'clexpand': case 'rowexpand': UI.expanded.has(id) ? UI.expanded.delete(id) : UI.expanded.add(id); App.render(); break;
+    case 'backdash': App.back('dashboard'); break;
+    case 'tools': Tools.toggle(); break;
     case 'clcheck': {
       e.preventDefault();
       const list=TaskStore.toggleCheck(id, Number(act.dataset.item)), t=TaskStore.get(id);
@@ -2437,7 +2625,7 @@ document.addEventListener('click',e=>{
     case 'newdate': Modal.open(null,{ dueDate:act.dataset.date }); break;
     case 'opennoti': AlertCenter.markRead([act.dataset.key]); App.renderNav(); Modal.open(TaskStore.get(id)); break;
     case 'sound': Prefs.set('sound',!Prefs.get('sound')); if(Prefs.get('sound')) Sound.play(); App.render(); break;
-    case 'export': ExportModal.open(act.dataset.scope); break;
+    case 'export': ExportModal.open(act.dataset.scope || (['company','personal'].includes(App.current)?App.current:'all')); Tools.close(); break;
     case 'ics': {
       const t=TaskStore.get(id);
       CalendarExport.download([t], CalendarExport.filename('_'+t.id));
@@ -3046,6 +3234,8 @@ function renderSaveState(){
   el.className='save-state '+cls+(st==='local'&&!TaskStore.saveOk?' err':'');
   el.querySelector('span').textContent=text; el.title=text;
   document.getElementById('cloudBtn').classList.toggle('show', st==='local' && Cloud.available());
+  const note=document.getElementById('syncNote');
+  if(note) note.textContent = st!=='local' ? `${text} · 로그아웃은 '내 정보 설정'에서` : (Cloud.available() ? '' : 'https 주소(GitHub Pages)로 접속하면 구글 로그인 동기화를 쓸 수 있어요.');
   const row=document.getElementById('cloudRow'); if(row) row.style.display=(st==='local' && Cloud.available())?'flex':'none';
 }
 
@@ -3084,11 +3274,16 @@ const SystemNotify = {
 /* =========================================================
    [P] 테마 · 내 정보 · 사용 가이드 · 앱 설치
    ========================================================= */
+/* 왼쪽 아래 '백업 · 동기화 · 내보내기' 도구 모음 (접이식) */
+const Tools = {
+  toggle(open){ const p=document.getElementById('toolsPanel'), b=document.getElementById('toolsToggle'); const on = open ?? !p.classList.contains('open'); p.classList.toggle('open',on); b.setAttribute('aria-expanded',String(on)); },
+  close(){ this.toggle(false); }
+};
 const Theme = {
   apply(){
     const t=Prefs.get('theme'), dark = t==='dark' || (t==='system' && matchMedia('(prefers-color-scheme: dark)').matches);
     document.documentElement.dataset.theme = dark?'dark':'light';
-    const b=document.getElementById('themeBtn'); b.innerHTML=icon(dark?'sun':'moon'); b.title=dark?'라이트 모드로':'다크 모드로';
+    const b=document.getElementById('themeBtn'); b.innerHTML=icon(dark?'sun':'moon')+`<span>${dark?'라이트 모드로 보기':'다크 모드로 보기'}</span>`; b.title=dark?'라이트 모드로':'다크 모드로';
     document.querySelector('meta[name=theme-color]').content = dark?'#0e141f':'#14254a';
   },
   toggle(){ Prefs.set('theme', document.documentElement.dataset.theme==='dark'?'light':'dark'); this.apply(); }
@@ -3157,7 +3352,8 @@ document.getElementById('gPrev').onclick=()=>Guide.prev();
 document.getElementById('g-name').addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); Guide.next(); } });
 document.getElementById('profileBtn').onclick=()=>Settings.open();
 document.getElementById('themeBtn').onclick=()=>Theme.toggle();
-document.getElementById('helpBtn').onclick=()=>Guide.open();
+document.getElementById('helpBtn').onclick=()=>{ Tools.close(); Guide.open(); };
+document.getElementById('saveState').addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); Tools.toggle(); } });
 
 /* 앱 설치 (PWA) — 지원 브라우저에서 '앱으로 설치하기' 버튼 표시 */
 let installEvt=null;

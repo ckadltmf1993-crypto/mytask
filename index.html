@@ -632,6 +632,15 @@ textarea.input{height:96px;padding:10px 12px;resize:vertical}
 .note-body-input{width:100%;min-height:300px;max-height:56vh;overflow-y:auto;border:none;outline:none;background:transparent;font-size:14.5px;line-height:1.7;color:var(--text);white-space:pre-wrap;word-break:break-word;cursor:text}
 .note-body-input.is-empty::before{content:attr(data-placeholder);color:var(--text-3);pointer-events:none;position:absolute}
 .note-body-input b,.note-body-input strong,.note-body b{font-weight:700;color:inherit}
+/* 메모장 글꼴 (설정에서 선택) */
+:root{--font-base:"Pretendard","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",system-ui,-apple-system,sans-serif;--note-font:var(--font-base);--note-scale:1}
+.note-body-input,.note-title-input,.note-card h4,.note-card .note-body{font-family:var(--note-font)}
+.note-body-input{font-size:calc(14.5px * var(--note-scale))}
+.note-title-input{font-size:calc(19px * var(--note-scale))}
+.note-card h4{font-size:calc(14.5px * var(--note-scale))}
+.note-card .note-body{font-size:calc(13px * var(--note-scale))}
+.nf-preview{margin-top:8px;padding:10px 12px;border:1px dashed var(--border-strong);border-radius:8px;display:flex;flex-direction:column;gap:2px;color:var(--text-2)}
+.nf-preview b{color:var(--text)}
 .note-fmt{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:6px 0 8px;margin-bottom:4px;border-bottom:1px solid var(--border)}
 .fmt-btn{width:30px;height:30px;border-radius:6px;display:grid;place-items:center;color:var(--text-2);font-size:15px;border:1px solid transparent}
 .fmt-btn:hover{background:var(--gray-soft)}
@@ -643,6 +652,9 @@ textarea.input{height:96px;padding:10px 12px;resize:vertical}
 .fmt-colors button:hover{transform:scale(1.12)}
 .fmt-colors button.fc-default{background:var(--surface);color:var(--text);box-shadow:inset 0 0 0 1.5px var(--border-strong)}
 .fmt-hint{font-size:11.5px;color:var(--text-3);margin-left:auto}
+.fmt-font{height:28px;padding:0 9px;border-radius:6px;font-size:12px;color:var(--text-2);border:1px solid var(--border)}
+.fmt-font:hover{background:var(--gray-soft);color:var(--text)}
+@media (max-width:640px){ .fmt-font{margin-left:auto} }
 @media (max-width:640px){ .fmt-hint{display:none} }
 .note-modal .modal-footer{justify-content:space-between;align-items:center;flex-wrap:wrap}
 .color-dots{display:flex;gap:6px;align-items:center}
@@ -1355,6 +1367,12 @@ tr:hover .xp-ic{opacity:1}
           </div>
         </div>
         <div class="form-group full">
+          <label for="s-noteFont">메모장 글꼴</label>
+          <select class="input" id="s-noteFont" name="noteFont"></select>
+          <div class="nf-preview" id="nfPreview"><b>회의 메모</b><span>중요한 일정 확인하기 · 내일 오전 10시 팀 미팅</span></div>
+          <span class="form-hint">메모장 본문과 메모 카드에만 적용돼요. 이 기기에만 저장되는 설정이에요.</span>
+        </div>
+        <div class="form-group full">
           <label>알림음</label>
           <div class="segmented">
             <label><input type="radio" name="sound" value="on"><span>켜기</span></label>
@@ -1383,6 +1401,7 @@ tr:hover .xp-ic{opacity:1}
         <span class="fmt-label">글자색</span>
         <div class="fmt-colors" id="noteFmtColors"></div>
         <span class="fmt-hint">글자를 드래그해 고른 뒤 누르세요</span>
+        <button type="button" class="fmt-font" id="noteFontBtn" title="메모장 글꼴 바꾸기 (내 정보 설정)">Aa 글꼴</button>
       </div>
       <div class="note-body-input" id="noteBody" contenteditable="true" role="textbox" aria-multiline="true" data-placeholder="메모를 입력하세요…" spellcheck="false"></div>
     </div>
@@ -1666,7 +1685,7 @@ NoteStore.init();
    --------------------------------------------------------- */
 const Prefs = {
   KEY:'mytask.prefs.v1',
-  data:{ sound:true, readAlerts:[], theme:'system', name:'', org:'', onboarded:false },
+  data:{ sound:true, readAlerts:[], theme:'system', name:'', org:'', onboarded:false, noteFont:'default' },
   load(){ try{ Object.assign(this.data, JSON.parse(localStorage.getItem(this.KEY)||'{}')); }catch(e){} },
   save(){ try{ localStorage.setItem(this.KEY, JSON.stringify(this.data)); }catch(e){} },
   get(k){ return this.data[k]; },
@@ -3262,6 +3281,7 @@ document.getElementById('noteColors').addEventListener('click',e=>{
 document.getElementById('notePin').onclick=()=>{ const n=NoteStore.get(NoteEditor.id); NoteStore.update(n.id,{ pinned:!n.pinned },{ touch:false }); NoteEditor.paint(NoteStore.get(n.id)); };
 document.getElementById('noteDel').onclick=()=>NoteEditor.remove();
 document.getElementById('noteDone').onclick=()=>NoteEditor.close();
+document.getElementById('noteFontBtn').onclick=()=>{ NoteEditor.close(); Settings.open(); setTimeout(()=>Settings.form.noteFont.focus(),60); };
 NoteEditor.el.addEventListener('click',e=>{ if(e.target===NoteEditor.el) NoteEditor.close(); });
 document.addEventListener('input',e=>{ if(e.target.id==='noteSearch'){
   listState.notesKeyword=e.target.value; const pos=e.target.selectionStart; App.render();
@@ -3389,24 +3409,45 @@ function renderProfile(){
   const ch=[...name]; document.getElementById('avatar').textContent = (/^[가-힣]{3,4}$/.test(name) ? ch.slice(-2) : ch.slice(0,2)).join('');   // 한글 이름은 '길동'처럼 이름 두 글자
 }
 
+/* 메모장 글꼴 — 선택한 글꼴만 구글 폰트에서 불러옴 (인터넷이 안 되면 기본 글꼴로 표시) */
+const NOTE_FONTS = {
+  default:{ label:'기본 글꼴 (맑은 고딕)', family:'', scale:1 },
+  gowun:  { label:'고운돋움 — 부드러운 고딕', family:'Gowun Dodum', q:'Gowun+Dodum', scale:1.02 },
+  nanum:  { label:'나눔고딕 — 둥근 고딕', family:'Nanum Gothic', q:'Nanum+Gothic:wght@400;700', scale:1 },
+  batang: { label:'고운바탕 — 부드러운 명조', family:'Gowun Batang', q:'Gowun+Batang:wght@400;700', scale:1.02 },
+  gaegu:  { label:'개구 — 귀여운 손글씨', family:'Gaegu', q:'Gaegu:wght@400;700', scale:1.18 },
+  pen:    { label:'나눔펜 — 펜 손글씨', family:'Nanum Pen Script', q:'Nanum+Pen+Script', scale:1.38 }
+};
+const NoteFont = {
+  load(key){ const f=NOTE_FONTS[key]; if(!f || !f.q || document.getElementById('nf-'+key)) return;
+    const l=document.createElement('link'); l.rel='stylesheet'; l.id='nf-'+key; l.href=`https://fonts.googleapis.com/css2?family=${f.q}&display=swap`; document.head.appendChild(l); },
+  css(key){ const f=NOTE_FONTS[key]||NOTE_FONTS.default; return f.family ? `'${f.family}',var(--font-base)` : 'var(--font-base)'; },
+  apply(key=Prefs.get('noteFont')){ if(!NOTE_FONTS[key]) key='default'; this.load(key);
+    const r=document.documentElement.style; r.setProperty('--note-font',this.css(key)); r.setProperty('--note-scale',NOTE_FONTS[key].scale); }
+};
+NoteFont.apply();
 const Settings = {
   el:document.getElementById('settingsModal'), form:document.getElementById('settingsForm'),
   open(){
     const f=this.form; f.name.value=Prefs.get('name'); f.org.value=Prefs.get('org');
     f.querySelector(`[name=theme][value=${Prefs.get('theme')}]`).checked=true;
     f.querySelector(`[name=sound][value=${Prefs.get('sound')?'on':'off'}]`).checked=true;
+    f.noteFont.innerHTML=Object.entries(NOTE_FONTS).map(([k,v])=>`<option value="${k}">${v.label}</option>`).join('');
+    f.noteFont.value=NOTE_FONTS[Prefs.get('noteFont')]?Prefs.get('noteFont'):'default'; this.preview();
     f.name.classList.remove('invalid'); Cloud.renderBox(); this.el.classList.add('open'); App.closeSidebar();
   },
   close(){ this.el.classList.remove('open'); },
+  preview(){ const k=this.form.noteFont.value; NoteFont.load(k); const el=document.getElementById('nfPreview'); el.style.fontFamily=NoteFont.css(k); el.style.fontSize=(14*NOTE_FONTS[k].scale)+'px'; },
   save(e){
     e.preventDefault(); const f=this.form, name=f.name.value.trim();
     if(!name){ f.name.classList.add('invalid'); return toast('이름을 입력해 주세요.'); }
     Prefs.set('name',name); Prefs.set('org',f.org.value.trim());
-    Prefs.set('theme',f.querySelector('[name=theme]:checked').value); Prefs.set('sound',f.querySelector('[name=sound]:checked').value==='on');
+    Prefs.set('theme',f.querySelector('[name=theme]:checked').value); Prefs.set('sound',f.querySelector('[name=sound]:checked').value==='on'); Prefs.set('noteFont',f.noteFont.value); NoteFont.apply();
     Theme.apply(); renderProfile(); App.render(); this.close(); toast('설정을 저장했습니다.');
   }
 };
 Settings.form.addEventListener('submit',e=>Settings.save(e));
+Settings.form.noteFont.addEventListener('change',()=>Settings.preview());
 Settings.el.addEventListener('click',e=>{ if(e.target===Settings.el || e.target.closest('[data-set-close]')) Settings.close(); });
 document.getElementById('reGuide').onclick=()=>{ Settings.close(); Guide.open(); };
 

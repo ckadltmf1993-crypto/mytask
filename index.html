@@ -1019,8 +1019,10 @@ tr:hover .xp-ic{opacity:1}
 .dt-actions .link-btn{margin-left:4px}
 
 /* 캘린더 → 대시보드 */
-.view-nav{margin-bottom:12px}
-.back-btn svg{width:15px;height:15px}
+/* 캘린더의 '대시보드로 돌아가기'는 대시보드 '캘린더 보기'와 같은 위치·같은 크기 */
+.view-nav{margin-bottom:16px;min-height:52px}
+.welcome [data-goto=calendar],.view-nav .back-btn{min-width:172px}
+@media (max-width:640px){ .view-nav{min-height:0} .view-nav>div:empty{display:none} }
 
 /* 왼쪽 아래 도구 모음 */
 .save-state{cursor:pointer;border-radius:4px}
@@ -2249,7 +2251,7 @@ const VIEWS = {
       }).join('');
       cells+=`<div class="${cls}" ${d.getMonth()===m?`data-action="newdate" data-date="${iso}" title="${d.getMonth()+1}월 ${d.getDate()}일 마감 업무 등록"`:''}><span class="cal-day">${d.getDate()}</span>${d.getMonth()===m?`<span class="cal-add">${icon('plus')}</span>`:''}${chips}${items.length>3?`<span class="cal-more">+${items.length-3}건 더보기</span>`:''}</div>`;
     }
-    return `<div class="view-nav"><button type="button" class="btn btn-outline btn-sm back-btn" data-action="backdash" title="대시보드 화면으로 돌아갑니다">${icon('chevL')}대시보드로 돌아가기</button></div>
+    return `<div class="welcome view-nav"><div></div><button type="button" class="btn btn-outline back-btn" data-action="backdash" title="대시보드 화면으로 돌아갑니다">${icon('dashboard')}대시보드로 돌아가기</button></div>
     <div class="card">
       <div class="card-header">
         <div class="cal-head">
